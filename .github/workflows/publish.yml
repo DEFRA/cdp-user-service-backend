@@ -25,4 +25,4 @@ jobs:
       - name: Build all the stuff
         uses: defra-cdp-sandpit/cdp-build-action/build@main
         with:
-          version: ${{ steps.version.outputs.new_tag }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
