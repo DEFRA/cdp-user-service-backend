@@ -1,6 +1,6 @@
-# CDP Node Backend Template
+# CDP User Service Backend
 
-Core delivery platform Node.js Backend Template.
+Core delivery platform User Service Backend.
 
 - [Requirements](#requirements)
   - [Node.js](#nodejs)

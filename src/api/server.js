@@ -7,7 +7,6 @@ import { requestLogger } from '~/src/helpers/request-logger'
 import { mongoPlugin } from '~/src/helpers/mongodb'
 import { failAction } from '~/src/helpers/fail-action'
 import { catchAll } from '~/src/helpers/errors'
-import { populateDb } from '~/src/helpers/db/populate-db'
 
 async function createServer() {
   const server = hapi.server({
@@ -35,8 +34,6 @@ async function createServer() {
   await server.register(router, {
     routes: { prefix: appConfig.get('appPathPrefix') }
   })
-
-  await server.register(populateDb)
 
   server.ext('onPreResponse', catchAll)
 
