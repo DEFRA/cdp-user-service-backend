@@ -1,5 +1,5 @@
 async function getUsers(db) {
-  const cursor = db.collection('users').find({}, { projection: { _id: 0 } })
+  const cursor = db.collection('users').find({})
   return await cursor.toArray()
 }
 
