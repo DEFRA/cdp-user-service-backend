@@ -3,6 +3,7 @@ import { createUser } from '~/src/api/users/helpers/create-user'
 import { createUserValidationSchema } from '~/src/api/users/helpers/create-user-validation-schema'
 import { getUser } from '~/src/api/users/helpers/get-user'
 import { normaliseUser } from '~/src/api/users/helpers/normalise-user'
+import { MongoErrors } from '~/src/api/users/helpers/mongodb-errors'
 
 const createUserController = {
   options: {
@@ -26,7 +27,7 @@ const createUserController = {
       const user = normaliseUser(userResult)
       return h.response({ message: 'success', user }).code(201)
     } catch (error) {
-      if (error.code === 11000) {
+      if (error.code === MongoErrors.DuplicateKey) {
         return Boom.conflict('User already exists')
       } else {
         throw error
