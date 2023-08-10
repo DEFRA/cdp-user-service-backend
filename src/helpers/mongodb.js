@@ -41,7 +41,7 @@ const mongoPlugin = {
 }
 
 async function createIndexes(db) {
-  await db.collection('entities').createIndex({ id: 1 })
+  await db.collection('users').createIndex({ id: 1 })
 }
 
 export { mongoPlugin }
