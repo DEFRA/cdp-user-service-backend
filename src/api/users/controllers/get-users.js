@@ -1,7 +1,7 @@
 import { getUsers } from '~/src/api/users/helpers/get-users'
 import { normaliseUser } from '~/src/api/users/helpers/normalise-user'
 
-const usersController = {
+const getUsersController = {
   handler: async (request, h) => {
     const dbUsers = await getUsers(request.db)
     const users = dbUsers.map(normaliseUser)
@@ -9,4 +9,4 @@ const usersController = {
   }
 }
 
-export { usersController }
+export { getUsersController }

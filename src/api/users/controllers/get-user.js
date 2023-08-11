@@ -3,7 +3,7 @@ import { getUser } from '~/src/api/users/helpers/get-user'
 import { isNull } from 'lodash'
 import { normaliseUser } from '~/src/api/users/helpers/normalise-user'
 
-const userController = {
+const getUserController = {
   handler: async (request, h) => {
     const dbUser = await getUser(request.db, request.params.userId)
     if (isNull(dbUser)) {
@@ -14,4 +14,4 @@ const userController = {
   }
 }
 
-export { userController }
+export { getUserController }

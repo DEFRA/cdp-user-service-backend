@@ -1,11 +1,11 @@
-import { userController } from '~/src/api/users/controllers/get-user'
-import { usersController } from '~/src/api/users/controllers/get-users'
+import { getUserController } from '~/src/api/users/controllers/get-user'
+import { getUsersController } from '~/src/api/users/controllers/get-users'
 import { createUserController } from '~/src/api/users/controllers/create-user'
 import { updateUserController } from '~/src/api/users/controllers/update-user'
 
 export {
-  userController,
-  usersController,
+  getUserController,
+  getUsersController,
   createUserController,
   updateUserController
 }
