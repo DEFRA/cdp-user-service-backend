@@ -1,7 +1,8 @@
+import Boom from '@hapi/boom'
 import { updateUser } from '~/src/api/users/helpers/update-user'
 import { updateUserValidationSchema } from '~/src/api/users/helpers/update-user-validation-schema'
-import Boom from '@hapi/boom'
 import { normaliseUser } from '~/src/api/users/helpers/normalise-user'
+import { buildUpdateFields } from '~/src/api/users/helpers/build-update-fields'
 
 const updateUserController = {
   options: {
@@ -12,13 +13,7 @@ const updateUserController = {
   handler: async (request, h) => {
     const userId = request.params.userId
     const fields = ['name', 'email', 'github', 'defraVpnId', 'defraAwsId']
-    const updateFields = Object.fromEntries(
-      Object.entries(request?.payload)
-        .filter(
-          ([field, value]) => fields.includes(field) && value !== undefined
-        )
-        .map(([field, value]) => [field, value])
-    )
+    const updateFields = buildUpdateFields(request?.payload, fields)
     const updateResult = await updateUser(request.db, userId, updateFields)
     if (updateResult.value) {
       const user = normaliseUser(updateResult.value)
