@@ -11,7 +11,8 @@ describe('#normaliseTeam', () => {
     const expectedTeam = {
       teamId: 123,
       name: 'Team A',
-      description: 'Best team ever'
+      description: 'Best team ever',
+      users: []
     }
     expect(normalisedTeam).toEqual(expectedTeam)
   })

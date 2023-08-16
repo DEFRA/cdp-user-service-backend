@@ -4,7 +4,7 @@ import { normaliseUser } from '~/src/api/users/helpers/normalise-user'
 const getUsersController = {
   handler: async (request, h) => {
     const dbUsers = await getUsers(request.db)
-    const users = dbUsers.map(normaliseUser)
+    const users = dbUsers.map((user) => normaliseUser(user))
     return h.response({ message: 'success', users }).code(200)
   }
 }

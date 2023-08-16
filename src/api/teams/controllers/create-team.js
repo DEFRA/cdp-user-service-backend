@@ -21,7 +21,7 @@ const createTeamController = {
     try {
       const createResult = await createTeam(request.db, dbTeam)
       const teamResult = await getTeam(request.db, createResult.insertedId)
-      const team = normaliseTeam(teamResult)
+      const team = normaliseTeam(teamResult, false)
       return h.response({ message: 'success', team }).code(201)
     } catch (error) {
       if (error.code === MongoErrors.DuplicateKey) {

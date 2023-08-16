@@ -1,8 +1,11 @@
 async function updateTeam(db, teamId, updateFields) {
-  const filter = { _id: teamId }
-  const update = { $set: updateFields }
-  const options = { returnDocument: 'after' }
-  return await db.collection('teams').findOneAndUpdate(filter, update, options)
+  return await db
+    .collection('teams')
+    .findOneAndUpdate(
+      { _id: teamId },
+      { $set: updateFields },
+      { returnDocument: 'after' }
+    )
 }
 
 export { updateTeam }

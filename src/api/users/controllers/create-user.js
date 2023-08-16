@@ -24,7 +24,7 @@ const createUserController = {
     try {
       const createResult = await createUser(request.db, dbUser)
       const userResult = await getUser(request.db, createResult.insertedId)
-      const user = normaliseUser(userResult)
+      const user = normaliseUser(userResult, false)
       return h.response({ message: 'success', user }).code(201)
     } catch (error) {
       if (error.code === MongoErrors.DuplicateKey) {

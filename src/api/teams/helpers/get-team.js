@@ -1,5 +1,19 @@
 async function getTeam(db, teamId) {
-  return await db.collection('teams').findOne({ _id: teamId })
+  const teams = await db
+    .collection('teams')
+    .aggregate([
+      { $match: { _id: teamId } },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'users',
+          foreignField: '_id',
+          as: 'users'
+        }
+      }
+    ])
+    .toArray()
+  return teams[0] || null
 }
 
 export { getTeam }

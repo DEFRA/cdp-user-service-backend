@@ -16,7 +16,7 @@ const updateUserController = {
     const updateFields = buildUpdateFields(request?.payload, fields)
     const updateResult = await updateUser(request.db, userId, updateFields)
     if (updateResult.value) {
-      const user = normaliseUser(updateResult.value)
+      const user = normaliseUser(updateResult.value, false)
       return h.response({ message: 'success', user }).code(200)
     } else {
       return Boom.notFound()

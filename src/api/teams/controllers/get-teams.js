@@ -4,7 +4,7 @@ import { normaliseTeam } from '~/src/api/teams/helpers/normalise-team'
 const getTeamsController = {
   handler: async (request, h) => {
     const dbTeams = await getTeams(request.db)
-    const teams = dbTeams.map(normaliseTeam)
+    const teams = dbTeams.map((team) => normaliseTeam(team))
     return h.response({ message: 'success', teams }).code(200)
   }
 }

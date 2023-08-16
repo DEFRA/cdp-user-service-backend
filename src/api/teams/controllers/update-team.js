@@ -16,7 +16,7 @@ const updateTeamController = {
     const updateFields = buildUpdateFields(request?.payload, fields)
     const updateResult = await updateTeam(request.db, teamId, updateFields)
     if (updateResult.value) {
-      const team = normaliseTeam(updateResult.value)
+      const team = normaliseTeam(updateResult.value, false)
       return h.response({ message: 'success', team }).code(200)
     } else {
       return Boom.notFound()

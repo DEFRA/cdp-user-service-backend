@@ -1,6 +1,17 @@
 async function getUsers(db) {
-  const cursor = db.collection('users').find({})
-  return await cursor.toArray()
+  return await db
+    .collection('users')
+    .aggregate([
+      {
+        $lookup: {
+          from: 'teams',
+          localField: 'teams',
+          foreignField: '_id',
+          as: 'teams'
+        }
+      }
+    ])
+    .toArray()
 }
 
 export { getUsers }

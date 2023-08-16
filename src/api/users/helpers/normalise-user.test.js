@@ -11,7 +11,8 @@ describe('#normaliseUser', () => {
     const expectedUser = {
       aadId: 123,
       name: 'John Doe',
-      email: 'john@doe.com'
+      email: 'john@doe.com',
+      teams: []
     }
     expect(normalisedUser).toEqual(expectedUser)
   })

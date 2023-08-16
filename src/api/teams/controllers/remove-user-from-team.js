@@ -25,7 +25,7 @@ const removeUserFromTeamController = {
       teamId
     )
     if (updateResult.value) {
-      const team = normaliseTeam(updateResult.value)
+      const team = normaliseTeam(updateResult.value, false)
       return h.response({ message: 'success', team }).code(200)
     } else {
       return Boom.notFound()
