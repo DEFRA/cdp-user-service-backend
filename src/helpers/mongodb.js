@@ -28,12 +28,17 @@ const mongoPlugin = {
       mongoUrl.password = password
     }
 
-    const client = await MongoClient.connect(mongoUrl.toString(), mongoOptions)
-    const db = client.db(databaseName)
+    const mongoClient = await MongoClient.connect(
+      mongoUrl.toString(),
+      mongoOptions
+    )
+    const db = mongoClient.db(databaseName)
     await createIndexes(db)
 
     logger.info(`mongodb connected to ${databaseName}`)
 
+    server.decorate('server', 'mongoClient', mongoClient)
+    server.decorate('request', 'mongoClient', mongoClient)
     server.decorate('server', 'db', db)
     server.decorate('request', 'db', db)
   }

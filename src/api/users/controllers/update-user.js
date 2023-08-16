@@ -1,8 +1,8 @@
 import Boom from '@hapi/boom'
 import { updateUser } from '~/src/api/users/helpers/update-user'
-import { updateUserValidationSchema } from '~/src/api/users/helpers/update-user-validation-schema'
 import { normaliseUser } from '~/src/api/users/helpers/normalise-user'
-import { buildUpdateFields } from '~/src/api/users/helpers/build-update-fields'
+import { buildUpdateFields } from '~/src/helpers/build-update-fields'
+import { updateUserValidationSchema } from '~/src/api/users/helpers/update-user-validation-schema'
 
 const updateUserController = {
   options: {

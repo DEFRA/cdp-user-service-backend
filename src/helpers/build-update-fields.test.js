@@ -1,4 +1,4 @@
-import { buildUpdateFields } from '~/src/api/users/helpers/build-update-fields'
+import { buildUpdateFields } from '~/src/helpers/build-update-fields'
 
 describe('#buildUpdateFields', () => {
   test('Should return an array with only the allowed fields and their values which are not undefined', () => {
@@ -11,10 +11,10 @@ describe('#buildUpdateFields', () => {
     }
     const allowedFields = ['name', 'email', 'gender']
     const updateFields = buildUpdateFields(obj, allowedFields)
-    const expectedUpdateFields = [
-      ['name', 'John Doe'],
-      ['email', 'john@doe.com']
-    ]
+    const expectedUpdateFields = {
+      name: 'John Doe',
+      email: 'john@doe.com'
+    }
     expect(updateFields).toEqual(expectedUpdateFields)
   })
 })

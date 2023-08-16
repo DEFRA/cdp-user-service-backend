@@ -1,6 +1,6 @@
 import Boom from '@hapi/boom'
-import { getUser } from '~/src/api/users/helpers/get-user'
 import { isNull } from 'lodash'
+import { getUser } from '~/src/api/users/helpers/get-user'
 import { normaliseUser } from '~/src/api/users/helpers/normalise-user'
 
 const getUserController = {

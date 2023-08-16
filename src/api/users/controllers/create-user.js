@@ -3,7 +3,7 @@ import { createUser } from '~/src/api/users/helpers/create-user'
 import { createUserValidationSchema } from '~/src/api/users/helpers/create-user-validation-schema'
 import { getUser } from '~/src/api/users/helpers/get-user'
 import { normaliseUser } from '~/src/api/users/helpers/normalise-user'
-import { MongoErrors } from '~/src/api/users/helpers/mongodb-errors'
+import { MongoErrors } from '~/src/helpers/mongodb-errors'
 
 const createUserController = {
   options: {

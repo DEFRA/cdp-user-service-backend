@@ -1,7 +1,8 @@
 function buildUpdateFields(entity, fields) {
-  return Object.entries(entity)
+  const updateFields = Object.entries(entity)
     .filter(([field, value]) => fields.includes(field) && value !== undefined)
     .map(([field, value]) => [field, value])
+  return Object.fromEntries(updateFields)
 }
 
 export { buildUpdateFields }
