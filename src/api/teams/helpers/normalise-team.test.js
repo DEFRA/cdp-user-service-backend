@@ -5,14 +5,32 @@ describe('#normaliseTeam', () => {
     const team = {
       _id: 123,
       name: 'Team A',
-      description: 'Best team ever'
+      description: 'Best team ever',
+      users: [{ _id: 50, name: 'Bob' }]
     }
     const normalisedTeam = normaliseTeam(team)
     const expectedTeam = {
       teamId: 123,
       name: 'Team A',
       description: 'Best team ever',
-      users: []
+      users: [{ aadId: 50, name: 'Bob', teams: [] }]
+    }
+    expect(normalisedTeam).toEqual(expectedTeam)
+  })
+
+  test('Should not normalise nested users if nested is false', () => {
+    const team = {
+      _id: 123,
+      name: 'Team A',
+      description: 'Best team ever',
+      users: [50]
+    }
+    const normalisedTeam = normaliseTeam(team, false)
+    const expectedTeam = {
+      teamId: 123,
+      name: 'Team A',
+      description: 'Best team ever',
+      users: [50]
     }
     expect(normalisedTeam).toEqual(expectedTeam)
   })
