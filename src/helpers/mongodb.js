@@ -33,7 +33,6 @@ const mongoPlugin = {
       mongoOptions
     )
     const db = mongoClient.db(databaseName)
-    await createIndexes(db)
 
     logger.info(`mongodb connected to ${databaseName}`)
 
@@ -42,10 +41,6 @@ const mongoPlugin = {
     server.decorate('server', 'db', db)
     server.decorate('request', 'db', db)
   }
-}
-
-async function createIndexes(db) {
-  await db.collection('users').createIndex({ id: 1 })
 }
 
 export { mongoPlugin }
