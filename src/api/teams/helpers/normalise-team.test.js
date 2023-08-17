@@ -13,7 +13,7 @@ describe('#normaliseTeam', () => {
       teamId: 123,
       name: 'Team A',
       description: 'Best team ever',
-      users: [{ aadId: 50, name: 'Bob', teams: [] }]
+      users: [{ userId: 50, name: 'Bob', teams: [] }]
     }
     expect(normalisedTeam).toEqual(expectedTeam)
   })

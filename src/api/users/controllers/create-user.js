@@ -18,7 +18,7 @@ const createUserController = {
   handler: async (request, h) => {
     const payload = request?.payload
     const dbUser = {
-      _id: payload.aadId,
+      _id: payload.userId,
       name: payload.name,
       email: payload.email,
       github: payload?.github,
@@ -26,14 +26,14 @@ const createUserController = {
       defraAwsId: payload?.defraAwsId
     }
     try {
-      const userExists = await userIdExists(request.graphClient, payload.aadId)
+      const userExists = await userIdExists(request.graphClient, payload.userId)
       if (!userExists) {
         return Boom.conflict('User does not exist in AAD')
       }
       const createResult = await createUser(request.db, dbUser)
       const userResult = await getUser(request.db, createResult.insertedId)
       const user = normaliseUser(userResult, false)
-      logger.info(`Created user ${userResult.aadId} ${userResult.name}`)
+      logger.info(`Created user ${userResult.userId} ${userResult.name}`)
       return h.response({ message: 'success', user }).code(201)
     } catch (error) {
       if (error.code === MongoErrors.DuplicateKey) {
