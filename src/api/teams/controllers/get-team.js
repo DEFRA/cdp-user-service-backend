@@ -7,7 +7,7 @@ const getTeamController = {
   handler: async (request, h) => {
     const dbTeam = await getTeam(request.db, request.params.teamId)
     if (isNull(dbTeam)) {
-      return Boom.notFound()
+      return Boom.notFound('Team not found')
     }
     const team = normaliseTeam(dbTeam)
     return h.response({ message: 'success', team }).code(200)

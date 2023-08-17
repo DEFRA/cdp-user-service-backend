@@ -15,10 +15,11 @@ const removeUserFromTeamController = {
     const dbUser = await getUser(request.db, userId)
 
     if (isNull(dbTeam) || isNull(dbUser) || !teamHasUser(dbTeam, dbUser)) {
-      return Boom.notFound()
+      return Boom.notFound('User or Team not found')
     }
 
     const updateResult = await removeUserFromTeam(
+      request.graphClient,
       request.mongoClient,
       request.db,
       userId,

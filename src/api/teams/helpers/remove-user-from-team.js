@@ -1,7 +1,15 @@
-async function removeUserFromTeam(mongoClient, db, userId, teamId) {
+async function removeUserFromTeam(
+  graphClient,
+  mongoClient,
+  db,
+  userId,
+  teamId
+) {
   const session = mongoClient.startSession()
   session.startTransaction()
   try {
+    await graphClient.api(`/groups/${teamId}/members/${userId}/$ref`).delete()
+
     await db
       .collection('users')
       .updateOne({ _id: userId }, { $pull: { teams: teamId } })

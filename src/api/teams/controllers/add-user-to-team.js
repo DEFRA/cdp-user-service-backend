@@ -15,12 +15,13 @@ const addUserToTeamController = {
     const dbUser = await getUser(request.db, userId)
 
     if (isNull(dbTeam) || isNull(dbUser)) {
-      return Boom.notFound()
+      return Boom.notFound('User or Team not found')
     } else if (teamHasUser(dbTeam, dbUser)) {
-      return Boom.conflict()
+      return Boom.conflict('User already a member of the team')
     }
 
     const updateResult = await addUserToTeam(
+      request.graphClient,
       request.mongoClient,
       request.db,
       userId,

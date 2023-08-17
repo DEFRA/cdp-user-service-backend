@@ -7,7 +7,7 @@ const getUserController = {
   handler: async (request, h) => {
     const dbUser = await getUser(request.db, request.params.userId)
     if (isNull(dbUser)) {
-      return Boom.notFound()
+      return Boom.notFound('User not found')
     }
     const user = normaliseUser(dbUser)
     return h.response({ message: 'success', user }).code(200)
