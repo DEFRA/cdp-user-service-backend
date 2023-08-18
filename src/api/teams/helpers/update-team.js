@@ -1,10 +1,12 @@
-import { mailNicknameFromTeamName } from '~/src/api/teams/helpers/mail-nickname-from-team-name'
+import { mailNicknameFromGroupName } from '~/src/api/teams/helpers/mail-nickname-from-group-name'
+import { groupNameFromTeamName } from '~/src/api/teams/helpers/group-name-from-team-name'
 
 async function updateTeam(graphClient, db, teamId, updateFields) {
   const updateGroupFields = {}
   if (updateFields.name) {
-    updateGroupFields.displayName = updateFields.name
-    updateGroupFields.mailNickname = mailNicknameFromTeamName(updateFields.name)
+    const groupName = groupNameFromTeamName(updateFields.name)
+    updateGroupFields.displayName = groupName
+    updateGroupFields.mailNickname = mailNicknameFromGroupName(groupName)
   }
   if (updateFields.description) {
     updateGroupFields.description = updateFields.description

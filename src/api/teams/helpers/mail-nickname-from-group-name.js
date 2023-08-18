@@ -1,4 +1,4 @@
-function mailNicknameFromTeamName(teamName) {
+function mailNicknameFromGroupName(teamName) {
   // Remove non-ASCII characters
   const asciiOnly = teamName.replace(/[^\p{ASCII}]/gu, '')
   // Replace spaces
@@ -9,4 +9,4 @@ function mailNicknameFromTeamName(teamName) {
   return validCharacters.slice(0, 64)
 }
 
-export { mailNicknameFromTeamName }
+export { mailNicknameFromGroupName }

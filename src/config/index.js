@@ -91,13 +91,13 @@ const appConfig = convict({
     doc: 'Azure Active Directory Tenant ID',
     format: String,
     env: 'AZURE_TENANT_ID',
-    default: ''
+    default: '6f504113-6b64-43f2-ade9-242e05780007'
   },
   azureClientId: {
     doc: 'Azure App Client ID',
     format: String,
     env: 'AZURE_CLIENT_ID',
-    default: ''
+    default: '81f438d7-b6e6-4f39-a2d8-10759536fb8a'
   },
   azureClientSecret: {
     doc: 'Azure App Client Secret',
@@ -105,6 +105,13 @@ const appConfig = convict({
     sensitive: true,
     env: 'AZURE_CLIENT_SECRET',
     default: ''
+  },
+  azureGroupPrefix: {
+    doc: 'Azure Active Directory Group Prefix',
+    format: String,
+    sensitive: true,
+    env: 'AZURE_GROUP_PREFIX',
+    default: 'AG-APP-CDP-'
   }
 })
 

@@ -3,7 +3,11 @@ async function userIdExists(graphClient, userId) {
     await graphClient.api(`/users/${userId}`).get()
     return true
   } catch (error) {
-    return false
+    if (error.statusCode === 404) {
+      return false
+    } else {
+      throw error
+    }
   }
 }
 
