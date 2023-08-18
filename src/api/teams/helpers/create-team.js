@@ -1,14 +1,16 @@
-import { mailNicknameFromTeamName } from '~/src/api/teams/helpers/mail-nickname-from-team-name'
 import { createLogger } from '~/src/helpers/logger'
+import { mailNicknameFromGroupName } from '~/src/api/teams/helpers/mail-nickname-from-group-name'
+import { groupNameFromTeamName } from '~/src/api/teams/helpers/group-name-from-team-name'
 
 const logger = createLogger()
 
 async function createTeam(graphClient, db, dbTeam) {
+  const groupName = groupNameFromTeamName(dbTeam.name)
   const newGroup = await graphClient.api('/groups').post({
-    displayName: dbTeam.name,
+    displayName: groupName,
     description: dbTeam.description,
     mailEnabled: false,
-    mailNickname: mailNicknameFromTeamName(dbTeam.name),
+    mailNickname: mailNicknameFromGroupName(groupName),
     securityEnabled: true
   })
   logger.info(`Created AAD group ${newGroup.id} ${newGroup.displayName}`)
