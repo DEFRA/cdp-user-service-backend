@@ -1,8 +1,8 @@
 import {
   createUserController,
-  updateUserController,
-  userController,
-  usersController
+  getUserController,
+  getUsersController,
+  updateUserController
 } from '~/src/api/users/controllers'
 
 const users = {
@@ -13,7 +13,7 @@ const users = {
         {
           method: 'GET',
           path: '/users',
-          ...usersController
+          ...getUsersController
         },
         {
           method: 'POST',
@@ -23,7 +23,7 @@ const users = {
         {
           method: 'GET',
           path: '/users/{userId}',
-          ...userController
+          ...getUserController
         },
         {
           method: 'PATCH',

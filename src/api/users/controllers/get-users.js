@@ -1,12 +1,12 @@
 import { getUsers } from '~/src/api/users/helpers/get-users'
 import { normaliseUser } from '~/src/api/users/helpers/normalise-user'
 
-const usersController = {
+const getUsersController = {
   handler: async (request, h) => {
     const dbUsers = await getUsers(request.db)
-    const users = dbUsers.map(normaliseUser)
+    const users = dbUsers.map((user) => normaliseUser(user))
     return h.response({ message: 'success', users }).code(200)
   }
 }
 
-export { usersController }
+export { getUsersController }

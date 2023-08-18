@@ -86,6 +86,25 @@ const appConfig = convict({
     doc: 'path for mongodb TLS truststore',
     format: '*',
     env: 'MONGO_CERT_PATH'
+  },
+  azureTenantId: {
+    doc: 'Azure Active Directory Tenant ID',
+    format: String,
+    env: 'AZURE_TENANT_ID',
+    default: ''
+  },
+  azureClientId: {
+    doc: 'Azure App Client ID',
+    format: String,
+    env: 'AZURE_CLIENT_ID',
+    default: ''
+  },
+  azureClientSecret: {
+    doc: 'Azure App Client Secret',
+    format: String,
+    sensitive: true,
+    env: 'AZURE_CLIENT_SECRET',
+    default: ''
   }
 })
 
