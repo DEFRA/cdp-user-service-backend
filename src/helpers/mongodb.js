@@ -1,9 +1,6 @@
 import { MongoClient } from 'mongodb'
 
 import { appConfig } from '~/src/config'
-import { createLogger } from '~/src/helpers/logger'
-
-const logger = createLogger()
 
 const mongoPlugin = {
   name: 'mongodb',
@@ -21,7 +18,7 @@ const mongoPlugin = {
     const mongoUrl = new URL(appConfig.get('mongoUri'))
     const databaseName = appConfig.get('mongoDatabase')
 
-    logger.info('Setting up mongodb')
+    server.logger.info('Setting up mongodb')
 
     if (username && password) {
       mongoUrl.username = username
@@ -34,7 +31,11 @@ const mongoPlugin = {
     )
     const db = mongoClient.db(databaseName)
 
-    logger.info(`mongodb connected to ${databaseName}`)
+    // TODO we can set up uniques on this items
+    // await db.collection('users').createIndex({ userId: 1 }, { unique: true })
+    // await db.collection('teams').createIndex({ teamId: 1 }, { unique: true })
+
+    server.logger.info(`mongodb connected to ${databaseName}`)
 
     server.decorate('server', 'mongoClient', mongoClient)
     server.decorate('request', 'mongoClient', mongoClient)

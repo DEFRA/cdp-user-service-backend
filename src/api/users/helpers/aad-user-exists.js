@@ -1,14 +1,14 @@
-async function userIdExists(graphClient, userId) {
+async function aadUserExists(graphClient, userId) {
   try {
     await graphClient.api(`/users/${userId}`).get()
     return true
   } catch (error) {
     if (error.statusCode === 404) {
       return false
-    } else {
-      throw error
     }
+
+    throw error
   }
 }
 
-export { userIdExists }
+export { aadUserExists }

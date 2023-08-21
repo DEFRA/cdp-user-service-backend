@@ -13,7 +13,8 @@ async function getUser(db, userId) {
       }
     ])
     .toArray()
-  return users[0] || null
+
+  return users?.at(0) ?? null
 }
 
 export { getUser }
