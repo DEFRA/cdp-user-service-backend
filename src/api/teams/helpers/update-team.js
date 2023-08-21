@@ -1,5 +1,6 @@
 import { mailNicknameFromGroupName } from '~/src/api/teams/helpers/mail-nickname-from-group-name'
 import { groupNameFromTeamName } from '~/src/api/teams/helpers/group-name-from-team-name'
+import { getTeam } from '~/src/api/teams/helpers/get-team'
 
 async function updateTeam(graphClient, db, teamId, updateFields) {
   const updateGroupFields = {}
@@ -14,13 +15,11 @@ async function updateTeam(graphClient, db, teamId, updateFields) {
 
   await graphClient.api(`/groups/${teamId}`).patch(updateGroupFields)
 
-  return await db
+  await db
     .collection('teams')
-    .findOneAndUpdate(
-      { _id: teamId },
-      { $set: updateFields },
-      { returnDocument: 'after' }
-    )
+    .findOneAndUpdate({ _id: teamId }, { $set: updateFields })
+
+  return await getTeam(db, teamId)
 }
 
 export { updateTeam }

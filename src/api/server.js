@@ -7,7 +7,6 @@ import { requestLogger } from '~/src/helpers/request-logger'
 import { mongoPlugin } from '~/src/helpers/mongodb'
 import { msGraphPlugin } from '~/src/helpers/ms-graph'
 import { failAction } from '~/src/helpers/fail-action'
-import { catchAll } from '~/src/helpers/errors'
 
 async function createServer() {
   const server = hapi.server({
@@ -28,17 +27,15 @@ async function createServer() {
     }
   })
 
+  await server.register(requestLogger)
+
   await server.register({ plugin: mongoPlugin, options: {} })
 
   await server.register({ plugin: msGraphPlugin, options: {} })
 
-  await server.register(requestLogger)
-
   await server.register(router, {
     routes: { prefix: appConfig.get('appPathPrefix') }
   })
-
-  server.ext('onPreResponse', catchAll)
 
   return server
 }

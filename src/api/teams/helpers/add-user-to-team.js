@@ -1,3 +1,5 @@
+import { getTeam } from '~/src/api/teams/helpers/get-team'
+
 async function addUserToTeam(graphClient, mongoClient, db, userId, teamId) {
   const session = mongoClient.startSession()
   session.startTransaction()
@@ -10,16 +12,12 @@ async function addUserToTeam(graphClient, mongoClient, db, userId, teamId) {
       .collection('users')
       .updateOne({ _id: userId }, { $addToSet: { teams: teamId } })
 
-    const updatedTeam = await db
+    await db
       .collection('teams')
-      .findOneAndUpdate(
-        { _id: teamId },
-        { $addToSet: { users: userId } },
-        { returnDocument: 'after' }
-      )
+      .findOneAndUpdate({ _id: teamId }, { $addToSet: { users: userId } })
 
     await session.commitTransaction()
-    return updatedTeam
+    return await getTeam(db, teamId)
   } catch (error) {
     await session.abortTransaction()
     throw error

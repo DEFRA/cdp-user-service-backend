@@ -5,7 +5,7 @@ const createTeamValidationSchema = Joi.object({
     .max(53)
     .regex(/^[A-Za-z0-9-]+$/)
     .required(),
-  description: Joi.string()
+  description: Joi.string().optional()
 })
 
 export { createTeamValidationSchema }

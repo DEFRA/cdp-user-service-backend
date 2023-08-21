@@ -9,6 +9,24 @@ async function getTeams(db) {
           foreignField: '_id',
           as: 'users'
         }
+      },
+      {
+        $project: {
+          _id: 0,
+          teamId: '$_id',
+          name: 1,
+          description: 1,
+          users: {
+            $map: {
+              input: '$users',
+              as: 'user',
+              in: {
+                userId: '$$user._id',
+                name: '$$user.name'
+              }
+            }
+          }
+        }
       }
     ])
     .toArray()
