@@ -1,9 +1,11 @@
 import Boom from '@hapi/boom'
-import { updateTeam } from '~/src/api/teams/helpers/update-team'
-import { normaliseTeam } from '~/src/api/teams/helpers/normalise-team'
-import { buildUpdateFields } from '~/src/helpers/build-update-fields'
+import { isNull } from 'lodash'
+
 import { updateTeamValidationSchema } from '~/src/api/teams/helpers/update-team-validation-schema'
-import { teamNameExists } from '~/src/api/teams/helpers/team-name-exists'
+import { updateTeam } from '~/src/api/teams/helpers/update-team'
+import { buildUpdateFields } from '~/src/helpers/build-update-fields'
+import { aadGroupNameExists } from '~/src/api/teams/helpers/aad-group-name-exists'
+import { aadGroupIdExists } from '~/src/api/teams/helpers/aad-group-id-exists'
 
 const updateTeamController = {
   options: {
@@ -16,28 +18,31 @@ const updateTeamController = {
     const fields = ['name', 'description']
     const updateFields = buildUpdateFields(request?.payload, fields)
 
+    const groupIdExists = await aadGroupIdExists(request.graphClient, teamId)
+    if (!groupIdExists) {
+      throw Boom.notFound('Team not found')
+    }
+
     if (updateFields.name) {
-      const teamExists = await teamNameExists(
+      const teamExists = await aadGroupNameExists(
         request.graphClient,
         updateFields.name
       )
       if (teamExists) {
-        return Boom.conflict('Team already exists on AAD')
+        throw Boom.conflict('Team already exists on AAD')
       }
     }
 
-    const updateResult = await updateTeam(
+    const team = await updateTeam(
       request.graphClient,
       request.db,
       teamId,
       updateFields
     )
-    if (updateResult.value) {
-      const team = normaliseTeam(updateResult.value, false)
-      return h.response({ message: 'success', team }).code(200)
-    } else {
-      return Boom.notFound()
+    if (isNull(team)) {
+      throw Boom.notFound('Team not found')
     }
+    return h.response({ message: 'success', team }).code(200)
   }
 }
 

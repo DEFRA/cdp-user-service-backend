@@ -1,10 +1,10 @@
 import Boom from '@hapi/boom'
 import { isNull } from 'lodash'
+
 import { getTeam } from '~/src/api/teams/helpers/get-team'
 import { getUser } from '~/src/api/users/helpers/get-user'
 import { teamHasUser } from '~/src/api/teams/helpers/team-has-user'
 import { addUserToTeam } from '~/src/api/teams/helpers/add-user-to-team'
-import { normaliseTeam } from '~/src/api/teams/helpers/normalise-team'
 
 const addUserToTeamController = {
   handler: async (request, h) => {
@@ -15,24 +15,19 @@ const addUserToTeamController = {
     const dbUser = await getUser(request.db, userId)
 
     if (isNull(dbTeam) || isNull(dbUser)) {
-      return Boom.notFound('User or Team not found')
+      throw Boom.notFound('User or Team not found')
     } else if (teamHasUser(dbTeam, dbUser)) {
-      return Boom.conflict('User already a member of the team')
+      throw Boom.conflict('User already a member of the team')
     }
 
-    const updateResult = await addUserToTeam(
+    const team = await addUserToTeam(
       request.graphClient,
       request.mongoClient,
       request.db,
       userId,
       teamId
     )
-    if (updateResult.value) {
-      const team = normaliseTeam(updateResult.value, false)
-      return h.response({ message: 'success', team }).code(200)
-    } else {
-      return Boom.notFound()
-    }
+    return h.response({ message: 'success', team }).code(200)
   }
 }
 

@@ -1,3 +1,5 @@
+import { getTeam } from '~/src/api/teams/helpers/get-team'
+
 async function removeUserFromTeam(
   graphClient,
   mongoClient,
@@ -14,16 +16,12 @@ async function removeUserFromTeam(
       .collection('users')
       .updateOne({ _id: userId }, { $pull: { teams: teamId } })
 
-    const updatedTeam = await db
+    await db
       .collection('teams')
-      .findOneAndUpdate(
-        { _id: teamId },
-        { $pull: { users: userId } },
-        { returnDocument: 'after' }
-      )
+      .findOneAndUpdate({ _id: teamId }, { $pull: { users: userId } })
 
     await session.commitTransaction()
-    return updatedTeam
+    return await getTeam(db, teamId)
   } catch (error) {
     await session.abortTransaction()
     throw error

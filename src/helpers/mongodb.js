@@ -31,10 +31,6 @@ const mongoPlugin = {
     )
     const db = mongoClient.db(databaseName)
 
-    // TODO we can set up uniques on this items
-    // await db.collection('users').createIndex({ userId: 1 }, { unique: true })
-    // await db.collection('teams').createIndex({ teamId: 1 }, { unique: true })
-
     server.logger.info(`mongodb connected to ${databaseName}`)
 
     server.decorate('server', 'mongoClient', mongoClient)

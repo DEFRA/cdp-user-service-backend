@@ -1,6 +1,8 @@
 function teamHasUser(dbTeam, dbUser) {
-  const hasUser = dbTeam.users?.some((user) => user._id === dbUser._id) || false
-  const hasTeam = dbUser.teams?.some((team) => team._id === dbTeam._id) || false
+  const hasUser =
+    dbTeam.users?.some((user) => user.userId === dbUser.userId) || false
+  const hasTeam =
+    dbUser.teams?.some((team) => team.teamId === dbTeam.teamId) || false
   return hasUser && hasTeam
 }
 

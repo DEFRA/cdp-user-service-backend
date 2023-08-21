@@ -1,11 +1,10 @@
+import { getUser } from '~/src/api/users/helpers/get-user'
+
 async function updateUser(db, userId, updateFields) {
-  return await db
+  await db
     .collection('users')
-    .findOneAndUpdate(
-      { _id: userId },
-      { $set: updateFields },
-      { returnDocument: 'after' }
-    )
+    .findOneAndUpdate({ _id: userId }, { $set: updateFields })
+  return await getUser(db, userId)
 }
 
 export { updateUser }
