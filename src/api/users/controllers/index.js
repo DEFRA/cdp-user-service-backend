@@ -2,10 +2,12 @@ import { getUserController } from '~/src/api/users/controllers/get-user'
 import { getUsersController } from '~/src/api/users/controllers/get-users'
 import { createUserController } from '~/src/api/users/controllers/create-user'
 import { updateUserController } from '~/src/api/users/controllers/update-user'
+import { getAadUsersController } from '~/src/api/users/controllers/get-aad-users'
 
 export {
   getUserController,
   getUsersController,
   createUserController,
-  updateUserController
+  updateUserController,
+  getAadUsersController
 }
