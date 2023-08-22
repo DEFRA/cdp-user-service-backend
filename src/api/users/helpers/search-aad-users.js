@@ -9,11 +9,13 @@ async function searchAadUsers(graphClient, query) {
     .top(10)
     .get()
   return (
-    users?.value.map((user) => ({
-      userId: user.id,
-      name: user.displayName,
-      email: user.mail
-    })) ?? []
+    users?.value
+      .map((user) => ({
+        userId: user.id,
+        name: user.displayName,
+        email: user.mail
+      }))
+      .filter((user) => Boolean(user.email)) ?? []
   )
 }
 
