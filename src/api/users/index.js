@@ -2,7 +2,8 @@ import {
   createUserController,
   getUserController,
   getUsersController,
-  updateUserController
+  updateUserController,
+  getAadUsersController
 } from '~/src/api/users/controllers'
 
 const users = {
@@ -29,6 +30,11 @@ const users = {
           method: 'PATCH',
           path: '/users/{userId}',
           ...updateUserController
+        },
+        {
+          method: 'GET',
+          path: '/aad-users',
+          ...getAadUsersController
         }
       ])
     }
