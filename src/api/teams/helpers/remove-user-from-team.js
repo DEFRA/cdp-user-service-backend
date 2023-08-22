@@ -16,9 +16,13 @@ async function removeUserFromTeam(
       .collection('users')
       .updateOne({ _id: userId }, { $pull: { teams: teamId } })
 
-    await db
-      .collection('teams')
-      .findOneAndUpdate({ _id: teamId }, { $pull: { users: userId } })
+    await db.collection('teams').findOneAndUpdate(
+      { _id: teamId },
+      {
+        $pull: { users: userId },
+        $set: { updatedAt: new Date() }
+      }
+    )
 
     await session.commitTransaction()
     return await getTeam(db, teamId)

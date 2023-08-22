@@ -29,7 +29,9 @@ async function getUser(db, userId) {
                 name: '$$team.name'
               }
             }
-          }
+          },
+          createdAt: 1,
+          updatedAt: 1
         }
       }
     ])
