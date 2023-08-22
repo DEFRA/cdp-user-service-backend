@@ -28,7 +28,9 @@ async function getUsers(db) {
                 name: '$$team.name'
               }
             }
-          }
+          },
+          createdAt: 1,
+          updatedAt: 1
         }
       }
     ])

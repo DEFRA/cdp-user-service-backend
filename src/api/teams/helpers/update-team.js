@@ -15,9 +15,13 @@ async function updateTeam(graphClient, db, teamId, updateFields) {
 
   await graphClient.api(`/groups/${teamId}`).patch(updateGroupFields)
 
+  const updatedFields = {
+    ...updateFields,
+    updatedAt: new Date()
+  }
   await db
     .collection('teams')
-    .findOneAndUpdate({ _id: teamId }, { $set: updateFields })
+    .findOneAndUpdate({ _id: teamId }, { $set: updatedFields })
 
   return await getTeam(db, teamId)
 }

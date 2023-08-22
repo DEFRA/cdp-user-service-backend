@@ -12,9 +12,13 @@ async function addUserToTeam(graphClient, mongoClient, db, userId, teamId) {
       .collection('users')
       .updateOne({ _id: userId }, { $addToSet: { teams: teamId } })
 
-    await db
-      .collection('teams')
-      .findOneAndUpdate({ _id: teamId }, { $addToSet: { users: userId } })
+    await db.collection('teams').findOneAndUpdate(
+      { _id: teamId },
+      {
+        $addToSet: { users: userId },
+        $set: { updatedAt: new Date() }
+      }
+    )
 
     await session.commitTransaction()
     return await getTeam(db, teamId)
