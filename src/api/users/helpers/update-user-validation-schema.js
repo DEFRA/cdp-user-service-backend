@@ -1,11 +1,11 @@
 import Joi from 'joi'
 
 const updateUserValidationSchema = Joi.object({
-  name: Joi.string().optional(),
-  email: Joi.string().email().optional(),
-  github: Joi.string().optional(),
-  defraVpnId: Joi.string().optional(),
-  defraAwsId: Joi.string().optional()
+  email: Joi.string().email().required(),
+  name: Joi.string().required(),
+  github: Joi.string().allow(null),
+  defraVpnId: Joi.string().allow(null),
+  defraAwsId: Joi.string().allow(null)
 })
 
 export { updateUserValidationSchema }
