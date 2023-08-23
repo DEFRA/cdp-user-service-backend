@@ -30,7 +30,8 @@ const updateTeamController = {
         request.graphClient,
         updateFields.name
       )
-      if (teamExists) {
+
+      if (teamExists && teamExists?.id !== teamId) {
         throw Boom.conflict('Team already exists on AAD')
       }
     }

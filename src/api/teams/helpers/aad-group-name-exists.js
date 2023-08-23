@@ -6,7 +6,8 @@ async function aadGroupNameExists(graphClient, name) {
     .api('/groups')
     .filter(`displayName eq '${groupName}'`)
     .get()
-  return group.value.length > 0
+
+  return group.value?.at(0) ?? false
 }
 
 export { aadGroupNameExists }
