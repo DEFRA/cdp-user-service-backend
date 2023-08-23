@@ -12,6 +12,26 @@ describe('#buildUpdateFields', () => {
     const allowedFields = ['name', 'email', 'gender']
     const updateFields = buildUpdateFields(obj, allowedFields)
     const expectedUpdateFields = {
+      $unset: {},
+      name: 'John Doe',
+      email: 'john@doe.com'
+    }
+    expect(updateFields).toEqual(expectedUpdateFields)
+  })
+
+  test('Should separate null values into $unset object', () => {
+    const obj = {
+      _id: 123,
+      name: 'John Doe',
+      email: 'john@doe.com',
+      age: null,
+      address: 'abc',
+      gender: null
+    }
+    const allowedFields = ['name', 'email', 'age', 'gender']
+    const updateFields = buildUpdateFields(obj, allowedFields)
+    const expectedUpdateFields = {
+      $unset: { gender: null, age: null },
       name: 'John Doe',
       email: 'john@doe.com'
     }
