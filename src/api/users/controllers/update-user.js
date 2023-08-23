@@ -13,8 +13,13 @@ const updateUserController = {
   },
   handler: async (request, h) => {
     const userId = request.params.userId
-    const fields = ['name', 'email', 'github', 'defraVpnId', 'defraAwsId']
-    const updateFields = buildUpdateFields(request?.payload, fields)
+    const updateFields = buildUpdateFields(request?.payload, [
+      'name',
+      'email',
+      'github',
+      'defraVpnId',
+      'defraAwsId'
+    ])
     const user = await updateUser(request.db, userId, updateFields)
     if (isNull(user)) {
       throw Boom.notFound('User not found')

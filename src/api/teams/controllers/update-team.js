@@ -15,8 +15,10 @@ const updateTeamController = {
   },
   handler: async (request, h) => {
     const teamId = request.params.teamId
-    const fields = ['name', 'description']
-    const updateFields = buildUpdateFields(request?.payload, fields)
+    const updateFields = buildUpdateFields(request?.payload, [
+      'name',
+      'description'
+    ])
 
     const groupIdExists = await aadGroupIdExists(request.graphClient, teamId)
     if (!groupIdExists) {
