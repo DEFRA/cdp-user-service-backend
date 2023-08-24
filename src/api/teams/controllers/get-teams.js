@@ -1,8 +1,18 @@
+import Joi from 'joi'
+
 import { getTeams } from '~/src/api/teams/helpers/get-teams'
 
 const getTeamsController = {
+  options: {
+    validate: {
+      query: Joi.object({
+        query: Joi.string()
+      })
+    }
+  },
   handler: async (request, h) => {
-    const teams = await getTeams(request.db)
+    const query = request.query.query
+    const teams = await getTeams(request.db, query)
     return h.response({ message: 'success', teams }).code(200)
   }
 }
