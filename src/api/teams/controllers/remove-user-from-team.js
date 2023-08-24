@@ -19,7 +19,7 @@ const removeUserFromTeamController = {
     }
 
     const team = await removeUserFromTeam(
-      request.graphClient,
+      request.msGraph,
       request.mongoClient,
       request.db,
       userId,

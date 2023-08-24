@@ -20,14 +20,14 @@ const updateTeamController = {
       'description'
     ])
 
-    const groupIdExists = await aadGroupIdExists(request.graphClient, teamId)
+    const groupIdExists = await aadGroupIdExists(request.msGraph, teamId)
     if (!groupIdExists) {
       throw Boom.notFound('Team not found')
     }
 
     if (updateFields.name) {
       const teamExists = await aadGroupNameExists(
-        request.graphClient,
+        request.msGraph,
         updateFields.name
       )
 
@@ -37,7 +37,7 @@ const updateTeamController = {
     }
 
     const team = await updateTeam(
-      request.graphClient,
+      request.msGraph,
       request.db,
       teamId,
       updateFields

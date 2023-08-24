@@ -1,8 +1,8 @@
 import { groupNameFromTeamName } from '~/src/api/teams/helpers/group-name-from-team-name'
 
-async function aadGroupNameExists(graphClient, name) {
+async function aadGroupNameExists(msGraph, name) {
   const groupName = groupNameFromTeamName(name)
-  const group = await graphClient
+  const group = await msGraph
     .api('/groups')
     .filter(`displayName eq '${groupName}'`)
     .get()

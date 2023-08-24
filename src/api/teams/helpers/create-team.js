@@ -3,9 +3,9 @@ import { groupNameFromTeamName } from '~/src/api/teams/helpers/group-name-from-t
 import { getTeam } from '~/src/api/teams/helpers/get-team'
 import { removeNil } from '~/src/helpers/remove-nil'
 
-async function createTeam(graphClient, db, dbTeam) {
+async function createTeam(msGraph, db, dbTeam) {
   const groupName = groupNameFromTeamName(dbTeam.name)
-  const newGroup = await graphClient.api('/groups').post({
+  const newGroup = await msGraph.api('/groups').post({
     displayName: groupName,
     description: dbTeam.description,
     mailEnabled: false,

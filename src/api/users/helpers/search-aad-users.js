@@ -1,5 +1,5 @@
-async function searchAadUsers(graphClient, query) {
-  const users = await graphClient
+async function searchAadUsers(msGraph, query) {
+  const users = await msGraph
     .api(`/users`)
     .headers({ ConsistencyLevel: 'eventual' })
     .search(`"displayName:${query}" OR "mail:${query}"`)
