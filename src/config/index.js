@@ -112,6 +112,31 @@ const appConfig = convict({
     sensitive: true,
     env: 'AZURE_GROUP_PREFIX',
     default: 'AG-APP-CDP-'
+  },
+  gitHubAppId: {
+    doc: 'GitHub Api authentication App Id',
+    format: String,
+    env: 'GITHUB_APP_ID',
+    default: '344866'
+  },
+  gitHubAppPrivateKey: {
+    doc: 'GitHub Api authentication App Private Key. This key is a base64 encoded secret',
+    format: '*',
+    sensitive: true,
+    env: 'GITHUB_APP_PRIVATE_KEY',
+    default: ''
+  },
+  gitHubAppInstallationId: {
+    doc: 'GitHub Api authentication App Installation Id',
+    format: String,
+    env: 'GITHUB_APP_INSTALLATION_ID',
+    default: '38398116'
+  },
+  gitHubOrg: {
+    doc: 'GitHub Organisation',
+    format: String,
+    env: 'GITHUB_APP_ORG_ID',
+    default: 'defra-cdp-sandpit'
   }
 })
 
