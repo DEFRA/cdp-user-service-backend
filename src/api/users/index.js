@@ -3,7 +3,8 @@ import {
   getUserController,
   getUsersController,
   updateUserController,
-  getAadUsersController
+  getAadUsersController,
+  getGitHubUsersController
 } from '~/src/api/users/controllers'
 
 const users = {
@@ -35,6 +36,11 @@ const users = {
           method: 'GET',
           path: '/aad-users',
           ...getAadUsersController
+        },
+        {
+          method: 'GET',
+          path: '/github-users',
+          ...getGitHubUsersController
         }
       ])
     }
