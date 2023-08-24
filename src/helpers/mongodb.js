@@ -33,9 +33,7 @@ const mongoPlugin = {
 
     server.logger.info(`mongodb connected to ${databaseName}`)
 
-    server.decorate('server', 'mongoClient', mongoClient)
     server.decorate('request', 'mongoClient', mongoClient)
-    server.decorate('server', 'db', db)
     server.decorate('request', 'db', db)
   }
 }

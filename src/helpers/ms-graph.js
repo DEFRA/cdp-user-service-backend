@@ -30,7 +30,6 @@ const msGraphPlugin = {
     )
     const graphClient = Client.initWithMiddleware({ authProvider })
 
-    server.decorate('server', 'graphClient', graphClient)
     server.decorate('request', 'graphClient', graphClient)
   }
 }

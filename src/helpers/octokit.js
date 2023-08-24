@@ -27,7 +27,6 @@ const octokitPlugin = {
       }
     })
 
-    server.decorate('server', 'octokit', octokit)
     server.decorate('request', 'octokit', octokit)
   }
 }
