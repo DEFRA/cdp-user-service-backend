@@ -1,12 +1,9 @@
 import { TokenCredentialAuthenticationProvider } from '@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials'
 
 import { appConfig } from '~/src/config'
-import { createLogger } from '~/src/helpers/logger'
 
 const { ClientSecretCredential } = require('@azure/identity')
 const { Client } = require('@microsoft/microsoft-graph-client')
-
-const logger = createLogger()
 
 const msGraphPlugin = {
   name: 'ms-graph',
@@ -16,7 +13,7 @@ const msGraphPlugin = {
     const azureClientId = appConfig.get('azureClientId')
     const azureClientSecret = appConfig.get('azureClientSecret')
 
-    logger.info('Setting up ms-graph')
+    server.logger.info('Setting up ms-graph')
 
     const credential = new ClientSecretCredential(
       azureTenantId,
