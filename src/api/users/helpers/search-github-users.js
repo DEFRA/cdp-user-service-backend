@@ -9,7 +9,6 @@ async function searchGithubUsers(octokit, query) {
         nodes {
           github: login
           name
-          email
         }
         pageInfo {
           hasNextPage
