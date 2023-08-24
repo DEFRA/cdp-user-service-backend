@@ -1,6 +1,6 @@
-async function aadUserIdExists(graphClient, userId) {
+async function aadUserIdExists(msGraph, userId) {
   try {
-    await graphClient.api(`/users/${userId}`).get()
+    await msGraph.api(`/users/${userId}`).get()
     return true
   } catch (error) {
     if (error?.statusCode === 404) {

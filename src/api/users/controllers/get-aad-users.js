@@ -12,7 +12,7 @@ const getAadUsersController = {
   },
   handler: async (request, h) => {
     const query = request.query.query
-    const users = await searchAadUsers(request.graphClient, query)
+    const users = await searchAadUsers(request.msGraph, query)
     return h.response({ message: 'success', users }).code(200)
   }
 }

@@ -21,7 +21,7 @@ const addUserToTeamController = {
     }
 
     const team = await addUserToTeam(
-      request.graphClient,
+      request.msGraph,
       request.mongoClient,
       request.db,
       userId,

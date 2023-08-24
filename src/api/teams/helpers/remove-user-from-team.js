@@ -1,16 +1,10 @@
 import { getTeam } from '~/src/api/teams/helpers/get-team'
 
-async function removeUserFromTeam(
-  graphClient,
-  mongoClient,
-  db,
-  userId,
-  teamId
-) {
+async function removeUserFromTeam(msGraph, mongoClient, db, userId, teamId) {
   const session = mongoClient.startSession()
   session.startTransaction()
   try {
-    await graphClient.api(`/groups/${teamId}/members/${userId}/$ref`).delete()
+    await msGraph.api(`/groups/${teamId}/members/${userId}/$ref`).delete()
 
     await db
       .collection('users')

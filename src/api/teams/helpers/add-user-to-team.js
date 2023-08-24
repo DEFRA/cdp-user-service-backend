@@ -1,10 +1,10 @@
 import { getTeam } from '~/src/api/teams/helpers/get-team'
 
-async function addUserToTeam(graphClient, mongoClient, db, userId, teamId) {
+async function addUserToTeam(msGraph, mongoClient, db, userId, teamId) {
   const session = mongoClient.startSession()
   session.startTransaction()
   try {
-    await graphClient
+    await msGraph
       .api(`/groups/${teamId}/members/$ref`)
       .post({ '@odata.id': `https://graph.microsoft.com/v1.0/users/${userId}` })
 

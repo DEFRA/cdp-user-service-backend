@@ -1,6 +1,6 @@
-async function aadGroupIdExists(graphClient, groupId) {
+async function aadGroupIdExists(msGraph, groupId) {
   try {
-    await graphClient.api(`/groups/${groupId}`).get()
+    await msGraph.api(`/groups/${groupId}`).get()
     return true
   } catch (error) {
     if (error?.statusCode === 404) {

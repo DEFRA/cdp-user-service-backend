@@ -4,7 +4,7 @@ import { mailNicknameFromGroupName } from '~/src/api/teams/helpers/mail-nickname
 import { groupNameFromTeamName } from '~/src/api/teams/helpers/group-name-from-team-name'
 import { getTeam } from '~/src/api/teams/helpers/get-team'
 
-async function updateTeam(graphClient, db, teamId, updateFields) {
+async function updateTeam(msGraph, db, teamId, updateFields) {
   const updateGroupFields = {}
   if (updateFields.name) {
     const groupName = groupNameFromTeamName(updateFields.name)
@@ -14,7 +14,7 @@ async function updateTeam(graphClient, db, teamId, updateFields) {
 
   updateGroupFields.description = updateFields.description ?? null
 
-  await graphClient.api(`/groups/${teamId}`).patch(updateGroupFields)
+  await msGraph.api(`/groups/${teamId}`).patch(updateGroupFields)
 
   const unsetFields = updateFields?.$unset
   const setFields = {

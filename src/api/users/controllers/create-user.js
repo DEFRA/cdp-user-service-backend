@@ -21,10 +21,7 @@ const createUserController = {
       defraVpnId: payload?.defraVpnId,
       defraAwsId: payload?.defraAwsId
     }
-    const userExists = await aadUserIdExists(
-      request.graphClient,
-      payload.userId
-    )
+    const userExists = await aadUserIdExists(request.msGraph, payload.userId)
     if (!userExists) {
       throw Boom.conflict('User does not exist in AAD')
     }
