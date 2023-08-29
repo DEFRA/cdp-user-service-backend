@@ -9,21 +9,14 @@ const mongoPlugin = {
     const mongoOptions = {
       retryWrites: false,
       readPreference: 'secondary',
-      tlsAllowInvalidCertificates: true, // TODO: use the trust store
-      tlsAllowInvalidHostnames: true
+      useNewUrlParser: true,
+      useUnifiedTopology: true
     }
 
-    const username = appConfig.get('mongoUsername')
-    const password = appConfig.get('mongoPassword')
     const mongoUrl = new URL(appConfig.get('mongoUri'))
     const databaseName = appConfig.get('mongoDatabase')
 
     server.logger.info('Setting up mongodb')
-
-    if (username && password) {
-      mongoUrl.username = username
-      mongoUrl.password = password
-    }
 
     const mongoClient = await MongoClient.connect(
       mongoUrl.toString(),
