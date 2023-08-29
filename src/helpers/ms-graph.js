@@ -1,9 +1,8 @@
 import { TokenCredentialAuthenticationProvider } from '@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials'
+import { ClientSecretCredential } from '@azure/identity'
+import { Client } from '@microsoft/microsoft-graph-client'
 
 import { appConfig } from '~/src/config'
-
-const { ClientSecretCredential } = require('@azure/identity')
-const { Client } = require('@microsoft/microsoft-graph-client')
 
 const msGraphPlugin = {
   name: 'ms-graph',
