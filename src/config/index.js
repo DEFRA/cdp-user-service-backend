@@ -63,29 +63,11 @@ const appConfig = convict({
     default: 'mongodb://127.0.0.1:27017/',
     env: 'MONGO_URI'
   },
-  mongoUsername: {
-    doc: 'username for mongodb',
-    format: '*',
-    env: 'MONGO_USERNAME',
-    default: null
-  },
-  mongoPassword: {
-    doc: 'password for mongodb',
-    format: '*',
-    sensitive: true,
-    env: 'MONGO_PASSWORD',
-    default: null
-  },
   mongoDatabase: {
     doc: 'database for mongodb',
     format: '*',
     default: 'cdp-user-service-backend',
     env: 'MONGO_DATABASE'
-  },
-  mongoCertPath: {
-    doc: 'path for mongodb TLS truststore',
-    format: '*',
-    env: 'MONGO_CERT_PATH'
   },
   azureTenantId: {
     doc: 'Azure Active Directory Tenant ID',
