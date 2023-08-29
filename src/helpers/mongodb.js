@@ -8,9 +8,7 @@ const mongoPlugin = {
   register: async function (server) {
     const mongoOptions = {
       retryWrites: false,
-      readPreference: 'secondary',
-      useNewUrlParser: true,
-      useUnifiedTopology: true
+      readPreference: 'secondary'
     }
 
     const mongoUrl = new URL(appConfig.get('mongoUri'))
