@@ -15,7 +15,8 @@ const createTeamController = {
     const payload = request?.payload
     const dbTeam = {
       name: payload.name,
-      description: payload.description
+      description: payload?.description,
+      github: payload?.github
     }
     const teamExists = await aadGroupNameExists(request.msGraph, dbTeam.name)
     if (teamExists) {
