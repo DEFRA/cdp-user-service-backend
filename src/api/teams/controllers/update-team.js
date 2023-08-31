@@ -17,7 +17,8 @@ const updateTeamController = {
     const teamId = request.params.teamId
     const updateFields = buildUpdateFields(request?.payload, [
       'name',
-      'description'
+      'description',
+      'github'
     ])
 
     const groupIdExists = await aadGroupIdExists(request.msGraph, teamId)
