@@ -4,6 +4,7 @@ import { createTeamController } from '~/src/api/teams/controllers/create-team'
 import { updateTeamController } from '~/src/api/teams/controllers/update-team'
 import { addUserToTeamController } from '~/src/api/teams/controllers/add-user-to-team'
 import { removeUserFromTeamController } from '~/src/api/teams/controllers/remove-user-from-team'
+import { getGitHubTeamsController } from '~/src/api/teams/controllers/get-github-teams'
 
 export {
   getTeamController,
@@ -11,5 +12,6 @@ export {
   createTeamController,
   updateTeamController,
   addUserToTeamController,
-  removeUserFromTeamController
+  removeUserFromTeamController,
+  getGitHubTeamsController
 }
