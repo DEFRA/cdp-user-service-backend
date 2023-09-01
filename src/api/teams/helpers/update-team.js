@@ -1,4 +1,4 @@
-import { omit } from 'lodash'
+import { isNull, isEmpty } from 'lodash'
 
 import { mailNicknameFromGroupName } from '~/src/api/teams/helpers/mail-nickname-from-group-name'
 import { groupNameFromTeamName } from '~/src/api/teams/helpers/group-name-from-team-name'
@@ -6,25 +6,33 @@ import { getTeam } from '~/src/api/teams/helpers/get-team'
 
 async function updateTeam(msGraph, db, teamId, updateFields) {
   const updateGroupFields = {}
-  if (updateFields.name) {
-    const groupName = groupNameFromTeamName(updateFields.name)
+  if (updateFields?.$set?.name) {
+    const groupName = groupNameFromTeamName(updateFields.$set.name)
     updateGroupFields.displayName = groupName
     updateGroupFields.mailNickname = mailNicknameFromGroupName(groupName)
   }
-
-  updateGroupFields.description = updateFields.description ?? null
-
-  await msGraph.api(`/groups/${teamId}`).patch(updateGroupFields)
-
-  const unsetFields = updateFields?.$unset
-  const setFields = {
-    ...omit(updateFields, ['$unset']),
-    updatedAt: new Date()
+  if (updateFields?.$set?.description) {
+    updateGroupFields.description = updateFields.$set.description
+  } else if ('description' in updateFields?.$unset) {
+    updateGroupFields.description = null
   }
 
-  await db
-    .collection('teams')
-    .findOneAndUpdate({ _id: teamId }, { $set: setFields, $unset: unsetFields })
+  if (!isEmpty(updateGroupFields)) {
+    await msGraph.api(`/groups/${teamId}`).patch(updateGroupFields)
+  }
+
+  if (!isNull(updateFields)) {
+    await db.collection('teams').findOneAndUpdate(
+      { _id: teamId },
+      {
+        ...updateFields,
+        $set: {
+          ...updateFields?.$set,
+          updatedAt: new Date()
+        }
+      }
+    )
+  }
 
   return await getTeam(db, teamId)
 }
