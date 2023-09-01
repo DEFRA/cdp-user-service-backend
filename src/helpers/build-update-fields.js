@@ -1,24 +1,36 @@
-import { isNull, isUndefined } from 'lodash'
+import { isArray, isNull, isUndefined } from 'lodash'
 
-function buildUpdateFields(entity, fields) {
-  return Object.entries(entity)
-    .filter(([field, value]) => fields.includes(field) && !isUndefined(value))
-    .reduce(
-      (obj, [field, value]) => {
-        if (!isNull(value)) {
-          return { ...obj, [field]: value }
-        }
+function buildUpdateFields(existingEntity, updatedEntity, fields) {
+  if (isNull(existingEntity) || isNull(updatedEntity) || !isArray(fields)) {
+    return null
+  }
 
+  return fields.reduce((obj, field) => {
+    const existingValue = existingEntity[field]
+    const updatedValue = updatedEntity[field]
+
+    if (existingValue !== updatedValue && !isUndefined(updatedValue)) {
+      if (!isNull(updatedValue)) {
         return {
           ...obj,
-          $unset: {
-            ...obj.$unset,
-            [field]: value
+          $set: {
+            ...obj?.$set,
+            [field]: updatedValue
           }
         }
-      },
-      { $unset: {} }
-    )
+      }
+
+      return {
+        ...obj,
+        $unset: {
+          ...obj?.$unset,
+          [field]: updatedValue
+        }
+      }
+    }
+
+    return obj
+  }, null)
 }
 
 export { buildUpdateFields }

@@ -20,14 +20,14 @@ const createTeamController = {
     }
     const teamExists = await aadGroupNameExists(request.msGraph, dbTeam.name)
     if (teamExists) {
-      throw Boom.conflict('Team already exists on AAD')
+      throw Boom.conflict('Team already exists in AAD')
     }
     try {
       const team = await createTeam(request.msGraph, request.db, dbTeam)
       return h.response({ message: 'success', team }).code(201)
     } catch (error) {
       if (error.code === MongoErrors.DuplicateKey) {
-        throw Boom.conflict('Team already exists on DB')
+        throw Boom.conflict('Team already exists in DB')
       }
       throw error
     }

@@ -7,7 +7,7 @@ async function aadGroupNameExists(msGraph, name) {
     .filter(`displayName eq '${groupName}'`)
     .get()
 
-  return group.value?.at(0) ?? false
+  return group?.value?.length > 0 ?? false
 }
 
 export { aadGroupNameExists }
