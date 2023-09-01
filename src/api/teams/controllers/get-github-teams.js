@@ -1,6 +1,6 @@
 import Joi from 'joi'
 
-import { searchGithubTeams } from '~/src/api/teams/helpers/search-github-teams'
+import { searchGitHubTeams } from '~/src/api/teams/helpers/search-github-teams'
 
 const getGitHubTeamsController = {
   options: {
@@ -12,7 +12,7 @@ const getGitHubTeamsController = {
   },
   handler: async (request, h) => {
     const query = request.query.query
-    const users = await searchGithubTeams(request.octokit, query)
+    const users = await searchGitHubTeams(request.octokit, query)
     return h.response({ message: 'success', users }).code(200)
   }
 }
