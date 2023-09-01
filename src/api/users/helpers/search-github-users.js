@@ -1,6 +1,6 @@
 import { appConfig } from '~/src/config'
 
-async function searchGithubUsers(octokit, query) {
+async function searchGitHubUsers(octokit, query) {
   const org = appConfig.get('gitHubOrg')
   const orgUsersQuery = `
   query orgUsers($cursor: String, $orgName: String!) {
@@ -29,4 +29,4 @@ async function searchGithubUsers(octokit, query) {
     .slice(0, 10)
 }
 
-export { searchGithubUsers }
+export { searchGitHubUsers }

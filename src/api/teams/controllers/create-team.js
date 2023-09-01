@@ -3,6 +3,7 @@ import Boom from '@hapi/boom'
 import { createTeamValidationSchema } from '~/src/api/teams/helpers/create-team-validation-schema'
 import { MongoErrors } from '~/src/helpers/mongodb-errors'
 import { aadGroupNameExists } from '~/src/api/teams/helpers/aad-group-name-exists'
+import { gitHubTeamExists } from '~/src/api/teams/helpers/github-team-exists'
 import { createTeam } from '~/src/api/teams/helpers/create-team'
 
 const createTeamController = {
@@ -22,6 +23,17 @@ const createTeamController = {
     if (teamExists) {
       throw Boom.conflict('Team already exists in AAD')
     }
+
+    if (payload?.github) {
+      const gitHubExists = await gitHubTeamExists(
+        request.octokit,
+        payload.github
+      )
+      if (!gitHubExists) {
+        throw Boom.badData('Team does not exist in GitHub')
+      }
+    }
+
     try {
       const team = await createTeam(request.msGraph, request.db, dbTeam)
       return h.response({ message: 'success', team }).code(201)

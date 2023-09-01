@@ -3,6 +3,7 @@ import Boom from '@hapi/boom'
 import { createUserValidationSchema } from '~/src/api/users/helpers/create-user-validation-schema'
 import { MongoErrors } from '~/src/helpers/mongodb-errors'
 import { aadUserIdExists } from '~/src/api/users/helpers/aad-user-id-exists'
+import { gitHubUserExists } from '~/src/api/users/helpers/github-user-exists'
 import { createUser } from '~/src/api/users/helpers/create-user'
 
 const createUserController = {
@@ -21,10 +22,22 @@ const createUserController = {
       defraVpnId: payload?.defraVpnId,
       defraAwsId: payload?.defraAwsId
     }
-    const userExists = await aadUserIdExists(request.msGraph, payload.userId)
-    if (!userExists) {
-      throw Boom.conflict('User does not exist in AAD')
+
+    const aadExists = await aadUserIdExists(request.msGraph, payload.userId)
+    if (!aadExists) {
+      throw Boom.badData('User does not exist in AAD')
     }
+
+    if (payload?.github) {
+      const gitHubExists = await gitHubUserExists(
+        request.octokit,
+        payload.github
+      )
+      if (!gitHubExists) {
+        throw Boom.badData('User does not exist in GitHub')
+      }
+    }
+
     try {
       const user = await createUser(request.db, dbUser)
       return h.response({ message: 'success', user }).code(201)
