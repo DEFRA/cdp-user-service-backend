@@ -1,4 +1,4 @@
-import { isNull, isEmpty } from 'lodash'
+import { isEmpty, isNull } from 'lodash'
 
 import { mailNicknameFromGroupName } from '~/src/api/teams/helpers/mail-nickname-from-group-name'
 import { groupNameFromTeamName } from '~/src/api/teams/helpers/group-name-from-team-name'
@@ -13,7 +13,7 @@ async function updateTeam(msGraph, db, teamId, updateFields) {
   }
   if (updateFields?.$set?.description) {
     updateGroupFields.description = updateFields.$set.description
-  } else if ('description' in updateFields?.$unset) {
+  } else if (isNull(updateFields?.$unset?.description)) {
     updateGroupFields.description = null
   }
 

@@ -31,10 +31,10 @@ const updateTeamController = {
       'description',
       'github'
     ])
-    if (updateFields.name) {
+    if (updateFields?.$set?.name) {
       const teamExists = await aadGroupNameExists(
         request.msGraph,
-        updateFields.name
+        updateFields.$set.name
       )
       if (teamExists) {
         throw Boom.conflict('Team already exists in AAD')
