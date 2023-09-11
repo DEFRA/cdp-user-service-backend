@@ -1,5 +1,6 @@
 import path from 'path'
 import hapi from '@hapi/hapi'
+import jwt from '@hapi/jwt'
 
 import { appConfig } from '~/src/config'
 import { failAction } from '~/src/helpers/fail-action'
@@ -30,11 +31,46 @@ async function createServer() {
 
   await server.register(requestLogger)
 
+  await server.register(jwt)
+
   await server.register({ plugin: mongoPlugin, options: {} })
 
   await server.register({ plugin: msGraphPlugin, options: {} })
 
   await server.register({ plugin: octokitPlugin, options: {} })
+
+  server.auth.strategy('azure-oidc', 'jwt', {
+    keys: {
+      uri: `https://login.microsoftonline.com/${appConfig.get(
+        'azureTenantId'
+      )}/discovery/v2.0/keys`
+    },
+    verify: {
+      aud: `${appConfig.get('azureSSOClientId')}`,
+      iss: `https://login.microsoftonline.com/${appConfig.get(
+        'azureTenantId'
+      )}/v2.0`,
+      sub: false,
+      nbf: true,
+      exp: true,
+      maxAgeSec: 5400, // 90 minutes
+      timeSkewSec: 15
+    },
+    validate: (artifacts, request, h) => {
+      const payload = artifacts.decoded.payload
+      return {
+        isValid: true,
+        credentials: {
+          profile: {
+            id: payload.oid,
+            displayName: payload.name,
+            email: payload.upn ?? payload.preferred_username,
+            groups: payload.groups
+          }
+        }
+      }
+    }
+  })
 
   await server.register(router, {
     routes: { prefix: appConfig.get('appPathPrefix') }
