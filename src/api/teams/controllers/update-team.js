@@ -4,7 +4,7 @@ import { isNull } from 'lodash'
 import { updateTeamValidationSchema } from '~/src/api/teams/helpers/update-team-validation-schema'
 import { getTeam } from '~/src/api/teams/helpers/get-team'
 import { buildUpdateFields } from '~/src/helpers/build-update-fields'
-import { aadGroupNameExists } from '~/src/api/teams/helpers/aad-group-name-exists'
+import { teamNameExists } from '~/src/api/teams/helpers/team-name-exists'
 import { aadGroupIdExists } from '~/src/api/teams/helpers/aad-group-id-exists'
 import { gitHubTeamExists } from '~/src/api/teams/helpers/github-team-exists'
 import { updateTeam } from '~/src/api/teams/helpers/update-team'
@@ -34,12 +34,12 @@ const updateTeamController = {
     ])
 
     if (updateFields?.$set?.name) {
-      const teamExists = await aadGroupNameExists(
-        request.msGraph,
+      const teamExists = await teamNameExists(
+        request.db,
         updateFields.$set.name
       )
       if (teamExists) {
-        throw Boom.conflict('Team already exists in AAD')
+        throw Boom.conflict('Team already exists')
       }
     }
 

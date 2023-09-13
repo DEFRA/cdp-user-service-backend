@@ -43,7 +43,7 @@ const createUserController = {
       return h.response({ message: 'success', user }).code(201)
     } catch (error) {
       if (error?.code === MongoErrors.DuplicateKey) {
-        return Boom.conflict('User already exists in DB')
+        return Boom.conflict('User already exists')
       }
       throw error
     }

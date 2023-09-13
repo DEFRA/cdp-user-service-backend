@@ -2,7 +2,7 @@ import Boom from '@hapi/boom'
 
 import { createTeamValidationSchema } from '~/src/api/teams/helpers/create-team-validation-schema'
 import { MongoErrors } from '~/src/helpers/mongodb-errors'
-import { aadGroupNameExists } from '~/src/api/teams/helpers/aad-group-name-exists'
+import { teamNameExists } from '~/src/api/teams/helpers/team-name-exists'
 import { gitHubTeamExists } from '~/src/api/teams/helpers/github-team-exists'
 import { createTeam } from '~/src/api/teams/helpers/create-team'
 
@@ -19,9 +19,9 @@ const createTeamController = {
       description: payload?.description,
       github: payload?.github
     }
-    const teamExists = await aadGroupNameExists(request.msGraph, dbTeam.name)
+    const teamExists = await teamNameExists(request.db, dbTeam.name)
     if (teamExists) {
-      throw Boom.conflict('Team already exists in AAD')
+      throw Boom.conflict('Team already exists')
     }
 
     if (payload?.github) {
@@ -39,7 +39,7 @@ const createTeamController = {
       return h.response({ message: 'success', team }).code(201)
     } catch (error) {
       if (error.code === MongoErrors.DuplicateKey) {
-        throw Boom.conflict('Team already exists in DB')
+        throw Boom.conflict('Team already exists')
       }
       throw error
     }

@@ -81,6 +81,12 @@ const appConfig = convict({
     env: 'AZURE_SSO_CLIENT_ID',
     default: '63983fc2-cfff-45bb-8ec2-959e21062b9a'
   },
+  azureServicePrincipalId: {
+    doc: 'Azure Service Principal ID',
+    format: String,
+    env: 'AZURE_SERVICE_PRINCIPAL_ID',
+    default: '921c6ceb-e3d7-4408-8e23-5d5fe5495a6e'
+  },
   azureClientId: {
     doc: 'Azure App Client ID',
     format: String,
