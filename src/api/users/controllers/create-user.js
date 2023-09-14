@@ -1,5 +1,6 @@
 import Boom from '@hapi/boom'
 
+import { appConfig } from '~/src/config'
 import { createUserValidationSchema } from '~/src/api/users/helpers/create-user-validation-schema'
 import { MongoErrors } from '~/src/helpers/mongodb-errors'
 import { aadUserIdExists } from '~/src/api/users/helpers/aad-user-id-exists'
@@ -10,6 +11,12 @@ const createUserController = {
   options: {
     validate: {
       payload: createUserValidationSchema
+    },
+    auth: {
+      strategy: 'azure-oidc',
+      access: {
+        scope: [appConfig.get('azureAdminGroupId')]
+      }
     }
   },
   handler: async (request, h) => {
@@ -43,7 +50,7 @@ const createUserController = {
       return h.response({ message: 'success', user }).code(201)
     } catch (error) {
       if (error?.code === MongoErrors.DuplicateKey) {
-        return Boom.conflict('User already exists in DB')
+        return Boom.conflict('User already exists')
       }
       throw error
     }

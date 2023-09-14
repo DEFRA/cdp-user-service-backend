@@ -81,6 +81,12 @@ const appConfig = convict({
     env: 'AZURE_SSO_CLIENT_ID',
     default: '63983fc2-cfff-45bb-8ec2-959e21062b9a'
   },
+  azureServicePrincipalId: {
+    doc: 'Azure Service Principal ID',
+    format: String,
+    env: 'AZURE_SERVICE_PRINCIPAL_ID',
+    default: '921c6ceb-e3d7-4408-8e23-5d5fe5495a6e'
+  },
   azureClientId: {
     doc: 'Azure App Client ID',
     format: String,
@@ -97,9 +103,14 @@ const appConfig = convict({
   azureGroupPrefix: {
     doc: 'Azure Active Directory Group Prefix',
     format: String,
-    sensitive: true,
     env: 'AZURE_GROUP_PREFIX',
     default: 'AG-APP-CDP-'
+  },
+  azureAdminGroupId: {
+    doc: 'Azure Active Directory Admin Group',
+    format: String,
+    env: 'AZURE_ADMIN_GROUP_ID',
+    default: 'aabe63e7-87ef-4beb-a596-c810631fc474'
   },
   gitHubAppId: {
     doc: 'GitHub Api authentication App Id',

@@ -8,9 +8,6 @@ const getTeamsController = {
       query: Joi.object({
         query: Joi.string()
       })
-    },
-    auth: {
-      strategy: 'azure-oidc'
     }
   },
   handler: async (request, h) => {
