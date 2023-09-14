@@ -1,6 +1,7 @@
 import Boom from '@hapi/boom'
 import { isNull } from 'lodash'
 
+import { appConfig } from '~/src/config'
 import { updateTeamValidationSchema } from '~/src/api/teams/helpers/update-team-validation-schema'
 import { getTeam } from '~/src/api/teams/helpers/get-team'
 import { buildUpdateFields } from '~/src/helpers/build-update-fields'
@@ -13,6 +14,12 @@ const updateTeamController = {
   options: {
     validate: {
       payload: updateTeamValidationSchema
+    },
+    auth: {
+      strategy: 'azure-oidc',
+      access: {
+        scope: [appConfig.get('azureAdminGroupId'), '{params.teamId}']
+      }
     }
   },
   handler: async (request, h) => {

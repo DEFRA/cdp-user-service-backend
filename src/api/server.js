@@ -61,12 +61,10 @@ async function createServer() {
       return {
         isValid: true,
         credentials: {
-          profile: {
-            id: payload.oid,
-            displayName: payload.name,
-            email: payload.upn ?? payload.preferred_username,
-            groups: payload.groups
-          }
+          id: payload.oid,
+          displayName: payload.name,
+          email: payload.upn ?? payload.preferred_username,
+          scope: [...payload.groups, payload.oid]
         }
       }
     }
