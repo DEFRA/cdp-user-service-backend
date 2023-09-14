@@ -9,6 +9,7 @@ import { requestLogger } from '~/src/helpers/request-logger'
 import { mongoPlugin } from '~/src/helpers/mongodb'
 import { msGraphPlugin } from '~/src/helpers/ms-graph'
 import { octokitPlugin } from '~/src/helpers/octokit'
+import { azureOidc } from '~/src/helpers/azure-oidc'
 
 async function createServer() {
   const server = hapi.server({
@@ -33,42 +34,13 @@ async function createServer() {
 
   await server.register(jwt)
 
+  await server.register(azureOidc)
+
   await server.register({ plugin: mongoPlugin, options: {} })
 
   await server.register({ plugin: msGraphPlugin, options: {} })
 
   await server.register({ plugin: octokitPlugin, options: {} })
-
-  server.auth.strategy('azure-oidc', 'jwt', {
-    keys: {
-      uri: `https://login.microsoftonline.com/${appConfig.get(
-        'azureTenantId'
-      )}/discovery/v2.0/keys`
-    },
-    verify: {
-      aud: `${appConfig.get('azureSSOClientId')}`,
-      iss: `https://login.microsoftonline.com/${appConfig.get(
-        'azureTenantId'
-      )}/v2.0`,
-      sub: false,
-      nbf: true,
-      exp: true,
-      maxAgeSec: 5400, // 90 minutes
-      timeSkewSec: 15
-    },
-    validate: (artifacts, request, h) => {
-      const payload = artifacts.decoded.payload
-      return {
-        isValid: true,
-        credentials: {
-          id: payload.oid,
-          displayName: payload.name,
-          email: payload.upn ?? payload.preferred_username,
-          scope: [...payload.groups, payload.oid]
-        }
-      }
-    }
-  })
 
   await server.register(router, {
     routes: { prefix: appConfig.get('appPathPrefix') }
