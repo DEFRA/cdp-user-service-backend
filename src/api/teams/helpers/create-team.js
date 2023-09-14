@@ -1,8 +1,8 @@
+import { appConfig } from '~/src/config'
 import { mailNicknameFromGroupName } from '~/src/api/teams/helpers/mail-nickname-from-group-name'
 import { groupNameFromTeamName } from '~/src/api/teams/helpers/group-name-from-team-name'
 import { getTeam } from '~/src/api/teams/helpers/get-team'
 import { removeNil } from '~/src/helpers/remove-nil'
-import { appConfig } from '~/src/config'
 
 async function createTeam(msGraph, db, dbTeam) {
   const groupName = groupNameFromTeamName(dbTeam.name)
