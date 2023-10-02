@@ -6,7 +6,7 @@ describe('#healthController', () => {
     code: jest.fn().mockReturnThis()
   }
 
-  test('Should provide expected response', () => {
+  it('should provide expected response', () => {
     healthController.handler(null, mockViewHandler)
 
     expect(mockViewHandler.response).toHaveBeenCalledWith({
