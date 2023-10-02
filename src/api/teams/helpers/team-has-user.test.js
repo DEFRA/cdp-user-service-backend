@@ -1,7 +1,7 @@
 import { teamHasUser } from '~/src/api/teams/helpers/team-has-user'
 
 describe('#teamHasUser', () => {
-  test('Should return true if team has user and user has team', () => {
+  it('should return true if team has user and user has team', () => {
     const team = {
       teamId: 123,
       name: 'Team A',
@@ -16,7 +16,7 @@ describe('#teamHasUser', () => {
     expect(teamHasUser(team, user)).toBeTruthy()
   })
 
-  test('Should return false if team has user but user has not team', () => {
+  it('should return false if team has user but user has not team', () => {
     const team = {
       teamId: 123,
       name: 'Team A',
@@ -30,7 +30,7 @@ describe('#teamHasUser', () => {
     expect(teamHasUser(team, user)).toBeFalsy()
   })
 
-  test('Should return false if team has not user but user has team', () => {
+  it('should return false if team has not user but user has team', () => {
     const team = {
       teamId: 123,
       name: 'Team A',
