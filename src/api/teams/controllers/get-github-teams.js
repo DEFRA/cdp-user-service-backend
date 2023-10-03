@@ -12,8 +12,8 @@ const getGitHubTeamsController = {
   },
   handler: async (request, h) => {
     const query = request.query.query
-    const users = await searchGitHubTeams(request.octokit, query)
-    return h.response({ message: 'success', users }).code(200)
+    const teams = await searchGitHubTeams(request.octokit, query)
+    return h.response({ message: 'success', teams }).code(200)
   }
 }
 
