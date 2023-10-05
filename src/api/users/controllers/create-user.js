@@ -1,6 +1,6 @@
 import Boom from '@hapi/boom'
 
-import { appConfig } from '~/src/config'
+// import { appConfig } from '~/src/config'
 import { createUserValidationSchema } from '~/src/api/users/helpers/create-user-validation-schema'
 import { MongoErrors } from '~/src/helpers/mongodb-errors'
 import { aadUserIdExists } from '~/src/api/users/helpers/aad-user-id-exists'
@@ -13,10 +13,10 @@ const createUserController = {
       payload: createUserValidationSchema
     },
     auth: {
-      strategy: 'azure-oidc',
-      access: {
-        scope: [appConfig.get('azureAdminGroupId')]
-      }
+      strategy: 'azure-oidc'
+      // access: {
+      //   scope: [appConfig.get('azureAdminGroupId')]
+      // }
     }
   },
   handler: async (request, h) => {
