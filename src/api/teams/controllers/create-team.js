@@ -1,6 +1,6 @@
 import Boom from '@hapi/boom'
 
-// import { appConfig } from '~/src/config'
+import { appConfig } from '~/src/config'
 import { createTeamValidationSchema } from '~/src/api/teams/helpers/create-team-validation-schema'
 import { MongoErrors } from '~/src/helpers/mongodb-errors'
 import { teamNameExists } from '~/src/api/teams/helpers/team-name-exists'
@@ -13,10 +13,10 @@ const createTeamController = {
       payload: createTeamValidationSchema
     },
     auth: {
-      strategy: 'azure-oidc'
-      // access: {
-      //   scope: [appConfig.get('azureAdminGroupId')]
-      // }
+      strategy: 'azure-oidc',
+      access: {
+        scope: [appConfig.get('azureAdminGroupId')]
+      }
     }
   },
   handler: async (request, h) => {
