@@ -8,6 +8,11 @@ async function getTeam(db, teamId) {
           from: 'users',
           localField: 'users',
           foreignField: '_id',
+          pipeline: [
+            {
+              $sort: { name: 1 }
+            }
+          ],
           as: 'users'
         }
       },
