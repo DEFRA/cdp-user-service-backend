@@ -1,9 +1,13 @@
+import jwt from '@hapi/jwt'
+
 import { appConfig } from '~/src/config'
 
 const azureOidc = {
   plugin: {
     name: 'azure-oidc',
-    register: (server) => {
+    register: async (server) => {
+      await server.register(jwt)
+
       server.auth.strategy('azure-oidc', 'jwt', {
         keys: {
           uri: `https://login.microsoftonline.com/${appConfig.get(
