@@ -1,6 +1,5 @@
 import path from 'path'
 import hapi from '@hapi/hapi'
-import jwt from '@hapi/jwt'
 
 import { appConfig } from '~/src/config'
 import { failAction } from '~/src/helpers/fail-action'
@@ -31,8 +30,6 @@ async function createServer() {
   })
 
   await server.register(requestLogger)
-
-  await server.register(jwt)
 
   await server.register(azureOidc)
 

@@ -27,6 +27,11 @@ async function getTeams(db, queryParams) {
       from: 'users',
       localField: 'users',
       foreignField: '_id',
+      pipeline: [
+        {
+          $sort: { name: 1 }
+        }
+      ],
       as: 'users'
     }
   })
@@ -51,6 +56,10 @@ async function getTeams(db, queryParams) {
       createdAt: 1,
       updatedAt: 1
     }
+  })
+
+  stages.push({
+    $sort: { name: 1 }
   })
 
   return await db.collection('teams').aggregate(stages).toArray()
