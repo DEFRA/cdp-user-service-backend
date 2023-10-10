@@ -6,13 +6,13 @@ const getTeamsController = {
   options: {
     validate: {
       query: Joi.object({
-        query: Joi.string()
+        query: Joi.string(),
+        hasGithub: Joi.boolean()
       })
     }
   },
   handler: async (request, h) => {
-    const query = request.query.query
-    const teams = await getTeams(request.db, query)
+    const teams = await getTeams(request.db, request.query)
     return h.response({ message: 'success', teams }).code(200)
   }
 }

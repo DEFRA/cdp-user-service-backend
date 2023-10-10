@@ -1,7 +1,9 @@
 import { isNil } from 'lodash'
 
-async function getTeams(db, query) {
+async function getTeams(db, queryParams) {
   const stages = []
+  const query = queryParams?.query
+  const hasGithub = queryParams?.hasGithub
 
   if (!isNil(query)) {
     stages.push({
@@ -11,6 +13,12 @@ async function getTeams(db, query) {
           { description: { $regex: query, $options: 'i' } }
         ]
       }
+    })
+  }
+
+  if (!isNil(hasGithub)) {
+    stages.push({
+      $match: { github: { $exists: hasGithub } }
     })
   }
 
