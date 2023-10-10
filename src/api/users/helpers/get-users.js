@@ -19,6 +19,11 @@ async function getUsers(db, query) {
       from: 'teams',
       localField: 'teams',
       foreignField: '_id',
+      pipeline: [
+        {
+          $sort: { name: 1 }
+        }
+      ],
       as: 'teams'
     }
   })
@@ -45,6 +50,10 @@ async function getUsers(db, query) {
       createdAt: 1,
       updatedAt: 1
     }
+  })
+
+  stages.push({
+    $sort: { name: 1 }
   })
 
   return await db.collection('users').aggregate(stages).toArray()
