@@ -1,7 +1,7 @@
 import hapiPino from 'hapi-pino'
+import ecsFormat from '@elastic/ecs-pino-format'
 
 import { appConfig } from '~/src/config'
-const ecsFormat = require('@elastic/ecs-pino-format')
 
 const requestLogger = {
   plugin: hapiPino,
