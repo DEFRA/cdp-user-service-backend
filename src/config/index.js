@@ -3,7 +3,7 @@ import path from 'path'
 
 import { version } from '~/package.json'
 
-const appConfig = convict({
+const config = convict({
   env: {
     doc: 'The application environment.',
     format: ['production', 'development', 'test'],
@@ -139,6 +139,6 @@ const appConfig = convict({
   }
 })
 
-appConfig.validate({ allowed: 'strict' })
+config.validate({ allowed: 'strict' })
 
-export { appConfig }
+export { config }

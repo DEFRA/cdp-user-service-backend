@@ -2,15 +2,15 @@ import { Octokit } from '@octokit/core'
 import { createAppAuth } from '@octokit/auth-app'
 import { paginateGraphql } from '@octokit/plugin-paginate-graphql'
 
-import { appConfig } from '~/src/config'
+import { config } from '~/src/config'
 
 const octokitPlugin = {
   name: 'octokit',
   version: '1.0.0',
   register: async function (server) {
-    const gitHubAppId = appConfig.get('gitHubAppId')
-    const gitHubAppPrivateKey = appConfig.get('gitHubAppPrivateKey')
-    const gitHubAppInstallationId = appConfig.get('gitHubAppInstallationId')
+    const gitHubAppId = config.get('gitHubAppId')
+    const gitHubAppPrivateKey = config.get('gitHubAppPrivateKey')
+    const gitHubAppInstallationId = config.get('gitHubAppInstallationId')
 
     server.logger.info('Setting up octokit')
 

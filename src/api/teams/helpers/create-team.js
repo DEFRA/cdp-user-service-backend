@@ -1,4 +1,4 @@
-import { appConfig } from '~/src/config'
+import { config } from '~/src/config'
 import { mailNicknameFromGroupName } from '~/src/api/teams/helpers/mail-nickname-from-group-name'
 import { groupNameFromTeamName } from '~/src/api/teams/helpers/group-name-from-team-name'
 import { getTeam } from '~/src/api/teams/helpers/get-team'
@@ -13,7 +13,7 @@ async function createTeam(msGraph, db, dbTeam) {
     mailNickname: mailNicknameFromGroupName(groupName),
     securityEnabled: true,
     'owners@odata.bind': [
-      `https://graph.microsoft.com/v1.0/servicePrincipals/${appConfig.get(
+      `https://graph.microsoft.com/v1.0/servicePrincipals/${config.get(
         'azureServicePrincipalId'
       )}`
     ]
