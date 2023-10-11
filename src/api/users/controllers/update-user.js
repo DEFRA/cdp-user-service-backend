@@ -1,7 +1,7 @@
 import Boom from '@hapi/boom'
 import { isNull } from 'lodash'
 
-import { appConfig } from '~/src/config'
+import { config } from '~/src/config'
 import { updateUserValidationSchema } from '~/src/api/users/helpers/update-user-validation-schema'
 import { getUser } from '~/src/api/users/helpers/get-user'
 import { buildUpdateFields } from '~/src/helpers/build-update-fields'
@@ -16,7 +16,7 @@ const updateUserController = {
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: [appConfig.get('azureAdminGroupId'), '{params.userId}']
+        scope: [config.get('azureAdminGroupId'), '{params.userId}']
       }
     }
   },

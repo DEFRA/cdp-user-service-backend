@@ -1,6 +1,6 @@
 import jwt from '@hapi/jwt'
 
-import { appConfig } from '~/src/config'
+import { config } from '~/src/config'
 
 const azureOidc = {
   plugin: {
@@ -10,13 +10,13 @@ const azureOidc = {
 
       server.auth.strategy('azure-oidc', 'jwt', {
         keys: {
-          uri: `https://login.microsoftonline.com/${appConfig.get(
+          uri: `https://login.microsoftonline.com/${config.get(
             'azureTenantId'
           )}/discovery/v2.0/keys`
         },
         verify: {
-          aud: `${appConfig.get('azureSSOClientId')}`,
-          iss: `https://login.microsoftonline.com/${appConfig.get(
+          aud: `${config.get('azureSSOClientId')}`,
+          iss: `https://login.microsoftonline.com/${config.get(
             'azureTenantId'
           )}/v2.0`,
           sub: false,

@@ -2,15 +2,15 @@ import { TokenCredentialAuthenticationProvider } from '@microsoft/microsoft-grap
 import { ClientSecretCredential } from '@azure/identity'
 import { Client } from '@microsoft/microsoft-graph-client'
 
-import { appConfig } from '~/src/config'
+import { config } from '~/src/config'
 
 const msGraphPlugin = {
   name: 'ms-graph',
   version: '1.0.0',
   register: async function (server) {
-    const azureTenantId = appConfig.get('azureTenantId')
-    const azureClientId = appConfig.get('azureClientId')
-    const azureClientSecret = appConfig.get('azureClientSecret')
+    const azureTenantId = config.get('azureTenantId')
+    const azureClientId = config.get('azureClientId')
+    const azureClientSecret = config.get('azureClientSecret')
 
     server.logger.info('Setting up ms-graph')
 
