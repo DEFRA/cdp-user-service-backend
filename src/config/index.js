@@ -135,7 +135,7 @@ const config = convict({
     doc: 'GitHub Organisation',
     format: String,
     env: 'GITHUB_APP_ORG_ID',
-    default: 'defra-cdp-sandpit'
+    default: 'DEFRA'
   }
 })
 
