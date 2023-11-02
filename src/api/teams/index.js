@@ -5,7 +5,8 @@ import {
   getTeamsController,
   removeUserFromTeamController,
   updateTeamController,
-  getGitHubTeamsController
+  getGitHubTeamsController,
+  getTeamByGithubController
 } from '~/src/api/teams/controllers'
 
 const teams = {
@@ -27,6 +28,11 @@ const teams = {
           method: 'GET',
           path: '/teams/{teamId}',
           ...getTeamController
+        },
+        {
+          method: 'GET',
+          path: '/teams/github/{githubId}',
+          ...getTeamByGithubController
         },
         {
           method: 'PATCH',
