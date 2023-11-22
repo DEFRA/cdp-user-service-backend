@@ -8,13 +8,17 @@ const azureOidc = {
     register: async (server) => {
       await server.register(jwt)
 
+      const oidc = await fetch(
+        config.get('oidcWellKnownConfigurationUrl')
+      ).then((res) => res.json())
+
       server.auth.strategy('azure-oidc', 'jwt', {
         keys: {
-          uri: config.get('oidcKeysUrl')
+          uri: oidc.jwks_uri
         },
         verify: {
-          aud: `${config.get('azureSSOClientId')}`,
-          iss: config.get('oidIssuerBaseUrl'),
+          aud: config.get('oidcAudience'),
+          iss: oidc.issuer,
           sub: false,
           nbf: true,
           exp: true,

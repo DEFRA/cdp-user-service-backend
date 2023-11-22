@@ -75,12 +75,6 @@ const config = convict({
     env: 'AZURE_TENANT_ID',
     default: '6f504113-6b64-43f2-ade9-242e05780007'
   },
-  azureSSOClientId: {
-    doc: 'Azure App SSO Client ID',
-    format: String,
-    env: 'AZURE_SSO_CLIENT_ID',
-    default: '63983fc2-cfff-45bb-8ec2-959e21062b9a'
-  },
   azureServicePrincipalId: {
     doc: 'Azure Service Principal ID',
     format: String,
@@ -106,10 +100,23 @@ const config = convict({
     env: 'AZURE_GROUP_PREFIX',
     default: 'AG-APP-CDP-'
   },
-  azureAdminGroupId: {
-    doc: 'Azure Active Directory Admin Group',
+  oidcWellKnownConfigurationUrl: {
+    doc: 'OIDC .well-known configuration URL',
     format: String,
-    env: 'AZURE_ADMIN_GROUP_ID',
+    env: 'OIDC_WELL_KNOWN_CONFIGURATION_URL',
+    default:
+      'https://login.microsoftonline.com/6f504113-6b64-43f2-ade9-242e05780007/v2.0/.well-known/openid-configuration'
+  },
+  oidcAudience: {
+    doc: 'OIDC Audience for verification',
+    format: String,
+    env: 'OIDC_AUDIENCE',
+    default: '63983fc2-cfff-45bb-8ec2-959e21062b9a'
+  },
+  oidcAdminGroupId: {
+    doc: 'OIDC Admin Group ID',
+    format: String,
+    env: 'OIDC_ADMIN_GROUP_ID',
     default: 'aabe63e7-87ef-4beb-a596-c810631fc474'
   },
   gitHubAppId: {
