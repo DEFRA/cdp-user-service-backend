@@ -15,7 +15,7 @@ const createTeamController = {
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: [config.get('azureAdminGroupId')]
+        scope: [config.get('oidcAdminGroupId')]
       }
     }
   },
