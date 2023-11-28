@@ -123,7 +123,7 @@ const config = convict({
     doc: 'GitHub Api authentication App Id',
     format: String,
     env: 'GITHUB_APP_ID',
-    default: '407916'
+    default: '405317'
   },
   gitHubAppPrivateKey: {
     doc: 'GitHub Api authentication App Private Key. This key is a base64 encoded secret',
@@ -136,7 +136,7 @@ const config = convict({
     doc: 'GitHub Api authentication App Installation Id',
     format: String,
     env: 'GITHUB_APP_INSTALLATION_ID',
-    default: '43275761'
+    default: '42703033'
   },
   gitHubOrg: {
     doc: 'GitHub Organisation',
