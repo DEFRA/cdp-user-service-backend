@@ -1,8 +1,11 @@
-name: Integration Tests
+name: IT Tests
 
 on:
   workflow_dispatch:
-
+  workflow_run:
+    workflows: ["Publish"]
+    types:
+      - completed
 jobs:
   test:
     uses: defra/cdp-portal-tests/.github/workflows/run-tests.yaml@main
