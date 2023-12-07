@@ -25,6 +25,13 @@ LABEL uk.gov.defra.ffc.parent-image=defradigital/node:${PARENT_VERSION}
 COPY --from=development /home/node/package*.json ./
 COPY --from=development /home/node/.server ./.server/
 
+# Add curl to template.
+# CDP PLATFORM HEALTHCHECK REQUIREMENT
+USER root
+RUN apk update && \
+    apk add curl
+USER node
+
 RUN npm ci --omit=dev
 
 ARG PORT
