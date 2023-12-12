@@ -1,5 +1,4 @@
-name: IT Tests
-
+name: Integration Tests (defra/cdp-portal-tests)
 on:
   workflow_dispatch:
   workflow_run:
