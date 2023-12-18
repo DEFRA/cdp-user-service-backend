@@ -157,6 +157,12 @@ const config = convict({
     default:
       'https://login.microsoftonline.com/6f504113-6b64-43f2-ade9-242e05780007/v2.0',
     env: 'OIDC_ISSUER_BASE_URL'
+  },
+  sharedRepos: {
+    doc: 'Github repos all teams get access to',
+    format: Array,
+    default: ['cdp-app-config'],
+    env: 'SHARED_REPOS'
   }
 })
 
