@@ -2,6 +2,10 @@
 
 Core delivery platform User Service Backend.
 
+[![Publish](https://github.com/DEFRA/cdp-user-service-backend/actions/workflows/publish.yml/badge.svg)](https://github.com/DEFRA/cdp-user-service-backend/actions/workflows/publish.yml)
+
+[![Integration Tests](https://github.com/DEFRA/cdp-user-service-backend/actions/workflows/integration-tests.yml/badge.svg)](https://github.com/DEFRA/cdp-user-service-backend/actions/workflows/integration-tests.yml)
+
 - [Requirements](#requirements)
   - [Node.js](#nodejs)
 - [Local development](#local-development)
