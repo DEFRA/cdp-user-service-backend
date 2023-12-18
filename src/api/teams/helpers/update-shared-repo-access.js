@@ -7,9 +7,9 @@ const updateSharedRepoAccess = async (octokit, githubTeam) => {
   const orgName = config.get('gitHubOrg')
   const sharedRepos = config.get('sharedRepos')
 
-  for (const sharedRepo of sharedRepos) {
+  const p = sharedRepos.map((sharedRepo) => {
     logger.info(`Granting ${githubTeam} access to ${orgName}/${sharedRepo}`)
-    await octokit.request(
+    return octokit.request(
       'PUT /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}',
       {
         org: orgName,
@@ -22,7 +22,9 @@ const updateSharedRepoAccess = async (octokit, githubTeam) => {
         }
       }
     )
-  }
+  })
+
+  await Promise.all(p)
 }
 
 export { updateSharedRepoAccess }
