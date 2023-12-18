@@ -5,7 +5,8 @@ import {
   getTeamsController,
   removeUserFromTeamController,
   updateTeamController,
-  getGitHubTeamsController
+  getGitHubTeamsController,
+  addTeamToSharedReposController
 } from '~/src/api/teams/controllers'
 
 const teams = {
@@ -47,6 +48,11 @@ const teams = {
           method: 'GET',
           path: '/github-teams',
           ...getGitHubTeamsController
+        },
+        {
+          method: 'POST',
+          path: '/shared-repos',
+          ...addTeamToSharedReposController
         }
       ])
     }

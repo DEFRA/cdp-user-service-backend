@@ -6,6 +6,7 @@ import { MongoErrors } from '~/src/helpers/mongodb-errors'
 import { teamNameExists } from '~/src/api/teams/helpers/team-name-exists'
 import { gitHubTeamExists } from '~/src/api/teams/helpers/github-team-exists'
 import { createTeam } from '~/src/api/teams/helpers/create-team'
+import { updateSharedRepoAccess } from '~/src/api/teams/helpers/update-shared-repo-access'
 
 const createTeamController = {
   options: {
@@ -43,6 +44,17 @@ const createTeamController = {
 
     try {
       const team = await createTeam(request.msGraph, request.db, dbTeam)
+
+      // This is still experimental, so we're just going to log the error from this bit for now.
+      try {
+        await updateSharedRepoAccess(request.octokit, payload.github)
+      } catch (error) {
+        request.error(
+          `Failed to add ${payload.github} to the shared repos`,
+          error
+        )
+      }
+
       return h.response({ message: 'success', team }).code(201)
     } catch (error) {
       if (error.code === MongoErrors.DuplicateKey) {
