@@ -100,6 +100,12 @@ const config = convict({
     env: 'AZURE_GROUP_PREFIX',
     default: 'AG-APP-CDP-'
   },
+  azureClientBaseUrl: {
+    doc: 'MsGraph api endpoint',
+    format: String,
+    env: 'AZURE_CLIENT_BASE_URL',
+    default: 'https://graph.microsoft.com/'
+  },
   oidcWellKnownConfigurationUrl: {
     doc: 'OIDC .well-known configuration URL',
     format: String,
@@ -143,6 +149,12 @@ const config = convict({
     format: String,
     env: 'GITHUB_APP_ORG_ID',
     default: 'DEFRA'
+  },
+  gitHubBaseUrl: {
+    doc: 'Override the github base url for local testing',
+    format: '*',
+    env: 'GITHUB_BASE_URL',
+    default: null
   },
   oidcKeysUrl: {
     doc: 'Url to the oidc JWT keys endpoint',

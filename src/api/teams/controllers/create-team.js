@@ -49,9 +49,8 @@ const createTeamController = {
       try {
         await updateSharedRepoAccess(request.octokit, payload.github)
       } catch (error) {
-        request.error(
-          `Failed to add ${payload.github} to the shared repos`,
-          error
+        request.logger.error(
+          `Failed to add ${payload.github} to the shared repos: ${error}`
         )
       }
 

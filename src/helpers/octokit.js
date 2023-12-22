@@ -14,16 +14,25 @@ const octokitPlugin = {
 
     server.logger.info('Setting up octokit')
 
-    const OctokitExtra = Octokit.plugin(paginateGraphql)
-    const octokit = new OctokitExtra({
+    let cfg = {
       authStrategy: createAppAuth,
       auth: {
         appId: gitHubAppId,
         privateKey: Buffer.from(gitHubAppPrivateKey, 'base64'),
         installationId: gitHubAppInstallationId
       }
-    })
+    }
 
+    // Test Mode, for use with cdp-portal-stubs
+    if (config.get('gitHubBaseUrl') != null) {
+      cfg = {
+        auth: 'test-value',
+        baseUrl: config.get('gitHubBaseUrl')
+      }
+    }
+
+    const OctokitExtra = Octokit.plugin(paginateGraphql)
+    const octokit = new OctokitExtra(cfg)
     server.decorate('request', 'octokit', octokit)
   }
 }
