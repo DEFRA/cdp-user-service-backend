@@ -11,6 +11,7 @@ const msGraphPlugin = {
     const azureTenantId = config.get('azureTenantId')
     const azureClientId = config.get('azureClientId')
     const azureClientSecret = config.get('azureClientSecret')
+    const azureClientBaseUrl = config.get('azureClientBaseUrl')
 
     server.logger.info('Setting up ms-graph')
 
@@ -19,12 +20,18 @@ const msGraphPlugin = {
       azureClientId,
       azureClientSecret
     )
-    const options = { scopes: ['https://graph.microsoft.com/.default'] }
-    const authProvider = new TokenCredentialAuthenticationProvider(
-      credential,
-      options
-    )
-    const msGraph = Client.initWithMiddleware({ authProvider })
+
+    const authProvider = new TokenCredentialAuthenticationProvider(credential, {
+      scopes: ['https://graph.microsoft.com/.default']
+    })
+
+    const clientOptions = {
+      authProvider
+    }
+    if (azureClientBaseUrl !== null) {
+      clientOptions.baseUrl = azureClientBaseUrl
+    }
+    const msGraph = Client.initWithMiddleware(clientOptions)
 
     server.decorate('request', 'msGraph', msGraph)
   }
