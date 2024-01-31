@@ -28,7 +28,10 @@ const msGraphPlugin = {
     const clientOptions = {
       authProvider
     }
-    if (azureClientBaseUrl !== null) {
+    if (azureClientBaseUrl !== '') {
+      server.logger.info(
+        `overriding azure client base url with ${azureClientBaseUrl}`
+      )
       clientOptions.baseUrl = azureClientBaseUrl
     }
     const msGraph = Client.initWithMiddleware(clientOptions)
