@@ -24,9 +24,11 @@ async function searchGitHubTeams(octokit, query) {
   })
   return allTeams?.organization?.teams?.nodes
     ?.filter(
-      (team) => team.name?.includes(query) || team.github?.includes(query)
+      (team) =>
+        team.name?.toLowerCase().includes(query.toLowerCase()) ||
+        team.github?.toLowerCase().includes(query.toLowerCase())
     )
-    .slice(0, 10)
+    .slice(0, 20)
 }
 
 export { searchGitHubTeams }
