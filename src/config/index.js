@@ -104,7 +104,7 @@ const config = convict({
     doc: 'MsGraph api endpoint',
     format: String,
     env: 'AZURE_CLIENT_BASE_URL',
-    default: 'https://graph.microsoft.com/'
+    default: ''
   },
   oidcWellKnownConfigurationUrl: {
     doc: 'OIDC .well-known configuration URL',
