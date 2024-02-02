@@ -21,7 +21,7 @@ const msGraphPlugin = {
     const proxyAgent = ProxyAgent?.agent
 
     const credential =
-      proxyAgent() === null
+      proxyAgent === null
         ? new ClientSecretCredential(
             azureTenantId,
             azureClientId,
