@@ -38,12 +38,16 @@ const msGraphPlugin = {
       scopes: ['https://graph.microsoft.com/.default']
     })
 
-    const clientOptions = {
-      authProvider,
-      fetchOptions: {
-        agent: proxyAgent
-      }
-    }
+    const clientOptions =
+      proxyAgent === null
+        ? { authProvider }
+        : {
+            authProvider,
+            fetchOptions: {
+              agent: proxyAgent
+            }
+          }
+
     if (azureClientBaseUrl !== '') {
       server.logger.info(
         `overriding azure client base url with ${azureClientBaseUrl}`
