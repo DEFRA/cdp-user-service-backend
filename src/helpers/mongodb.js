@@ -6,9 +6,11 @@ const mongoPlugin = {
   name: 'mongodb',
   version: '1.0.0',
   register: async function (server) {
+    const isProduction = config.get('isProduction')
     const mongoOptions = {
       retryWrites: false,
-      readPreference: 'secondary'
+      readPreference: 'secondary',
+      ...(isProduction && { secureContext: server.getSecureContext() })
     }
 
     const mongoUrl = new URL(config.get('mongoUri'))

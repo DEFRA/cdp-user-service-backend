@@ -9,6 +9,9 @@ import { mongoPlugin } from '~/src/helpers/mongodb'
 import { msGraphPlugin } from '~/src/helpers/ms-graph'
 import { octokitPlugin } from '~/src/helpers/octokit'
 import { azureOidc } from '~/src/helpers/azure-oidc'
+import { secureContext } from '~/src/helpers/secure-context'
+
+const isProduction = config.get('isProduction')
 
 async function createServer() {
   const server = hapi.server({
@@ -28,6 +31,10 @@ async function createServer() {
       stripTrailingSlash: true
     }
   })
+
+  if (isProduction) {
+    await server.register(secureContext)
+  }
 
   await server.register(requestLogger)
 

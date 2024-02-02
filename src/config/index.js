@@ -175,6 +175,13 @@ const config = convict({
     format: Array,
     default: ['cdp-app-config'],
     env: 'SHARED_REPOS'
+  },
+  trustStore: {
+    doc: 'CA Certificates',
+    format: Array,
+    default: Object.entries(process.env)
+      ?.map(([key, value]) => (key.startsWith('TRUSTSTORE_') ? value : null))
+      .filter(Boolean)
   }
 })
 
