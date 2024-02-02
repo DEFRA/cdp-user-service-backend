@@ -16,8 +16,6 @@ const msGraphPlugin = {
 
     server.logger.info('Setting up ms-graph')
 
-    const proxyHost = ProxyAgent?.url.hostname
-    const proxyPort = ProxyAgent?.url.port
     const proxyAgent = ProxyAgent?.agent
 
     const credential = new ClientSecretCredential(
@@ -28,8 +26,8 @@ const msGraphPlugin = {
         ? {}
         : {
             proxyOptions: {
-              proxyHost,
-              proxyPort
+              host: ProxyAgent?.url.hostname,
+              port: ProxyAgent?.url.port
             }
           }
     )
