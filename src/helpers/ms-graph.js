@@ -20,24 +20,19 @@ const msGraphPlugin = {
     const proxyPort = ProxyAgent?.url.port
     const proxyAgent = ProxyAgent?.agent
 
-    const credential =
+    const credential = new ClientSecretCredential(
+      azureTenantId,
+      azureClientId,
+      azureClientSecret,
       proxyAgent === null
-        ? new ClientSecretCredential(
-            azureTenantId,
-            azureClientId,
-            azureClientSecret
-          )
-        : new ClientSecretCredential(
-            azureTenantId,
-            azureClientId,
-            azureClientSecret,
-            {
-              proxyOptions: {
-                proxyHost,
-                proxyPort
-              }
+        ? {}
+        : {
+            proxyOptions: {
+              proxyHost,
+              proxyPort
             }
-          )
+          }
+    )
 
     const authProvider = new TokenCredentialAuthenticationProvider(credential, {
       scopes: ['https://graph.microsoft.com/.default']
