@@ -17,19 +17,18 @@ const msGraphPlugin = {
     server.logger.info('Setting up ms-graph')
 
     const proxyAgent = ProxyAgent?.agent
+    const options = proxyAgent && {
+      proxyOptions: {
+        host: ProxyAgent?.url.hostname,
+        port: ProxyAgent?.url.port
+      }
+    }
 
     const credential = new ClientSecretCredential(
       azureTenantId,
       azureClientId,
       azureClientSecret,
-      proxyAgent === null
-        ? {}
-        : {
-            proxyOptions: {
-              host: ProxyAgent?.url.hostname,
-              port: ProxyAgent?.url.port
-            }
-          }
+      options
     )
 
     const authProvider = new TokenCredentialAuthenticationProvider(credential, {
