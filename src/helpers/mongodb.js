@@ -10,7 +10,7 @@ const mongoPlugin = {
     const mongoOptions = {
       retryWrites: false,
       readPreference: 'secondary',
-      ...(isProduction && { secureContext: server.getSecureContext() })
+      ...(isProduction && { secureContext: server.secureContext })
     }
 
     const mongoUrl = config.get('mongoUri')
