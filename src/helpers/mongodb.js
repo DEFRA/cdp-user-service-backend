@@ -13,15 +13,12 @@ const mongoPlugin = {
       ...(isProduction && { secureContext: server.getSecureContext() })
     }
 
-    const mongoUrl = new URL(config.get('mongoUri'))
+    const mongoUrl = config.get('mongoUri')
     const databaseName = config.get('mongoDatabase')
 
     server.logger.info('Setting up mongodb')
 
-    const mongoClient = await MongoClient.connect(
-      mongoUrl.toString(),
-      mongoOptions
-    )
+    const mongoClient = await MongoClient.connect(mongoUrl, mongoOptions)
     const db = mongoClient.db(databaseName)
 
     server.logger.info(`mongodb connected to ${databaseName}`)
