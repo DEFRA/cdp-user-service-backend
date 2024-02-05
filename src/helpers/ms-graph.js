@@ -35,15 +35,14 @@ const msGraphPlugin = {
       scopes: ['https://graph.microsoft.com/.default']
     })
 
-    const clientOptions =
-      proxyAgent === null
-        ? { authProvider }
-        : {
-            authProvider,
-            fetchOptions: {
-              agent: proxyAgent
-            }
+    const clientOptions = proxyAgent
+      ? { authProvider }
+      : {
+          authProvider,
+          fetchOptions: {
+            agent: proxyAgent
           }
+        }
 
     if (azureClientBaseUrl !== '') {
       server.logger.info(
