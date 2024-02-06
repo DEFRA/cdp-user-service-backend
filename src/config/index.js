@@ -2,7 +2,6 @@ import convict from 'convict'
 import path from 'path'
 
 import { version } from '~/package.json'
-import { getTrustStoreCerts } from '~/src/config/helpers/get-trust-store-certs'
 
 const config = convict({
   env: {
@@ -176,11 +175,6 @@ const config = convict({
     format: Array,
     default: ['cdp-app-config'],
     env: 'SHARED_REPOS'
-  },
-  trustStore: {
-    doc: 'CA Certificates',
-    format: Array,
-    default: getTrustStoreCerts(process.env)
   }
 })
 
