@@ -3,6 +3,7 @@ import { createAppAuth } from '@octokit/auth-app'
 import { paginateGraphql } from '@octokit/plugin-paginate-graphql'
 
 import { config } from '~/src/config'
+import { proxyFetch } from '~/src/helpers/proxy-fetch'
 
 const octokitPlugin = {
   name: 'octokit',
@@ -20,7 +21,8 @@ const octokitPlugin = {
         appId: gitHubAppId,
         privateKey: Buffer.from(gitHubAppPrivateKey, 'base64'),
         installationId: gitHubAppInstallationId
-      }
+      },
+      request: { fetch: proxyFetch }
     }
 
     // Test Mode, for use with cdp-portal-stubs
