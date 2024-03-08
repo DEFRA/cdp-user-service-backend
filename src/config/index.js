@@ -34,7 +34,7 @@ const config = convict({
   appPathPrefix: {
     doc: 'Application url path prefix this is needed only until we have host based routing',
     format: String,
-    default: '/cdp-user-service-backend'
+    default: ''
   },
   isProduction: {
     doc: 'If this application running in the production environment',
