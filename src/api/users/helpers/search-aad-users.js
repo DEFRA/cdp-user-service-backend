@@ -6,17 +6,14 @@ async function searchAadUsers(msGraph, query) {
     .select('id')
     .select('displayName')
     .select('mail')
+    .select('userPrincipalName')
     .top(10)
     .get()
-  return (
-    users?.value
-      .map((user) => ({
-        userId: user.id,
-        name: user.displayName,
-        email: user.mail
-      }))
-      .filter((user) => Boolean(user.email)) ?? []
-  )
+  return users?.value.map((user) => ({
+    userId: user.id,
+    name: user.displayName,
+    email: user?.mail ?? user?.userPrincipalName
+  }))
 }
 
 export { searchAadUsers }
