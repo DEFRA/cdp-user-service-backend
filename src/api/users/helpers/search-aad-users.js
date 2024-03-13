@@ -2,7 +2,9 @@ async function searchAadUsers(msGraph, query) {
   const users = await msGraph
     .api(`/users`)
     .headers({ ConsistencyLevel: 'eventual' })
-    .search(`"displayName:${query}" OR "mail:${query}"`)
+    .search(
+      `"displayName:${query}" OR "mail:${query}" OR "userPrincipalName:${query}"`
+    )
     .select('id')
     .select('displayName')
     .select('mail')
