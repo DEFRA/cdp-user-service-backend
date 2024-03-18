@@ -1,7 +1,7 @@
 import Joi from 'joi'
 
-import { updateSharedRepoAccess } from '~/src/api/teams/helpers/update-shared-repo-access'
-import { gitHubTeamExists } from '~/src/api/teams/helpers/github-team-exists'
+import { addSharedRepoAccess } from '~/src/api/teams/helpers/github/github-shared-repo-access'
+import { gitHubTeamExists } from '~/src/api/teams/helpers/github/github-team-exists'
 
 const addTeamToSharedReposController = {
   options: {
@@ -20,7 +20,7 @@ const addTeamToSharedReposController = {
         .code(400)
     }
 
-    await updateSharedRepoAccess(request.octokit, team)
+    await addSharedRepoAccess(request.octokit, team)
     return h.response({ message: 'success' }).code(200)
   }
 }

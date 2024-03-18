@@ -1,4 +1,4 @@
-import { getTeam } from '~/src/api/teams/helpers/get-team'
+import { getTeam } from '~/src/api/teams/helpers/mongo/get-team'
 
 async function removeUserFromTeam(msGraph, mongoClient, db, userId, teamId) {
   const session = mongoClient.startSession()

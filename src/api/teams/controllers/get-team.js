@@ -1,7 +1,7 @@
 import Boom from '@hapi/boom'
 import { isNull } from 'lodash'
 
-import { getTeam } from '~/src/api/teams/helpers/get-team'
+import { getTeam } from '~/src/api/teams/helpers/mongo/get-team'
 
 const getTeamController = {
   handler: async (request, h) => {

@@ -1,6 +1,6 @@
 import Joi from 'joi'
 
-import { getTeams } from '~/src/api/teams/helpers/get-teams'
+import { getTeams } from '~/src/api/teams/helpers/mongo/get-teams'
 
 const getTeamsController = {
   options: {
