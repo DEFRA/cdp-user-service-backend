@@ -1,6 +1,6 @@
 import Joi from 'joi'
 
-import { searchGitHubTeams } from '~/src/api/teams/helpers/search-github-teams'
+import { searchGitHubTeams } from '~/src/api/teams/helpers/github/search-github-teams'
 
 const getGitHubTeamsController = {
   options: {

@@ -3,12 +3,17 @@ import { isNull } from 'lodash'
 
 import { config } from '~/src/config'
 import { updateTeamValidationSchema } from '~/src/api/teams/helpers/update-team-validation-schema'
-import { getTeam } from '~/src/api/teams/helpers/get-team'
+import { getTeam } from '~/src/api/teams/helpers/mongo/get-team'
+import { getTeamsCount } from '~/src/api/teams/helpers/mongo/get-teams'
 import { buildUpdateFields } from '~/src/helpers/build-update-fields'
-import { teamNameExists } from '~/src/api/teams/helpers/team-name-exists'
-import { aadGroupIdExists } from '~/src/api/teams/helpers/aad-group-id-exists'
-import { gitHubTeamExists } from '~/src/api/teams/helpers/github-team-exists'
+import { teamNameExists } from '~/src/api/teams/helpers/mongo/team-name-exists'
+import { aadGroupIdExists } from '~/src/api/teams/helpers/aad/aad-group-id-exists'
+import { gitHubTeamExists } from '~/src/api/teams/helpers/github/github-team-exists'
 import { updateTeam } from '~/src/api/teams/helpers/update-team'
+import {
+  addSharedRepoAccess,
+  deleteSharedRepoAccess
+} from '~/src/api/teams/helpers/github/github-shared-repo-access'
 
 const updateTeamController = {
   options: {
@@ -39,27 +44,12 @@ const updateTeamController = {
       'description',
       'github'
     ])
-
-    if (updateFields?.$set?.name) {
-      const teamExists = await teamNameExists(
-        request.db,
-        updateFields.$set.name
-      )
-      if (teamExists) {
-        throw Boom.conflict('Team already exists')
-      }
-    }
-
-    if (updateFields?.$set?.github) {
-      const gitHubExists = await gitHubTeamExists(
-        request.octokit,
-        updateFields.$set.github
-      )
-      if (!gitHubExists) {
-        throw Boom.badData('Team does not exist in GitHub')
-      }
-    }
-
+    await existingTeamInDb(updateFields?.$set?.name, request)
+    await updateGithubSharedRepos(
+      existingTeam?.github,
+      updateFields?.$set?.github,
+      request
+    )
     const updatedTeam = await updateTeam(
       request.msGraph,
       request.db,
@@ -67,6 +57,48 @@ const updateTeamController = {
       updateFields
     )
     return h.response({ message: 'success', team: updatedTeam }).code(200)
+  }
+}
+
+async function existingTeamInDb(name, request) {
+  if (name) {
+    const teamExists = await teamNameExists(request.db, name)
+    if (teamExists) {
+      throw Boom.conflict('Team already exists')
+    }
+  }
+}
+
+async function updateGithubSharedRepos(currentTeam, newTeam, request) {
+  if (newTeam) {
+    const gitHubExists = await gitHubTeamExists(request.octokit, newTeam)
+    if (!gitHubExists) {
+      throw Boom.badData('Team does not exist in GitHub')
+    }
+    // This is still experimental, so we're just going to log the error from this bit for now.
+    if (currentTeam) {
+      const numberOfTeamsInDb = await getTeamsCount(request.db, {
+        github: currentTeam
+      })
+
+      if (numberOfTeamsInDb === 1) {
+        try {
+          await deleteSharedRepoAccess(request.octokit, currentTeam)
+        } catch (error) {
+          request.logger.error(
+            `Failed to delete ${currentTeam} to the shared repos: ${error}`
+          )
+        }
+      }
+    }
+
+    try {
+      await addSharedRepoAccess(request.octokit, newTeam)
+    } catch (error) {
+      request.logger.error(
+        `Failed to add ${newTeam} to the shared repos: ${error}`
+      )
+    }
   }
 }
 

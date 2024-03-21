@@ -2,7 +2,7 @@ import Boom from '@hapi/boom'
 import { isNull } from 'lodash'
 
 import { config } from '~/src/config'
-import { getTeam } from '~/src/api/teams/helpers/get-team'
+import { getTeam } from '~/src/api/teams/helpers/mongo/get-team'
 import { getUser } from '~/src/api/users/helpers/get-user'
 import { teamHasUser } from '~/src/api/teams/helpers/team-has-user'
 import { addUserToTeam } from '~/src/api/teams/helpers/add-user-to-team'

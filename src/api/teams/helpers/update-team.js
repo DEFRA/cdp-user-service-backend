@@ -2,7 +2,7 @@ import { isEmpty, isNull } from 'lodash'
 
 import { mailNicknameFromGroupName } from '~/src/api/teams/helpers/mail-nickname-from-group-name'
 import { groupNameFromTeamName } from '~/src/api/teams/helpers/group-name-from-team-name'
-import { getTeam } from '~/src/api/teams/helpers/get-team'
+import { getTeam } from '~/src/api/teams/helpers/mongo/get-team'
 
 async function updateTeam(msGraph, db, teamId, updateFields) {
   const updateGroupFields = {}

@@ -3,10 +3,10 @@ import Boom from '@hapi/boom'
 import { config } from '~/src/config'
 import { createTeamValidationSchema } from '~/src/api/teams/helpers/create-team-validation-schema'
 import { MongoErrors } from '~/src/helpers/mongodb-errors'
-import { teamNameExists } from '~/src/api/teams/helpers/team-name-exists'
-import { gitHubTeamExists } from '~/src/api/teams/helpers/github-team-exists'
-import { createTeam } from '~/src/api/teams/helpers/create-team'
-import { updateSharedRepoAccess } from '~/src/api/teams/helpers/update-shared-repo-access'
+import { teamNameExists } from '~/src/api/teams/helpers/mongo/team-name-exists'
+import { gitHubTeamExists } from '~/src/api/teams/helpers/github/github-team-exists'
+import { createTeam } from '~/src/api/teams/helpers/aad/create-team'
+import { addSharedRepoAccess } from '~/src/api/teams/helpers/github/github-shared-repo-access'
 
 const createTeamController = {
   options: {
@@ -32,27 +32,10 @@ const createTeamController = {
       throw Boom.conflict('Team already exists')
     }
 
-    if (payload?.github) {
-      const gitHubExists = await gitHubTeamExists(
-        request.octokit,
-        payload.github
-      )
-      if (!gitHubExists) {
-        throw Boom.badData('Team does not exist in GitHub')
-      }
-    }
+    await addGithubSharedRepos(payload?.github, request)
 
     try {
       const team = await createTeam(request.msGraph, request.db, dbTeam)
-
-      // This is still experimental, so we're just going to log the error from this bit for now.
-      try {
-        await updateSharedRepoAccess(request.octokit, payload.github)
-      } catch (error) {
-        request.logger.error(
-          `Failed to add ${payload.github} to the shared repos: ${error}`
-        )
-      }
 
       return h.response({ message: 'success', team }).code(201)
     } catch (error) {
@@ -60,6 +43,24 @@ const createTeamController = {
         throw Boom.conflict('Team already exists')
       }
       throw error
+    }
+  }
+}
+
+async function addGithubSharedRepos(team, request) {
+  if (team) {
+    const gitHubExists = await gitHubTeamExists(request.octokit, team)
+    if (!gitHubExists) {
+      throw Boom.badData('Team does not exist in GitHub')
+    }
+
+    // This is still experimental, so we're just going to log the error from this bit for now.
+    try {
+      await addSharedRepoAccess(request.octokit, team)
+    } catch (error) {
+      request.logger.error(
+        `Failed to add ${team} to the shared repos: ${error}`
+      )
     }
   }
 }
