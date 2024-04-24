@@ -45,7 +45,7 @@
     "convict": "6.2.4",
     "hapi-pino": "12.1.0",
     "https-proxy-agent": "7.0.4",
-    "joi": "17.12.3",
+    "joi": "17.13.0",
     "lodash": "4.17.21",
     "mongodb": "6.5.0",
     "node-fetch": "^3.3.2",
