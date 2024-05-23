@@ -3,7 +3,7 @@ import { ClientSecretCredential } from '@azure/identity'
 import { Client } from '@microsoft/microsoft-graph-client'
 
 import { config } from '~/src/config'
-import { ProxyAgent } from '~/src/helpers/proxy-agent'
+import { proxyAgent } from '~/src/helpers/proxy-agent'
 
 const msGraphPlugin = {
   name: 'ms-graph',
@@ -16,11 +16,11 @@ const msGraphPlugin = {
 
     server.logger.info('Setting up ms-graph')
 
-    const proxyAgent = ProxyAgent?.agent
-    const options = proxyAgent && {
+    const agent = proxyAgent?.agent
+    const options = agent && {
       proxyOptions: {
-        host: ProxyAgent?.url.hostname,
-        port: ProxyAgent?.url.port
+        host: proxyAgent?.url.hostname,
+        port: proxyAgent?.url.port
       }
     }
 
@@ -35,12 +35,12 @@ const msGraphPlugin = {
       scopes: ['https://graph.microsoft.com/.default']
     })
 
-    const clientOptions = proxyAgent
+    const clientOptions = agent
       ? { authProvider }
       : {
           authProvider,
           fetchOptions: {
-            agent: proxyAgent
+            agent
           }
         }
 
