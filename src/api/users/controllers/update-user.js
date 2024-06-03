@@ -12,7 +12,7 @@ import { requireLock } from '~/src/helpers/mongo-lock'
 const updateUserController = {
   options: {
     validate: {
-      payload: updateUserValidationSchema
+      payload: updateUserValidationSchema(config.get('isProduction'))
     },
     auth: {
       strategy: 'azure-oidc',
@@ -49,7 +49,7 @@ const updateUserController = {
 
     const lock = await requireLock(request.locker, 'users')
     const updatedUser = await updateUser(request.db, userId, updateFields)
-    lock.release()
+    lock.free()
     return h.response({ message: 'success', user: updatedUser }).code(200)
   }
 }
