@@ -1,4 +1,5 @@
 import { MongoClient } from 'mongodb'
+import { LockManager } from 'mongo-locks'
 
 import { config } from '~/src/config'
 
@@ -19,12 +20,20 @@ const mongoPlugin = {
 
     const mongoClient = await MongoClient.connect(mongoUrl, mongoOptions)
     const db = mongoClient.db(databaseName)
+    const locker = new LockManager(db.collection('mongo-locks'))
 
     server.logger.info(`mongodb connected to ${databaseName}`)
 
     server.decorate('request', 'mongoClient', mongoClient)
     server.decorate('request', 'db', db)
+    server.decorate('request', 'locker', locker)
+
+    await createIndexes(db)
   }
+}
+
+async function createIndexes(db) {
+  await db.collection('mongo-locks').createIndex({ id: 1 })
 }
 
 export { mongoPlugin }

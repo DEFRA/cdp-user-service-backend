@@ -7,6 +7,7 @@ import { getUser } from '~/src/api/users/helpers/get-user'
 import { buildUpdateFields } from '~/src/helpers/build-update-fields'
 import { gitHubUserExists } from '~/src/api/users/helpers/github-user-exists'
 import { updateUser } from '~/src/api/users/helpers/update-user'
+import { requireLock } from '~/src/helpers/mongo-lock'
 
 const updateUserController = {
   options: {
@@ -46,7 +47,9 @@ const updateUserController = {
       }
     }
 
+    const lock = await requireLock(request.locker, 'users')
     const updatedUser = await updateUser(request.db, userId, updateFields)
+    lock.release()
     return h.response({ message: 'success', user: updatedUser }).code(200)
   }
 }
