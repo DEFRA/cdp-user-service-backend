@@ -48,8 +48,12 @@ const updateUserController = {
     }
 
     const lock = await requireLock(request.locker, 'users')
-    const updatedUser = await updateUser(request.db, userId, updateFields)
-    lock.free()
+    let updatedUser
+    try {
+      updatedUser = await updateUser(request.db, userId, updateFields)
+    } finally {
+      lock.free()
+    }
     return h.response({ message: 'success', user: updatedUser }).code(200)
   }
 }
