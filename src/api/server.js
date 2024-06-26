@@ -10,10 +10,14 @@ import { msGraphPlugin } from '~/src/helpers/ms-graph'
 import { octokitPlugin } from '~/src/helpers/octokit'
 import { azureOidc } from '~/src/helpers/azure-oidc'
 import { secureContext } from '~/src/helpers/secure-context'
+import { setupWreckAgents } from '~/src/helpers/proxy/setup-wreck-agents'
+import { proxyAgent } from '~/src/helpers/proxy/proxy-agent'
 
 const isProduction = config.get('isProduction')
 
 async function createServer() {
+  setupWreckAgents(proxyAgent())
+
   const server = hapi.server({
     port: config.get('port'),
     routes: {

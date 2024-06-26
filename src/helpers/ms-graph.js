@@ -3,7 +3,7 @@ import { ClientSecretCredential } from '@azure/identity'
 import { Client } from '@microsoft/microsoft-graph-client'
 
 import { config } from '~/src/config'
-import { proxyAgent } from '~/src/helpers/proxy-agent'
+import { proxyAgent } from '~/src/helpers/proxy/proxy-agent'
 
 const msGraphPlugin = {
   name: 'ms-graph',
