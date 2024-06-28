@@ -1,6 +1,5 @@
-import originalPino from 'pino'
+import pino from 'pino'
 
-// Mock logger
 const mockPino = {
   levels: {
     labels: {
@@ -20,19 +19,19 @@ const mockPino = {
       fatal: 60
     }
   },
-  fatal: jest.fn(),
-  error: jest.fn(),
-  warn: jest.fn(),
-  info: jest.fn(),
-  debug: jest.fn(),
   trace: jest.fn(),
+  debug: jest.fn(),
+  info: jest.fn(),
+  warn: jest.fn(),
+  error: jest.fn(),
+  fatal: jest.fn(),
   silent: jest.fn()
 }
 mockPino.child = () => mockPino
 
 const mockPinoFunc = () => mockPino
-mockPinoFunc.stdSerializers = originalPino.stdSerializers
+mockPinoFunc.stdSerializers = pino.stdSerializers
 
 jest.doMock('pino', () => mockPinoFunc)
 
-module.exports = require('pino')
+export default () => pino
