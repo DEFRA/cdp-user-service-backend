@@ -1,7 +1,7 @@
 import jwt from '@hapi/jwt'
 
 import { config } from '~/src/config'
-import { proxyFetch } from '~/src/helpers/proxy/proxy-fetch'
+import { proxyFetch } from '~/src/helpers/proxy'
 
 const azureOidc = {
   plugin: {
@@ -11,7 +11,7 @@ const azureOidc = {
 
       const oidc = await proxyFetch(
         config.get('oidcWellKnownConfigurationUrl')
-      ).then((res) => res.json())
+      ).then((response) => response.json())
 
       server.auth.strategy('azure-oidc', 'jwt', {
         keys: {

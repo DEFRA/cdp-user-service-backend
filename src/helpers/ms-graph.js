@@ -1,10 +1,9 @@
-import { TokenCredentialAuthenticationProvider } from '@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials'
 import { ClientSecretCredential } from '@azure/identity'
 import { Client } from '@microsoft/microsoft-graph-client'
+import { TokenCredentialAuthenticationProvider } from '@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials'
 
 import { config } from '~/src/config'
-import { ProxyAgent } from 'undici'
-import { proxyAgent } from '~/src/helpers/proxy/proxy-agent'
+import { provideProxy } from '~/src/helpers/proxy'
 
 const msGraphPlugin = {
   name: 'ms-graph',
@@ -17,22 +16,17 @@ const msGraphPlugin = {
 
     server.logger.info('Setting up ms-graph')
 
-    const proxy = proxyAgent()
-    const agent = proxy?.agent
-
-    const credentialOptions = {}
-
-    if (agent) {
-      credentialOptions.proxyOptions = {}
-      credentialOptions.proxyOptions.host = proxy.url.href
-      credentialOptions.proxyOptions.port = agent.connectOpts.port
-      if (proxy.url.username && proxy.url.username !== '') {
-        credentialOptions.proxyOptions.username = proxy.url.username
-      }
-      if (proxy.url.password && proxy.url.password !== '') {
-        credentialOptions.proxyOptions.password = proxy.url.password
-      }
-    }
+    const proxy = provideProxy()
+    const credentialOptions = proxy
+      ? {
+          proxyOptions: {
+            host: proxy.url.href,
+            port: proxy.port,
+            username: proxy.url?.username,
+            password: proxy.url?.password
+          }
+        }
+      : {}
 
     const credential = new ClientSecretCredential(
       azureTenantId,
@@ -48,20 +42,16 @@ const msGraphPlugin = {
     const clientOptions = {
       debugLogging: true,
       authProvider,
-      ...(agent && {
+      ...(proxy && {
         fetchOptions: {
-          dispatcher: new ProxyAgent({
-            uri: proxy.url.href,
-            keepAliveTimeout: 10,
-            keepAliveMaxTimeout: 10
-          })
+          dispatcher: proxy.proxyAgent
         }
       })
     }
 
     if (azureClientBaseUrl !== '') {
-      server.logger.info(
-        `overriding azure client base url with ${azureClientBaseUrl}`
+      server.logger.debug(
+        `Overriding azure client base url with ${azureClientBaseUrl}`
       )
       clientOptions.baseUrl = azureClientBaseUrl
     }
