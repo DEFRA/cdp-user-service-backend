@@ -3,7 +3,7 @@ import { createAppAuth } from '@octokit/auth-app'
 import { paginateGraphql } from '@octokit/plugin-paginate-graphql'
 
 import { config } from '~/src/config'
-import { proxyFetch } from '~/src/helpers/proxy/proxy-fetch'
+import { proxyFetch } from '~/src/helpers/proxy'
 
 const octokitPlugin = {
   name: 'octokit',
