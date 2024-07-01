@@ -1,9 +1,19 @@
 import { TokenCredentialAuthenticationProvider } from '@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials'
 import { ClientSecretCredential } from '@azure/identity'
-import { Client } from '@microsoft/microsoft-graph-client'
+import {
+  AuthenticationHandler,
+  Client
+} from '@microsoft/microsoft-graph-client'
 
 import { config } from '~/src/config'
-import { proxyAgent } from '~/src/helpers/proxy/proxy-agent'
+import { proxyFetch } from '~/src/helpers/proxy/proxy-fetch'
+import { proxyAgent } from '~/.server/helpers/proxy-agent'
+
+class CDPHttpHandler {
+  async execute(context) {
+    context.response = await proxyFetch(context.request, context.options)
+  }
+}
 
 const msGraphPlugin = {
   name: 'ms-graph',
@@ -44,15 +54,13 @@ const msGraphPlugin = {
       scopes: ['https://graph.microsoft.com/.default']
     })
 
+    const httpMiddleware = []
+    httpMiddleware.push(new AuthenticationHandler(authProvider))
+    httpMiddleware.push(new CDPHttpHandler())
+
     const clientOptions = {
-      debugLogging: true,
-      authProvider,
-      ...(agent && {
-        fetchOptions: {
-          agent: agent,
-          dispatcher: agent
-        }
-      })
+      middleware: httpMiddleware,
+      debugLogging: true
     }
 
     if (azureClientBaseUrl !== '') {
