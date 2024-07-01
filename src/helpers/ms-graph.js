@@ -19,14 +19,19 @@ const msGraphPlugin = {
     const proxy = proxyAgent()
     const agent = proxy?.agent
 
-    const credentialOptions = agent
-      ? {
-          proxyOptions: {
-            host: proxy.url.href,
-            port: agent.connectOpts.port
-          }
-        }
-      : {}
+    const credentialOptions = {}
+
+    if (agent) {
+      credentialOptions.proxyOptions = {}
+      credentialOptions.proxyOptions.host = proxy.url.href
+      credentialOptions.proxyOptions.port = agent.connectOpts.port
+      if (proxy.url.username && proxy.url.username !== '') {
+        credentialOptions.proxyOptions.username = proxy.url.username
+      }
+      if (proxy.url.password && proxy.url.password !== '') {
+        credentialOptions.proxyOptions.password = proxy.url.password
+      }
+    }
 
     const credential = new ClientSecretCredential(
       azureTenantId,
@@ -43,7 +48,7 @@ const msGraphPlugin = {
       authProvider,
       ...(agent && {
         fetchOptions: {
-          agent
+          dispatcher: agent
         }
       })
     }
