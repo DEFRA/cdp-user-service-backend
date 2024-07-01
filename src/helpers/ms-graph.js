@@ -45,9 +45,11 @@ const msGraphPlugin = {
     })
 
     const clientOptions = {
+      debugLogging: true,
       authProvider,
       ...(agent && {
         fetchOptions: {
+          agent: agent,
           dispatcher: agent
         }
       })
