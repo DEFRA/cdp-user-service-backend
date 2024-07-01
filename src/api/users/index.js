@@ -1,5 +1,6 @@
 import {
   createUserController,
+  deleteUserController,
   getUserController,
   getUsersController,
   updateUserController,
@@ -31,6 +32,11 @@ const users = {
           method: 'PATCH',
           path: '/users/{userId}',
           ...updateUserController
+        },
+        {
+          method: 'DELETE',
+          path: '/users/{userId}',
+          ...deleteUserController
         },
         {
           method: 'GET',

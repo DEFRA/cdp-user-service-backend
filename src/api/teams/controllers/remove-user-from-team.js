@@ -27,13 +27,7 @@ const removeUserFromTeamController = {
       throw Boom.notFound('User or Team not found')
     }
 
-    const team = await removeUserFromTeam(
-      request.msGraph,
-      request.mongoClient,
-      request.db,
-      userId,
-      teamId
-    )
+    const team = await removeUserFromTeam(request, userId, teamId)
     return h.response({ message: 'success', team }).code(200)
   }
 }
