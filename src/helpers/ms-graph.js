@@ -16,33 +16,37 @@ const msGraphPlugin = {
 
     server.logger.info('Setting up ms-graph')
 
-    const agent = proxyAgent?.agent
-    const options = agent && {
-      proxyOptions: {
-        host: proxyAgent?.url.hostname,
-        port: proxyAgent?.url.port
-      }
-    }
+    const proxy = proxyAgent()
+    const agent = proxy?.agent
+
+    const credentialOptions = agent
+      ? {
+          proxyOptions: {
+            host: proxy.url.href,
+            port: agent.connectOpts.port
+          }
+        }
+      : {}
 
     const credential = new ClientSecretCredential(
       azureTenantId,
       azureClientId,
       azureClientSecret,
-      options
+      credentialOptions
     )
 
     const authProvider = new TokenCredentialAuthenticationProvider(credential, {
       scopes: ['https://graph.microsoft.com/.default']
     })
 
-    const clientOptions = agent
-      ? { authProvider }
-      : {
-          authProvider,
-          fetchOptions: {
-            agent
-          }
+    const clientOptions = {
+      authProvider,
+      ...(agent && {
+        fetchOptions: {
+          agent
         }
+      })
+    }
 
     if (azureClientBaseUrl !== '') {
       server.logger.info(
