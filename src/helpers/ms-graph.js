@@ -3,6 +3,7 @@ import { ClientSecretCredential } from '@azure/identity'
 import { Client } from '@microsoft/microsoft-graph-client'
 
 import { config } from '~/src/config'
+import { ProxyAgent } from 'undici'
 import { proxyAgent } from '~/src/helpers/proxy/proxy-agent'
 
 const msGraphPlugin = {
@@ -49,8 +50,11 @@ const msGraphPlugin = {
       authProvider,
       ...(agent && {
         fetchOptions: {
-          agent: agent,
-          dispatcher: agent
+          dispatcher: new ProxyAgent({
+            uri: proxy.url.href,
+            keepAliveTimeout: 10,
+            keepAliveMaxTimeout: 10
+          })
         }
       })
     }
