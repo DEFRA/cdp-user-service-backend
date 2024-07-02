@@ -1,6 +1,5 @@
 import { URL } from 'node:url'
-import fetch from 'node-fetch'
-import { ProxyAgent } from 'undici'
+import { ProxyAgent, fetch as undiciFetch } from 'undici'
 import { HttpsProxyAgent } from 'https-proxy-agent'
 
 import { config } from '~/src/config'
@@ -48,14 +47,14 @@ function proxyFetch(url, options) {
   const proxy = provideProxy()
 
   if (!proxy) {
-    return fetch(url, options)
+    return undiciFetch(url, options)
   }
 
   logger.debug(
     `Fetching: ${url} via the proxy: ${proxy.url.origin}:${proxy.port}`
   )
 
-  return fetch(url, {
+  return undiciFetch(url, {
     ...options,
     dispatcher: proxy.proxyAgent
   })
