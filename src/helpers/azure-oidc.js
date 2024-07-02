@@ -9,9 +9,9 @@ const azureOidc = {
     register: async (server) => {
       await server.register(jwt)
 
-      const oidc = await proxyFetch(
-        config.get('oidcWellKnownConfigurationUrl')
-      ).then((response) => response.json())
+      const oidc = await proxyFetch(config.get('oidcWellKnownConfigurationUrl'))
+        .then((response) => response.json())
+        .catch((error) => server.logger.error(error))
 
       server.auth.strategy('azure-oidc', 'jwt', {
         keys: {
