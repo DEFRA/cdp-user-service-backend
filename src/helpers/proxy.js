@@ -26,7 +26,7 @@ function provideProxy(proxyUrl = proxyUrlConfig) {
       url,
       port,
       proxyAgent: new ProxyAgent({
-        uri: url,
+        uri: proxyUrl,
         keepAliveTimeout: 10,
         keepAliveMaxTimeout: 10
       }),
