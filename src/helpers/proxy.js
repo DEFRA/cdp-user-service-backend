@@ -1,5 +1,5 @@
 import { URL } from 'node:url'
-import { ProxyAgent, fetch as undiciFetch } from 'undici'
+import { ProxyAgent } from 'undici'
 import { HttpsProxyAgent } from 'https-proxy-agent'
 
 import { config } from '~/src/config'
@@ -37,7 +37,7 @@ function provideProxy(proxyUrl = proxyUrlConfig) {
 }
 
 /**
- * Provide fetch with dispatcher ProxyAgent when http/s proxy url config has been set
+ * Provide Node.js fetch with dispatcher ProxyAgent when http/s proxy url config has been set
  *
  * @param url
  * @param options
@@ -47,14 +47,14 @@ function proxyFetch(url, options) {
   const proxy = provideProxy()
 
   if (!proxy) {
-    return undiciFetch(url, options)
+    return fetch(url, options)
   }
 
   logger.debug(
     `Fetching: ${url} via the proxy: ${proxy.url.origin}:${proxy.port}`
   )
 
-  return undiciFetch(url, {
+  return fetch(url, {
     ...options,
     dispatcher: proxy.proxyAgent
   })

@@ -50,7 +50,6 @@
     "lodash": "4.17.21",
     "mongo-locks": "3.0.2",
     "mongodb": "6.7.0",
-    "node-fetch": "^2.7.0",
     "pino": "9.1.0",
     "undici": "6.18.2"
   },
