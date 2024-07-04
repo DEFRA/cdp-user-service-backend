@@ -52,15 +52,13 @@ async function createServer() {
     await server.register(secureContext)
   }
 
-  await server.register(azureOidc)
-
-  await server.register({ plugin: mongoPlugin, options: {} })
-
-  await server.register({ plugin: msGraphPlugin, options: {} })
-
-  await server.register({ plugin: octokitPlugin, options: {} })
-
-  await server.register(router)
+  await server.register([
+    azureOidc,
+    mongoPlugin,
+    msGraphPlugin,
+    octokitPlugin,
+    router
+  ])
 
   return server
 }
