@@ -1,6 +1,7 @@
 import { URL } from 'node:url'
-import { ProxyAgent } from 'undici'
-import { HttpsProxyAgent } from 'https-proxy-agent'
+import { EnvHttpProxyAgent } from 'undici'
+import { ProxyAgent } from 'proxy-agent'
+// import { HttpsProxyAgent } from 'https-proxy-agent'
 
 import { config } from '~/src/config'
 import { createLogger } from '~/src/helpers/logging/logger'
@@ -12,7 +13,7 @@ const logger = createLogger()
  * Provide proxy agent detail when http/s proxy url config has been set
  *
  * @param proxyUrl
- * @returns {{proxyAgent: ProxyAgent, port: (number), httpAndHttpsProxyAgent: HttpsProxyAgent<string>, url: module:url.URL}|null}
+ * @returns {{proxyAgent: EnvHttpProxyAgent, port: (number), httpAndHttpsProxyAgent: ProxyAgent<string>, url: module:url.URL}|null}
  */
 function provideProxy(proxyUrl = proxyUrlConfig) {
   if (proxyUrl) {
@@ -24,12 +25,8 @@ function provideProxy(proxyUrl = proxyUrlConfig) {
     return {
       url,
       port,
-      proxyAgent: new ProxyAgent({
-        uri: proxyUrl,
-        keepAliveTimeout: 10,
-        keepAliveMaxTimeout: 10
-      }),
-      httpAndHttpsProxyAgent: new HttpsProxyAgent(url)
+      proxyAgent: new EnvHttpProxyAgent(),
+      httpAndHttpsProxyAgent: new ProxyAgent()
     }
   }
 
