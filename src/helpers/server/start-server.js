@@ -1,4 +1,3 @@
-// import { config } from '~/src/config/index'
 import { createServer } from '~/src/api/server'
 import { config } from '~/src/config'
 import { createLogger } from '~/src/helpers/logging/logger'
