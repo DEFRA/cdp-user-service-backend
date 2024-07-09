@@ -6,36 +6,37 @@ import { config } from '~/src/config'
 import { proxyFetch } from '~/src/helpers/proxy'
 
 const octokitPlugin = {
-  name: 'octokit',
-  version: '1.0.0',
-  register: async function (server) {
-    const gitHubAppId = config.get('gitHubAppId')
-    const gitHubAppPrivateKey = config.get('gitHubAppPrivateKey')
-    const gitHubAppInstallationId = config.get('gitHubAppInstallationId')
+  plugin: {
+    name: 'octokit',
+    version: '1.0.0',
+    register: async function (server) {
+      const gitHubAppId = config.get('gitHubAppId')
+      const gitHubAppPrivateKey = config.get('gitHubAppPrivateKey')
+      const gitHubAppInstallationId = config.get('gitHubAppInstallationId')
 
-    server.logger.info('Setting up octokit')
+      server.logger.info('Setting up octokit')
 
-    let cfg = {
-      authStrategy: createAppAuth,
-      auth: {
-        appId: gitHubAppId,
-        privateKey: Buffer.from(gitHubAppPrivateKey, 'base64'),
-        installationId: gitHubAppInstallationId
-      },
-      request: { fetch: proxyFetch }
+      const cfg =
+        config.get('gitHubBaseUrl') == null
+          ? {
+              authStrategy: createAppAuth,
+              auth: {
+                appId: gitHubAppId,
+                privateKey: Buffer.from(gitHubAppPrivateKey, 'base64'),
+                installationId: gitHubAppInstallationId
+              },
+              request: { fetch: proxyFetch }
+            }
+          : {
+              // Test Mode, for use with cdp-portal-stubs
+              auth: 'test-value',
+              baseUrl: config.get('gitHubBaseUrl')
+            }
+
+      const OctokitExtra = Octokit.plugin(paginateGraphql)
+      const octokit = new OctokitExtra(cfg)
+      server.decorate('request', 'octokit', octokit)
     }
-
-    // Test Mode, for use with cdp-portal-stubs
-    if (config.get('gitHubBaseUrl') != null) {
-      cfg = {
-        auth: 'test-value',
-        baseUrl: config.get('gitHubBaseUrl')
-      }
-    }
-
-    const OctokitExtra = Octokit.plugin(paginateGraphql)
-    const octokit = new OctokitExtra(cfg)
-    server.decorate('request', 'octokit', octokit)
   }
 }
 
