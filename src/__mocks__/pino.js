@@ -34,4 +34,4 @@ mockPinoFunc.stdSerializers = pino.stdSerializers
 
 jest.doMock('pino', () => mockPinoFunc)
 
-export default () => pino
+export default pino
