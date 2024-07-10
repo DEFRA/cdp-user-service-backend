@@ -12,6 +12,7 @@ import { azureOidc } from '~/src/helpers/azure-oidc'
 import { secureContext } from '~/src/helpers/secure-context'
 import { setupWreckAgents } from '~/src/helpers/setup-wreck-agents'
 import { provideProxy } from '~/src/helpers/proxy'
+import { pulse } from '~/src/helpers/pulse'
 
 const isProduction = config.get('isProduction')
 
@@ -53,6 +54,7 @@ async function createServer() {
   }
 
   await server.register([
+    pulse,
     azureOidc,
     mongoPlugin,
     msGraphPlugin,
