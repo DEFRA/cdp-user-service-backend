@@ -43,23 +43,16 @@ const msGraphPlugin = {
         }
       )
 
-      const clientOptions = {
+      const msGraph = Client.initWithMiddleware({
         debugLogging: true,
         authProvider,
+        baseUrl: azureClientBaseUrl,
         ...(proxy && {
           fetchOptions: {
             dispatcher: proxy.proxyAgent
           }
         })
-      }
-
-      if (azureClientBaseUrl !== '') {
-        server.logger.debug(
-          `Overriding azure client base url with ${azureClientBaseUrl}`
-        )
-        clientOptions.baseUrl = azureClientBaseUrl
-      }
-      const msGraph = Client.initWithMiddleware(clientOptions)
+      })
 
       server.decorate('request', 'msGraph', msGraph)
     }
