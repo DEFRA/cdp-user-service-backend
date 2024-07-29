@@ -1,5 +1,6 @@
 {
-  "watch": [".public", "./src", "./mock-api"],
-  "ignore": ["**/*.test.*", "./test-helpers", "./src/common/assets"],
-  "ext": "js,json,njk,scss"
+  "watch": ["./src"],
+  "ignore": ["**/*.test.*"],
+  "ext": "js,json,njk,scss",
+  "signal": "SIGINT"
 }
