@@ -4,7 +4,7 @@ module.exports = {
   verbose: true,
   resetModules: true,
   clearMocks: true,
-  silent: true,
+  silent: process.env.NODE_ENV !== 'development',
   preset: '@shelf/jest-mongodb',
   testMatch: ['**/src/**/*.test.js'],
   reporters: ['default', ['github-actions', { silent: false }], 'summary'],
