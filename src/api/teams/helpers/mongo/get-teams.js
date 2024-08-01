@@ -43,6 +43,7 @@ async function getTeams(db, queryParams) {
       name: 1,
       description: 1,
       github: 1,
+      serviceCodes: 1,
       users: {
         $map: {
           input: '$users',

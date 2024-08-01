@@ -1,5 +1,4 @@
 import Boom from '@hapi/boom'
-import { isNull } from 'lodash'
 
 import { config } from '~/src/config'
 import { updateTeamValidationSchema } from '~/src/api/teams/helpers/update-team-validation-schema'
@@ -30,7 +29,7 @@ const updateTeamController = {
   handler: async (request, h) => {
     const teamId = request.params.teamId
     const existingTeam = await getTeam(request.db, teamId)
-    if (isNull(existingTeam)) {
+    if (!existingTeam) {
       throw Boom.notFound('Team not found in DB')
     }
 
@@ -42,7 +41,8 @@ const updateTeamController = {
     const updateFields = buildUpdateFields(existingTeam, request?.payload, [
       'name',
       'description',
-      'github'
+      'github',
+      'serviceCodes'
     ])
     await existingTeamInDb(updateFields?.$set?.name, request)
     await updateGithubSharedRepos(
