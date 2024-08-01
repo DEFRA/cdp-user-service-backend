@@ -25,7 +25,8 @@ const createTeamController = {
     const dbTeam = {
       name: payload.name,
       description: payload?.description,
-      github: payload?.github
+      github: payload?.github,
+      serviceCodes: payload?.serviceCodes
     }
     const teamExists = await teamNameExists(request.db, dbTeam.name)
     if (teamExists) {
