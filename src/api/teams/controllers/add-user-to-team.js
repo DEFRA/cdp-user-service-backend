@@ -1,11 +1,10 @@
 import Boom from '@hapi/boom'
-import { isNull } from 'lodash'
 
 import { config } from '~/src/config'
 import { getTeam } from '~/src/api/teams/helpers/mongo/get-team'
 import { getUser } from '~/src/api/users/helpers/get-user'
 import { teamHasUser } from '~/src/api/teams/helpers/team-has-user'
-import { addUserToTeam } from '~/src/api/teams/helpers/add-user-to-team'
+import { addUserToTeam } from '~/src/api/helpers/mongo/transactions/add-user-to-team'
 
 const addUserToTeamController = {
   options: {
@@ -23,19 +22,21 @@ const addUserToTeamController = {
     const dbTeam = await getTeam(request.db, teamId)
     const dbUser = await getUser(request.db, userId)
 
-    if (isNull(dbTeam) || isNull(dbUser)) {
-      throw Boom.notFound('User or Team not found')
-    } else if (teamHasUser(dbTeam, dbUser)) {
-      throw Boom.conflict('User already a member of the team')
+    if (!dbTeam) {
+      throw Boom.notFound('Team not found')
+    } else if (!dbUser) {
+      throw Boom.notFound('User not found')
     }
 
-    const team = await addUserToTeam(
-      request.msGraph,
-      request.mongoClient,
-      request.db,
-      userId,
-      teamId
-    )
+    if (teamHasUser(dbTeam, dbUser)) {
+      return h.response({ message: 'success', dbTeam }).code(200)
+    }
+
+    const team = await addUserToTeam(request, userId, teamId)
+    await request.msGraph
+      .api(`/groups/${teamId}/members/$ref`)
+      .post({ '@odata.id': `https://graph.microsoft.com/v1.0/users/${userId}` })
+
     return h.response({ message: 'success', team }).code(200)
   }
 }

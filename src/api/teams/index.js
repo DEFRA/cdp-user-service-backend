@@ -1,12 +1,13 @@
 import {
+  addTeamToSharedReposController,
   addUserToTeamController,
   createTeamController,
+  deleteTeamController,
+  getGitHubTeamsController,
   getTeamController,
   getTeamsController,
   removeUserFromTeamController,
-  updateTeamController,
-  getGitHubTeamsController,
-  addTeamToSharedReposController
+  updateTeamController
 } from '~/src/api/teams/controllers'
 
 const teams = {
@@ -33,6 +34,11 @@ const teams = {
           method: 'PATCH',
           path: '/teams/{teamId}',
           ...updateTeamController
+        },
+        {
+          method: 'DELETE',
+          path: '/teams/{teamId}',
+          ...deleteTeamController
         },
         {
           method: 'PATCH',

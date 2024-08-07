@@ -67,8 +67,8 @@ describe('/users/{userId}', () => {
     await server.stop({ timeout: 0 })
   })
 
-  const callDeleteUser = async (url) =>
-    await server.inject({
+  async function invokeDeleteUser(url) {
+    return await server.inject({
       method: 'DELETE',
       url,
       auth: {
@@ -78,34 +78,38 @@ describe('/users/{userId}', () => {
         }
       }
     })
+  }
 
   test('Should error when non uuid passed as userId param', async () => {
-    const result = await callDeleteUser('/users/not-a-uuid')
-
-    expect(result.statusMessage).toEqual('Bad Request')
-    expect(result.statusCode).toEqual(400)
+    const result = await invokeDeleteUser('/users/not-a-uuid')
+    expect(result).toMatchObject({
+      statusCode: 400,
+      statusMessage: 'Bad Request'
+    })
   })
 
   test('Should error when user uuid does not exist in the db', async () => {
-    const result = await callDeleteUser(
+    const result = await invokeDeleteUser(
       '/users/8469dcf7-846d-43fd-899a-9850bc43298b'
     )
-
-    expect(server.logger.error).toHaveBeenCalledWith(
-      { error: Error('User not found') },
-      'User deletion aborted due to: User not found'
-    )
-    expect(result.statusMessage).toEqual('Not Found')
-    expect(result.statusCode).toEqual(404)
+    expect(result).toMatchObject({
+      statusCode: 404,
+      statusMessage: 'Not Found'
+    })
   })
 
   describe('When a user is not in any teams', () => {
     test('Should delete a user from DB', async () => {
-      const result = await callDeleteUser(`/users/${mockUser._id}`)
+      const result = await invokeDeleteUser(`/users/${mockUser._id}`)
 
-      expect(server.logger.info).toHaveBeenCalledWith('User deleted from CDP')
-      expect(result.statusMessage).toEqual('OK')
-      expect(result.statusCode).toEqual(200)
+      const users = await server.db.collection('users').find({}).toArray()
+
+      expect(users).toEqual([mockUserInATeam])
+
+      expect(result).toMatchObject({
+        statusCode: 200,
+        statusMessage: 'OK'
+      })
     })
   })
 
@@ -116,7 +120,7 @@ describe('/users/{userId}', () => {
       })
       mockMsGraph.delete.mockResolvedValue()
 
-      const result = await callDeleteUser(`/users/${mockUserInATeam._id}`)
+      const result = await invokeDeleteUser(`/users/${mockUserInATeam._id}`)
 
       // Call to get members of a group
       expect(mockMsGraph.api).toHaveBeenNthCalledWith(
@@ -131,23 +135,23 @@ describe('/users/{userId}', () => {
         `/groups/${mockTeam._id}/members/${mockUserInATeam._id}/$ref`
       )
       expect(mockMsGraph.delete).toHaveBeenCalledTimes(1)
-      expect(server.logger.info).toHaveBeenNthCalledWith(
-        1,
-        `User: ${mockUserInATeam._id} removed from AAD teamId: ${mockTeam._id}`
-      )
 
-      // User removed from the DB
-      expect(server.logger.info).toHaveBeenNthCalledWith(
-        2,
-        `User removed from CDP ${mockTeam.name} team`
-      )
-      expect(server.logger.info).toHaveBeenNthCalledWith(
-        3,
-        'User deleted from CDP'
-      )
+      const users = await server.db.collection('users').find({}).toArray()
+      const teams = await server.db.collection('teams').find({}).toArray()
 
-      expect(result.statusMessage).toEqual('OK')
-      expect(result.statusCode).toEqual(200)
+      expect(users).toEqual([mockUser])
+      expect(teams).toMatchObject([
+        {
+          _id: mockTeam._id,
+          name: 'A-team',
+          users: []
+        }
+      ])
+
+      expect(result).toMatchObject({
+        statusCode: 200,
+        statusMessage: 'OK'
+      })
     })
   })
 
@@ -155,7 +159,7 @@ describe('/users/{userId}', () => {
     test('Should complete DB user removal from team and DB user deletion', async () => {
       mockMsGraph.get.mockReturnValue({ value: [] })
 
-      const result = await callDeleteUser(`/users/${mockUserInATeam._id}`)
+      const result = await invokeDeleteUser(`/users/${mockUserInATeam._id}`)
 
       // Call to get members of a group
       expect(mockMsGraph.api).toHaveBeenNthCalledWith(
@@ -167,18 +171,22 @@ describe('/users/{userId}', () => {
       // No call to remove user from a group
       expect(mockMsGraph.delete).not.toHaveBeenCalled()
 
-      // User removed from the DB
-      expect(server.logger.info).toHaveBeenNthCalledWith(
-        1,
-        `User removed from CDP ${mockTeam.name} team`
-      )
-      expect(server.logger.info).toHaveBeenNthCalledWith(
-        2,
-        'User deleted from CDP'
-      )
+      const users = await server.db.collection('users').find({}).toArray()
+      const teams = await server.db.collection('teams').find({}).toArray()
 
-      expect(result.statusMessage).toEqual('OK')
-      expect(result.statusCode).toEqual(200)
+      expect(users).toEqual([mockUser])
+      expect(teams).toMatchObject([
+        {
+          _id: mockTeam._id,
+          name: 'A-team',
+          users: []
+        }
+      ])
+
+      expect(result).toMatchObject({
+        statusCode: 200,
+        statusMessage: 'OK'
+      })
     })
   })
 })
