@@ -1,11 +1,6 @@
-import Boom from '@hapi/boom'
-import { isNull } from 'lodash'
-
+import { removeUserFromTeam } from '~/src/api/helpers/mongo/transactions/delete-transactions'
+import { removeUserFromAadGroup } from '~/src/api/teams/helpers/remove-user-from-aad-group'
 import { config } from '~/src/config'
-import { getTeam } from '~/src/api/teams/helpers/mongo/get-team'
-import { getUser } from '~/src/api/users/helpers/get-user'
-import { teamHasUser } from '~/src/api/teams/helpers/team-has-user'
-import { removeUserFromTeam } from '~/src/api/teams/helpers/remove-user-from-team'
 
 const removeUserFromTeamController = {
   options: {
@@ -20,14 +15,13 @@ const removeUserFromTeamController = {
     const teamId = request.params.teamId
     const userId = request.params.userId
 
-    const dbTeam = await getTeam(request.db, teamId)
-    const dbUser = await getUser(request.db, userId)
-
-    if (isNull(dbTeam) || isNull(dbUser) || !teamHasUser(dbTeam, dbUser)) {
-      throw Boom.notFound('User or Team not found')
-    }
-
     const team = await removeUserFromTeam(request, userId, teamId)
+    await removeUserFromAadGroup(
+      request.msGraph,
+      teamId,
+      userId,
+      request.logger
+    )
     return h.response({ message: 'success', team }).code(200)
   }
 }

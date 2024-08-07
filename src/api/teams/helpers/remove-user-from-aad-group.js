@@ -3,12 +3,12 @@
  * To avoid aborting the parent operation guard against group and/or user no longer existing in AAD.
  *
  * @param msGraph
- * @param logger
  * @param teamId
  * @param userId
+ * @param logger
  * @returns {Promise<void>}
  */
-async function removeUserFromAadGroup(msGraph, logger, teamId, userId) {
+async function removeUserFromAadGroup(msGraph, teamId, userId, logger) {
   try {
     const teamMembersResult = await msGraph
       .api(`/groups/${teamId}/members`)
