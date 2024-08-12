@@ -4,6 +4,7 @@ import {
   getUserController,
   getUsersController,
   updateUserController,
+  updateUserGithubController,
   getAadUsersController,
   getGitHubUsersController
 } from '~/src/api/users/controllers'
@@ -32,6 +33,11 @@ const users = {
           method: 'PATCH',
           path: '/users/{userId}',
           ...updateUserController
+        },
+        {
+          method: 'PATCH',
+          path: '/users/{userId}/github',
+          ...updateUserGithubController
         },
         {
           method: 'DELETE',
