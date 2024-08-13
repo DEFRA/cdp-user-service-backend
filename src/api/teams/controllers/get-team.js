@@ -1,6 +1,6 @@
 import Boom from '@hapi/boom'
 
-import { getTeam } from '~/src/api/teams/helpers/mongo/get-team'
+import { getTeam } from '~/src/api/teams/helpers/mongo/get-team.js'
 
 const getTeamController = {
   handler: async (request, h) => {

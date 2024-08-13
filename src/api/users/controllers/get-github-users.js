@@ -1,6 +1,6 @@
 import Joi from 'joi'
 
-import { searchGitHubUsers } from '~/src/api/users/helpers/search-github-users'
+import { searchGitHubUsers } from '~/src/api/users/helpers/search-github-users.js'
 
 const getGitHubUsersController = {
   options: {

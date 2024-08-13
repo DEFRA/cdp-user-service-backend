@@ -1,5 +1,5 @@
-import { getUser } from '~/src/api/users/helpers/get-user'
-import { removeNil } from '~/src/helpers/remove-nil'
+import { getUser } from '~/src/api/users/helpers/get-user.js'
+import { removeNil } from '~/src/helpers/remove-nil.js'
 
 async function createUser(db, dbUser) {
   const newUser = {

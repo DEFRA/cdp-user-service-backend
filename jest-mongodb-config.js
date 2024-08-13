@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   mongodbMemoryServerOptions: {
     binary: {
       skipMD5: true
@@ -8,5 +8,6 @@ module.exports = {
       dbName: 'cdp-user-service-backend'
     }
   },
+  useSharedDBForAllJestWorkers: false,
   mongoURLEnvName: 'MONGO_URI'
 }

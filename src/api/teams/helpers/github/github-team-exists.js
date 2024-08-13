@@ -1,4 +1,4 @@
-import { config } from '~/src/config'
+import { config } from '~/src/config/index.js'
 
 async function gitHubTeamExists(octokit, github) {
   const org = config.get('gitHubOrg')

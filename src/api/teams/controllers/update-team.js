@@ -1,18 +1,18 @@
 import Boom from '@hapi/boom'
 
-import { config } from '~/src/config'
-import { updateTeamValidationSchema } from '~/src/api/teams/helpers/update-team-validation-schema'
-import { getTeam } from '~/src/api/teams/helpers/mongo/get-team'
-import { getTeamsCount } from '~/src/api/teams/helpers/mongo/get-teams'
-import { buildUpdateFields } from '~/src/helpers/build-update-fields'
-import { teamNameExists } from '~/src/api/teams/helpers/mongo/team-name-exists'
-import { aadGroupIdExists } from '~/src/api/teams/helpers/aad/aad-group-id-exists'
-import { gitHubTeamExists } from '~/src/api/teams/helpers/github/github-team-exists'
-import { updateTeam } from '~/src/api/teams/helpers/update-team'
+import { config } from '~/src/config/index.js'
+import { updateTeamValidationSchema } from '~/src/api/teams/helpers/update-team-validation-schema.js'
+import { getTeam } from '~/src/api/teams/helpers/mongo/get-team.js'
+import { getTeamsCount } from '~/src/api/teams/helpers/mongo/get-teams.js'
+import { buildUpdateFields } from '~/src/helpers/build-update-fields.js'
+import { teamNameExists } from '~/src/api/teams/helpers/mongo/team-name-exists.js'
+import { aadGroupIdExists } from '~/src/api/teams/helpers/aad/aad-group-id-exists.js'
+import { gitHubTeamExists } from '~/src/api/teams/helpers/github/github-team-exists.js'
+import { updateTeam } from '~/src/api/teams/helpers/update-team.js'
 import {
   addSharedRepoAccess,
   deleteSharedRepoAccess
-} from '~/src/api/teams/helpers/github/github-shared-repo-access'
+} from '~/src/api/teams/helpers/github/github-shared-repo-access.js'
 
 const updateTeamController = {
   options: {

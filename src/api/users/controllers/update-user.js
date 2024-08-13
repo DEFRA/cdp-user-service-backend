@@ -1,13 +1,13 @@
 import Boom from '@hapi/boom'
-import { isNull } from 'lodash'
+import isNull from 'lodash/isNull.js'
 
-import { config } from '~/src/config'
-import { updateUserValidationSchema } from '~/src/api/users/helpers/update-user-validation-schema'
-import { getUser } from '~/src/api/users/helpers/get-user'
-import { buildUpdateFields } from '~/src/helpers/build-update-fields'
-import { gitHubUserExists } from '~/src/api/users/helpers/github-user-exists'
-import { updateUser } from '~/src/api/users/helpers/update-user'
-import { requireLock } from '~/src/helpers/mongo-lock'
+import { config } from '~/src/config/index.js'
+import { updateUserValidationSchema } from '~/src/api/users/helpers/update-user-validation-schema.js'
+import { getUser } from '~/src/api/users/helpers/get-user.js'
+import { buildUpdateFields } from '~/src/helpers/build-update-fields.js'
+import { gitHubUserExists } from '~/src/api/users/helpers/github-user-exists.js'
+import { updateUser } from '~/src/api/users/helpers/update-user.js'
+import { requireLock } from '~/src/helpers/mongo-lock.js'
 
 const updateUserController = {
   options: {
