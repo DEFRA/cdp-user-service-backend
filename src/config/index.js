@@ -1,7 +1,8 @@
 import convict from 'convict'
-import path from 'path'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-import { version } from '~/package.json'
+const dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const config = convict({
   env: {
@@ -16,11 +17,6 @@ const config = convict({
     default: 3001,
     env: 'PORT'
   },
-  version: {
-    doc: 'Api version',
-    format: String,
-    default: version
-  },
   serviceName: {
     doc: 'Api Service Name',
     format: String,
@@ -29,7 +25,7 @@ const config = convict({
   root: {
     doc: 'Project root',
     format: String,
-    default: path.normalize(path.join(__dirname, '..', '..'))
+    default: path.resolve(dirname, '../..')
   },
   isProduction: {
     doc: 'If this application running in the production environment',

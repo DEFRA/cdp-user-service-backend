@@ -1,6 +1,6 @@
-import { removeUserFromTeam } from '~/src/api/helpers/mongo/transactions/delete-transactions'
-import { removeUserFromAadGroup } from '~/src/api/teams/helpers/remove-user-from-aad-group'
-import { config } from '~/src/config'
+import { removeUserFromTeam } from '~/src/api/helpers/mongo/transactions/delete-transactions.js'
+import { removeUserFromAadGroup } from '~/src/api/teams/helpers/remove-user-from-aad-group.js'
+import { config } from '~/src/config/index.js'
 
 const removeUserFromTeamController = {
   options: {

@@ -1,5 +1,5 @@
-import { config } from '~/src/config'
-import { createLogger } from '~/src/helpers/logging/logger'
+import { config } from '~/src/config/index.js'
+import { createLogger } from '~/src/helpers/logging/logger.js'
 
 const logger = createLogger()
 

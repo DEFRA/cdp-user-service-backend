@@ -2,8 +2,8 @@ import { URL } from 'node:url'
 import { ProxyAgent } from 'undici'
 import { HttpsProxyAgent } from 'https-proxy-agent'
 
-import { config } from '~/src/config'
-import { createLogger } from '~/src/helpers/logging/logger'
+import { config } from '~/src/config/index.js'
+import { createLogger } from '~/src/helpers/logging/logger.js'
 
 const proxyUrlConfig = config.get('httpsProxy') ?? config.get('httpProxy')
 const logger = createLogger()

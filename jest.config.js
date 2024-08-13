@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   rootDir: '.',
   verbose: true,
   resetModules: true,
