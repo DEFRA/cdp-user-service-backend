@@ -1,6 +1,6 @@
+import { Client } from '@microsoft/microsoft-graph-client'
 import { config } from '~/src/config'
 import { createServer } from '~/src/api/server'
-import { Client } from '@microsoft/microsoft-graph-client'
 
 jest.mock('@microsoft/microsoft-graph-client')
 jest.mock('@azure/identity')
@@ -47,7 +47,6 @@ describe('/users/{userId}', () => {
       delete: jest.fn()
     }
     Client.initWithMiddleware = () => mockMsGraph
-
     server = await createServer()
     await server.initialize()
   })
@@ -63,7 +62,7 @@ describe('/users/{userId}', () => {
   })
 
   afterAll(async () => {
-    await server.mongoClient.close()
+    await server.mongoClient?.close()
     await server.stop({ timeout: 0 })
   })
 
