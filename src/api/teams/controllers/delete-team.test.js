@@ -18,6 +18,7 @@ describe('/teams/{teamId}', () => {
     }
     Client.initWithMiddleware = () => mockMsGraph
 
+    // Initialize sever
     server = await createServer()
     await server.initialize()
   })
@@ -25,11 +26,13 @@ describe('/teams/{teamId}', () => {
   beforeEach(async () => {})
 
   afterEach(async () => {
+    // Clear down collections
     await server.db.collection('users').deleteMany({})
     await server.db.collection('teams').deleteMany({})
   })
 
   afterAll(async () => {
+    // Shutdown mongo client and server
     await server.mongoClient.close()
     await server.stop({ timeout: 0 })
   })
@@ -73,6 +76,9 @@ describe('/teams/{teamId}', () => {
         statusCode: 200,
         statusMessage: 'OK'
       })
+
+      // TODO query the app endpoint to check if the team is deleted rather than querying the db directly
+      // TODO Do we need to do this or is the above response enough?
       const teams = await server.db.collection('teams').find({}).toArray()
       expect(teams).toEqual([])
     })
@@ -80,6 +86,7 @@ describe('/teams/{teamId}', () => {
 
   describe('When a team has users', () => {
     test('Should remove user from AAD and team from user', async () => {
+      // TODO can these abstracted?
       const userId = crypto.randomUUID()
       const teamId = crypto.randomUUID()
       const mockUser = {
@@ -95,12 +102,15 @@ describe('/teams/{teamId}', () => {
         users: [userId]
       }
 
+      // TODO can these go in a beforeEach()?
       await server.db.collection('teams').insertOne(mockTeam)
       await server.db.collection('users').insertOne(mockUser)
 
+      // TODO mockReturnValueOnce?
       mockMsGraph.get.mockReturnValue({
         value: [{ id: userId }]
       })
+      // TODO mockResolvedValueOnce?
       mockMsGraph.delete.mockResolvedValue()
 
       const result = await invokeDeleteTeam(`/teams/${teamId}`)
@@ -121,7 +131,7 @@ describe('/teams/{teamId}', () => {
         statusCode: 200,
         statusMessage: 'OK'
       })
-
+      // TODO use endpoint to check if team has been deleted rather than querying db directly?
       const teams = await server.db.collection('teams').find({}).toArray()
       const users = await server.db.collection('users').find({}).toArray()
 
@@ -138,6 +148,7 @@ describe('/teams/{teamId}', () => {
 
   describe('When DB and AAD are out of sync', () => {
     test('Should complete DB user removal from team and DB user deletion', async () => {
+      // TODO can these be helpers/abstracted?
       const userId = crypto.randomUUID()
       const teamId = crypto.randomUUID()
       const mockUser = {
@@ -152,6 +163,7 @@ describe('/teams/{teamId}', () => {
         createdAt: new Date(),
         users: [userId]
       }
+      // TODO can these go in a beforeEach()?
       await server.db.collection('teams').insertOne(mockTeam)
       await server.db.collection('users').insertOne(mockUser)
 
@@ -173,6 +185,7 @@ describe('/teams/{teamId}', () => {
         statusCode: 200,
         statusMessage: 'OK'
       })
+      // TODO use endpoint to check if team has been deleted rather than querying db directly?
       const teams = await server.db.collection('teams').find({}).toArray()
       const users = await server.db.collection('users').find({}).toArray()
 

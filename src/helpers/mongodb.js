@@ -13,8 +13,12 @@ const mongoPlugin = {
         readPreference: 'secondary',
         ...(server.secureContext && { secureContext: server.secureContext })
       }
-
       const mongoUrl = config.get('mongoUri')
+
+      console.log(mongoUrl, '---------------------------')
+      console.log(globalThis.__MONGO_DB_NAME__, '+++++++++++++++++++++++++++')
+      console.log(globalThis.__MONGO_URI__, '+++++++++++++++++++++++++++')
+
       const databaseName = config.get('mongoDatabase')
 
       server.logger.info('Setting up mongodb')

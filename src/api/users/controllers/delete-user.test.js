@@ -1,11 +1,13 @@
+import { Client } from '@microsoft/microsoft-graph-client'
+
 import { config } from '~/src/config/index.js'
 import { createServer } from '~/src/api/server.js'
-import { Client } from '@microsoft/microsoft-graph-client'
 
 jest.mock('@microsoft/microsoft-graph-client')
 jest.mock('@azure/identity')
 
 describe('/users/{userId}', () => {
+  // TODO move these to fixtures?
   const mockUser = {
     _id: '2fdc6295-b3e5-409e-846a-2ec237f20977',
     name: 'Tetsuo Shima',
@@ -48,6 +50,7 @@ describe('/users/{userId}', () => {
     }
     Client.initWithMiddleware = () => mockMsGraph
 
+    // Initialize sever
     server = await createServer()
     await server.initialize()
   })
@@ -58,11 +61,13 @@ describe('/users/{userId}', () => {
   })
 
   afterEach(async () => {
+    // Clear down collections
     await server.db.collection('users').deleteMany({})
     await server.db.collection('teams').deleteMany({})
   })
 
   afterAll(async () => {
+    // Shutdown mongo client and server
     await server.mongoClient.close()
     await server.stop({ timeout: 0 })
   })

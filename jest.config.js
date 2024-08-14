@@ -4,7 +4,7 @@ export default {
   verbose: true,
   resetModules: true,
   clearMocks: true,
-  silent: process.env.NODE_ENV !== 'development',
+  silent: false,
   preset: '@shelf/jest-mongodb',
   testMatch: ['**/src/**/*.test.js'],
   reporters: ['default', ['github-actions', { silent: false }], 'summary'],
