@@ -1,6 +1,5 @@
 module.exports = {
   rootDir: '.',
-  testEnvironment: 'node',
   verbose: true,
   resetModules: true,
   clearMocks: true,
@@ -8,6 +7,7 @@ module.exports = {
   preset: '@shelf/jest-mongodb',
   testMatch: ['**/src/**/*.test.js'],
   reporters: ['default', ['github-actions', { silent: false }], 'summary'],
+  setupFilesAfterEnv: ['<rootDir>/.jest/setup-file-after-env.js'],
   collectCoverageFrom: ['src/**/*.js'],
   coveragePathIgnorePatterns: [
     '<rootDir>/node_modules/',

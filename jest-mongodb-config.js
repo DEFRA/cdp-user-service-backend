@@ -8,5 +8,6 @@ module.exports = {
       dbName: 'cdp-user-service-backend'
     }
   },
-  mongoURLEnvName: 'MONGO_URI'
+  mongoURLEnvName: 'MONGO_URI',
+  useSharedDBForAllJestWorkers: false
 }
