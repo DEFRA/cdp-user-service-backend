@@ -10,14 +10,14 @@ const octokitPlugin = {
     name: 'octokit',
     version: '1.0.0',
     register: async function (server) {
-      const gitHubAppId = config.get('gitHubAppId')
-      const gitHubAppPrivateKey = config.get('gitHubAppPrivateKey')
-      const gitHubAppInstallationId = config.get('gitHubAppInstallationId')
+      const gitHubAppId = config.gitHubAppId
+      const gitHubAppPrivateKey = config.gitHubAppPrivateKey
+      const gitHubAppInstallationId = config.gitHubAppInstallationId
 
       server.logger.info('Setting up octokit')
 
       const cfg =
-        config.get('gitHubBaseUrl') == null
+        config.gitHubBaseUrl == null
           ? {
               authStrategy: createAppAuth,
               auth: {
@@ -30,7 +30,7 @@ const octokitPlugin = {
           : {
               // Test Mode, for use with cdp-portal-stubs
               auth: 'test-value',
-              baseUrl: config.get('gitHubBaseUrl')
+              baseUrl: config.gitHubBaseUrl
             }
 
       const OctokitExtra = Octokit.plugin(paginateGraphql)

@@ -5,7 +5,7 @@ import { HttpsProxyAgent } from 'https-proxy-agent'
 import { config } from '~/src/config'
 import { createLogger } from '~/src/helpers/logging/logger'
 
-const proxyUrlConfig = config.get('httpsProxy') ?? config.get('httpProxy')
+const proxyUrlConfig = config.httpsProxy
 const logger = createLogger()
 
 /**
@@ -43,7 +43,7 @@ function provideProxy(proxyUrl = proxyUrlConfig) {
  * @param options
  * @returns {Promise}
  */
-function proxyFetch(url, options) {
+function proxyFetch(url, options = {}) {
   const proxy = provideProxy()
 
   if (!proxy) {

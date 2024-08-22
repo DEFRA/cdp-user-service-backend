@@ -73,7 +73,7 @@ describe('/users/{userId}', () => {
       auth: {
         strategy: 'azure-oidc',
         credentials: {
-          scope: [config.get('oidcAdminGroupId')]
+          scope: [config.oidcAdminGroupId]
         }
       }
     })

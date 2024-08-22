@@ -186,7 +186,7 @@ const config = convict({
     env: 'CDP_HTTPS_PROXY'
   }
 })
-
-config.validate({ allowed: 'strict' })
+  .validate({ allowed: 'strict' })
+  .getProperties()
 
 export { config }

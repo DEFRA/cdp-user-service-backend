@@ -9,7 +9,7 @@ const azureOidc = {
     register: async (server) => {
       await server.register(jwt)
 
-      const oidc = await proxyFetch(config.get('oidcWellKnownConfigurationUrl'))
+      const oidc = await proxyFetch(config.oidcWellKnownConfigurationUrl)
         .then((response) => response.json())
         .catch((error) => server.logger.error(error))
 
@@ -18,7 +18,7 @@ const azureOidc = {
           uri: oidc.jwks_uri
         },
         verify: {
-          aud: config.get('oidcAudience'),
+          aud: config.oidcAudience,
           iss: oidc.issuer,
           sub: false,
           nbf: true,

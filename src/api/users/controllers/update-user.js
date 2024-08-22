@@ -12,12 +12,12 @@ import { requireLock } from '~/src/helpers/mongo-lock'
 const updateUserController = {
   options: {
     validate: {
-      payload: updateUserValidationSchema(config.get('isProduction'))
+      payload: updateUserValidationSchema(config.isProduction)
     },
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: [config.get('oidcAdminGroupId'), '{params.userId}']
+        scope: [config.oidcAdminGroupId, '{params.userId}']
       }
     }
   },
