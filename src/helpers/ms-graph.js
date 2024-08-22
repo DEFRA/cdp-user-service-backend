@@ -10,10 +10,10 @@ const msGraphPlugin = {
     name: 'ms-graph',
     version: '1.0.0',
     register: async function (server) {
-      const azureTenantId = config.get('azureTenantId')
-      const azureClientId = config.get('azureClientId')
-      const azureClientSecret = config.get('azureClientSecret')
-      const azureClientBaseUrl = config.get('azureClientBaseUrl')
+      const azureTenantId = config.azureTenantId
+      const azureClientId = config.azureClientId
+      const azureClientSecret = config.azureClientSecret
+      const azureClientBaseUrl = config.azureClientBaseUrl
 
       server.logger.info('Setting up ms-graph')
 

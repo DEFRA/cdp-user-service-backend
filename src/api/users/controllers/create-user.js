@@ -15,7 +15,7 @@ const createUserController = {
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: [config.get('oidcAdminGroupId')]
+        scope: [config.oidcAdminGroupId]
       }
     }
   },

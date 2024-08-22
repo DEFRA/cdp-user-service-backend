@@ -14,13 +14,13 @@ import { setupWreckAgents } from '~/src/helpers/setup-wreck-agents'
 import { provideProxy } from '~/src/helpers/proxy'
 import { pulse } from '~/src/helpers/pulse'
 
-const isProduction = config.get('isProduction')
+const isProduction = config.isProduction
 
 async function createServer() {
   setupWreckAgents(provideProxy())
 
   const server = hapi.server({
-    port: config.get('port'),
+    port: config.port,
     routes: {
       validate: {
         options: {
@@ -29,7 +29,7 @@ async function createServer() {
         failAction
       },
       files: {
-        relativeTo: path.resolve(config.get('root'), '.public')
+        relativeTo: path.resolve(config.root, '.public')
       },
       security: {
         hsts: {

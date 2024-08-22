@@ -13,9 +13,7 @@ async function createTeam(msGraph, db, dbTeam) {
     mailNickname: mailNicknameFromGroupName(groupName),
     securityEnabled: true,
     'owners@odata.bind': [
-      `https://graph.microsoft.com/v1.0/servicePrincipals/${config.get(
-        'azureServicePrincipalId'
-      )}`
+      `https://graph.microsoft.com/v1.0/servicePrincipals/${config.azureServicePrincipalId}`
     ]
   })
   const newTeam = {

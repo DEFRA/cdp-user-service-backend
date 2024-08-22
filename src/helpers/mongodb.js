@@ -37,8 +37,8 @@ const mongoPlugin = {
     }
   },
   options: {
-    mongoUrl: config.get('mongoUri'),
-    databaseName: config.get('mongoDatabase'),
+    mongoUrl: config.mongoUri,
+    databaseName: config.mongoDatabase,
     mongoOptions: {
       retryWrites: false,
       readPreference: 'secondary'

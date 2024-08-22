@@ -1,7 +1,7 @@
 import { config } from '~/src/config'
 
 async function gitHubTeamExists(octokit, github) {
-  const org = config.get('gitHubOrg')
+  const org = config.gitHubOrg
   const teamExistsInOrgQuery = `
   query teamExistsInOrg($team: String!, $orgName: String!) {
     organization(login: $orgName) {

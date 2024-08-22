@@ -1,7 +1,7 @@
 import { config } from '~/src/config'
 
 function groupNameFromTeamName(teamName) {
-  const groupPrefix = config.get('azureGroupPrefix')
+  const groupPrefix = config.azureGroupPrefix
   return `${groupPrefix}${teamName.toUpperCase()}`
 }
 

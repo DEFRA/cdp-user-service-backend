@@ -22,7 +22,7 @@ const updateTeamController = {
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: [config.get('oidcAdminGroupId'), '{params.teamId}']
+        scope: [config.oidcAdminGroupId, '{params.teamId}']
       }
     }
   },
