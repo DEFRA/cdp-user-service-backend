@@ -9,7 +9,10 @@ const azureOidc = {
     register: async (server) => {
       await server.register(jwt)
 
-      const oidc = await proxyFetch(config.get('oidcWellKnownConfigurationUrl'))
+      const oidc = await proxyFetch(
+        config.get('oidcWellKnownConfigurationUrl'),
+        {}
+      )
         .then((response) => response.json())
         .catch((error) => server.logger.error(error))
 
@@ -26,7 +29,7 @@ const azureOidc = {
           maxAgeSec: 5400, // 90 minutes
           timeSkewSec: 15
         },
-        validate: (artifacts, request, h) => {
+        validate: (artifacts) => {
           const payload = artifacts.decoded.payload
           return {
             isValid: true,

@@ -9,29 +9,28 @@ const octokitPlugin = {
   plugin: {
     name: 'octokit',
     version: '1.0.0',
-    register: async function (server) {
+    register: (server) => {
       const gitHubAppId = config.get('gitHubAppId')
       const gitHubAppPrivateKey = config.get('gitHubAppPrivateKey')
       const gitHubAppInstallationId = config.get('gitHubAppInstallationId')
 
       server.logger.info('Setting up octokit')
 
-      const cfg =
-        config.get('gitHubBaseUrl') == null
-          ? {
-              authStrategy: createAppAuth,
-              auth: {
-                appId: gitHubAppId,
-                privateKey: Buffer.from(gitHubAppPrivateKey, 'base64'),
-                installationId: gitHubAppInstallationId
-              },
-              request: { fetch: proxyFetch }
-            }
-          : {
-              // Test Mode, for use with cdp-portal-stubs
-              auth: 'test-value',
-              baseUrl: config.get('gitHubBaseUrl')
-            }
+      const cfg = config.get('gitHubBaseUrl')
+        ? {
+            authStrategy: createAppAuth,
+            auth: {
+              appId: gitHubAppId,
+              privateKey: Buffer.from(gitHubAppPrivateKey, 'base64'),
+              installationId: gitHubAppInstallationId
+            },
+            request: { fetch: proxyFetch }
+          }
+        : {
+            // Test Mode, for use with cdp-portal-stubs
+            auth: 'test-value',
+            baseUrl: config.get('gitHubBaseUrl')
+          }
 
       const OctokitExtra = Octokit.plugin(paginateGraphql)
       const octokit = new OctokitExtra(cfg)

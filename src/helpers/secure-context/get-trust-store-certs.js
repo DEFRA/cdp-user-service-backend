@@ -1,6 +1,5 @@
 /**
  * Get base64 certs from all environment variables starting with TRUSTSTORE_
- *
  * @param envs
  * @returns {string[]}
  */

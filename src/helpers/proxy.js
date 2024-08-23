@@ -9,10 +9,9 @@ const proxyUrlConfig = config.get('httpsProxy') ?? config.get('httpProxy')
 const logger = createLogger()
 
 /**
- * Provide proxy agent detail when http/s proxy url config has been set
  *
  * @param proxyUrl
- * @returns {{proxyAgent: ProxyAgent, port: (number), httpAndHttpsProxyAgent: HttpsProxyAgent<string>, url: module:url.URL}|null}
+ * @returns {{proxyAgent: ProxyAgent, port: (number), httpAndHttpsProxyAgent: HttpsProxyAgent<string>, url: URL}|null}
  */
 function provideProxy(proxyUrl = proxyUrlConfig) {
   if (proxyUrl) {
@@ -38,7 +37,6 @@ function provideProxy(proxyUrl = proxyUrlConfig) {
 
 /**
  * Provide Node.js fetch with dispatcher ProxyAgent when http/s proxy url config has been set
- *
  * @param url
  * @param options
  * @returns {Promise}
@@ -51,7 +49,7 @@ function proxyFetch(url, options) {
   }
 
   logger.debug(
-    `Fetching: ${url} via the proxy: ${proxy.url.origin}:${proxy.port}`
+    `Fetching: ${url} via the proxy: ${proxy?.url.origin}:${proxy.port}`
   )
 
   return fetch(url, {

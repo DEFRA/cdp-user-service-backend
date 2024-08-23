@@ -30,9 +30,9 @@ const mongoPlugin = {
 
       server.decorate('request', 'locker', locker)
 
-      server.events.on('stop', () => {
+      server.events.on('stop', async () => {
         server.logger.info(`Closing Mongo client`)
-        client.close(true)
+        await client.close(true)
       })
     }
   },

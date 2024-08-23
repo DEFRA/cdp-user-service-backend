@@ -22,8 +22,6 @@ describe('/teams/{teamId}', () => {
     await server.initialize()
   })
 
-  beforeEach(async () => {})
-
   afterEach(async () => {
     await server.db.collection('users').deleteMany({})
     await server.db.collection('teams').deleteMany({})

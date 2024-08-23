@@ -9,7 +9,7 @@ import { getGitHubUsersController } from '~/src/api/users/controllers/get-github
 const users = {
   plugin: {
     name: 'users',
-    register: async (server) => {
+    register: (server) => {
       server.route([
         {
           method: 'GET',

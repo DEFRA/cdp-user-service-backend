@@ -4,7 +4,6 @@ import { createLogger } from '~/src/helpers/logging/logger.js'
 
 /**
  * Provide Wreck http client agents when http/s proxy url config has been set
- *
  * @param proxy
  */
 function setupWreckAgents(proxy) {

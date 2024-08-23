@@ -1,6 +1,6 @@
-import lodash from 'lodash'
-
-const { isArray, isNull, isUndefined } = lodash
+import isArray from 'lodash/isArray.js'
+import isNull from 'lodash/isNull.js'
+import isUndefined from 'lodash/isUndefined.js'
 
 function buildUpdateFields(existingEntity, updatedEntity, fields) {
   if (isNull(existingEntity) || isNull(updatedEntity) || !isArray(fields)) {

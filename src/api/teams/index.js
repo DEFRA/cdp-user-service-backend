@@ -11,7 +11,7 @@ import { updateTeamController } from '~/src/api/teams/controllers/update-team.js
 const teams = {
   plugin: {
     name: 'teams',
-    register: async (server) => {
+    register: (server) => {
       server.route([
         {
           method: 'GET',
