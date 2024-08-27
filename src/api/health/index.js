@@ -1,9 +1,9 @@
-import { healthController } from '~/src/api/health/controller'
+import { healthController } from '~/src/api/health/controller.js'
 
 const health = {
   plugin: {
     name: 'health',
-    register: async (server) => {
+    register: (server) => {
       server.route({
         method: 'GET',
         path: '/health',

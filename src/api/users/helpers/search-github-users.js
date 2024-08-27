@@ -1,4 +1,4 @@
-import { config } from '~/src/config'
+import { config } from '~/src/config/index.js'
 
 async function searchGitHubUsers(octokit, query) {
   const org = config.get('gitHubOrg')

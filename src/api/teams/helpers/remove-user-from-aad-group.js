@@ -1,7 +1,6 @@
 /**
  * User service could be out of sync with AAD.
  * To avoid aborting the parent operation guard against group and/or user no longer existing in AAD.
- *
  * @param msGraph
  * @param teamId
  * @param userId

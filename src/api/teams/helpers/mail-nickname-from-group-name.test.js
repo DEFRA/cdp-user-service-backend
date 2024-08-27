@@ -1,15 +1,15 @@
-import { mailNicknameFromGroupName } from '~/src/api/teams/helpers/mail-nickname-from-group-name'
+import { mailNicknameFromGroupName } from '~/src/api/teams/helpers/mail-nickname-from-group-name.js'
 
 describe('#mailNicknameFromGroupName', () => {
   it('should remove non-ASCII characters', () => {
-    expect(mailNicknameFromGroupName('TeamA💪🏻')).toEqual('TeamA')
+    expect(mailNicknameFromGroupName('TeamA💪🏻')).toBe('TeamA')
   })
 
   it('should replace spaces with underscores', () => {
-    expect(mailNicknameFromGroupName('Team A 💪🏻')).toEqual('Team_A')
+    expect(mailNicknameFromGroupName('Team A 💪🏻')).toBe('Team_A')
   })
 
   it('should replace invalid characters', () => {
-    expect(mailNicknameFromGroupName('T[e]a;(m) @A 💪🏻')).toEqual('Team_A')
+    expect(mailNicknameFromGroupName('T[e]a;(m) @A 💪🏻')).toBe('Team_A')
   })
 })

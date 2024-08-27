@@ -1,7 +1,7 @@
 import Joi from 'joi'
 
-import { addSharedRepoAccess } from '~/src/api/teams/helpers/github/github-shared-repo-access'
-import { gitHubTeamExists } from '~/src/api/teams/helpers/github/github-team-exists'
+import { addSharedRepoAccess } from '~/src/api/teams/helpers/github/github-shared-repo-access.js'
+import { gitHubTeamExists } from '~/src/api/teams/helpers/github/github-team-exists.js'
 
 const addTeamToSharedReposController = {
   options: {

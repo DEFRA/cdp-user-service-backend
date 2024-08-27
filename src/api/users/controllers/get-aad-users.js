@@ -1,6 +1,6 @@
 import Joi from 'joi'
 
-import { searchAadUsers } from '~/src/api/users/helpers/search-aad-users'
+import { searchAadUsers } from '~/src/api/users/helpers/search-aad-users.js'
 
 const getAadUsersController = {
   options: {

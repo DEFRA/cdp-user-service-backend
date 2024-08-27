@@ -1,9 +1,9 @@
 import Joi from 'joi'
 import Boom from '@hapi/boom'
 
-import { config } from '~/src/config'
-import { deleteUser } from '~/src/api/helpers/mongo/transactions/delete-transactions'
-import { removeUserFromAadGroup } from '~/src/api/teams/helpers/remove-user-from-aad-group'
+import { config } from '~/src/config/index.js'
+import { deleteUser } from '~/src/api/helpers/mongo/transactions/delete-transactions.js'
+import { removeUserFromAadGroup } from '~/src/api/teams/helpers/remove-user-from-aad-group.js'
 
 const deleteUserController = {
   options: {

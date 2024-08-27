@@ -1,15 +1,15 @@
 import { ClientSecretCredential } from '@azure/identity'
 import { Client } from '@microsoft/microsoft-graph-client'
-import { TokenCredentialAuthenticationProvider } from '@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials'
+import { TokenCredentialAuthenticationProvider } from '@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials/index.js'
 
-import { config } from '~/src/config'
-import { provideProxy } from '~/src/helpers/proxy'
+import { config } from '~/src/config/index.js'
+import { provideProxy } from '~/src/helpers/proxy.js'
 
 const msGraphPlugin = {
   plugin: {
     name: 'ms-graph',
     version: '1.0.0',
-    register: async function (server) {
+    register: (server) => {
       const azureTenantId = config.get('azureTenantId')
       const azureClientId = config.get('azureClientId')
       const azureClientSecret = config.get('azureClientSecret')
@@ -49,6 +49,7 @@ const msGraphPlugin = {
         baseUrl: azureClientBaseUrl,
         ...(proxy && {
           fetchOptions: {
+            // @ts-expect-error This is not typed. See microsoftgraph/msgraph-sdk-javascript#1646 (comment)
             dispatcher: proxy.proxyAgent
           }
         })

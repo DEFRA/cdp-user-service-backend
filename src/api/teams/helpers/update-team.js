@@ -1,8 +1,9 @@
-import { isEmpty, isNull } from 'lodash'
+import isEmpty from 'lodash/isEmpty.js'
+import isNull from 'lodash/isNull.js'
 
-import { mailNicknameFromGroupName } from '~/src/api/teams/helpers/mail-nickname-from-group-name'
-import { groupNameFromTeamName } from '~/src/api/teams/helpers/group-name-from-team-name'
-import { getTeam } from '~/src/api/teams/helpers/mongo/get-team'
+import { mailNicknameFromGroupName } from '~/src/api/teams/helpers/mail-nickname-from-group-name.js'
+import { groupNameFromTeamName } from '~/src/api/teams/helpers/group-name-from-team-name.js'
+import { getTeam } from '~/src/api/teams/helpers/mongo/get-team.js'
 
 async function updateTeam(msGraph, db, teamId, updateFields) {
   const updateGroupFields = {}

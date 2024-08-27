@@ -1,11 +1,11 @@
 import Boom from '@hapi/boom'
 
-import { config } from '~/src/config'
-import { createUserValidationSchema } from '~/src/api/users/helpers/create-user-validation-schema'
-import { MongoErrors } from '~/src/helpers/mongodb-errors'
-import { aadUserIdExists } from '~/src/api/users/helpers/aad-user-id-exists'
-import { gitHubUserExists } from '~/src/api/users/helpers/github-user-exists'
-import { createUser } from '~/src/api/users/helpers/create-user'
+import { config } from '~/src/config/index.js'
+import { createUserValidationSchema } from '~/src/api/users/helpers/create-user-validation-schema.js'
+import { MongoErrors } from '~/src/helpers/mongodb-errors.js'
+import { aadUserIdExists } from '~/src/api/users/helpers/aad-user-id-exists.js'
+import { gitHubUserExists } from '~/src/api/users/helpers/github-user-exists.js'
+import { createUser } from '~/src/api/users/helpers/create-user.js'
 
 const createUserController = {
   options: {

@@ -1,4 +1,4 @@
-import { teamHasUser } from '~/src/api/teams/helpers/team-has-user'
+import { teamHasUser } from '~/src/api/teams/helpers/team-has-user.js'
 
 describe('#teamHasUser', () => {
   it('should return true if team has user and user has team', () => {
