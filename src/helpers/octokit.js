@@ -16,7 +16,7 @@ const octokitPlugin = {
 
       server.logger.info('Setting up octokit')
 
-      const cfg = config.get('gitHubBaseUrl')
+      const cfg = !config.get('gitHubBaseUrl')
         ? {
             authStrategy: createAppAuth,
             auth: {
