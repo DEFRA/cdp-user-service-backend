@@ -5,40 +5,48 @@ import { HttpsProxyAgent } from 'https-proxy-agent'
 import { config } from '~/src/config/index.js'
 import { createLogger } from '~/src/helpers/logging/logger.js'
 
-const proxyUrlConfig = config.get('httpsProxy') ?? config.get('httpProxy')
 const logger = createLogger()
 
 /**
- *
- * @param proxyUrl
- * @returns {{proxyAgent: ProxyAgent, port: (number), httpAndHttpsProxyAgent: HttpsProxyAgent<string>, url: URL}|null}
+ * @typedef Proxy
+ * @property {URL} url
+ * @property {number} port
+ * @property {ProxyAgent} proxyAgent
+ * @property {HttpsProxyAgent<string>} httpAndHttpsProxyAgent
  */
-function provideProxy(proxyUrl = proxyUrlConfig) {
-  if (proxyUrl) {
-    const url = new URL(proxyUrl)
-    const port = url.protocol.toLowerCase() === 'http' ? 80 : 443
-
-    logger.debug(`Proxy set up using ${url.origin}:${port}`)
-
-    return {
-      url,
-      port,
-      proxyAgent: new ProxyAgent({
-        uri: proxyUrl,
-        keepAliveTimeout: 10,
-        keepAliveMaxTimeout: 10
-      }),
-      httpAndHttpsProxyAgent: new HttpsProxyAgent(url)
-    }
-  }
-
-  return null
-}
 
 /**
- * Provide Node.js fetch with dispatcher ProxyAgent when http/s proxy url config has been set
- * @param url
- * @param options
+ * Provide ProxyAgent and HttpsProxyAgent when http/s proxy url config has been set
+ * @returns {Proxy|null}
+ */
+function provideProxy() {
+  const proxyUrl = config.get('httpsProxy') ?? config.get('httpProxy')
+
+  if (!proxyUrl) {
+    return null
+  }
+
+  const url = new URL(proxyUrl)
+  // The url.protocol value always has a colon at the end
+  const port = url.protocol.toLowerCase() === 'http:' ? 80 : 443
+
+  logger.debug(`Proxy set up using ${url.origin}:${port}`)
+
+  return {
+    url,
+    port,
+    proxyAgent: new ProxyAgent({
+      uri: proxyUrl,
+      keepAliveTimeout: 10,
+      keepAliveMaxTimeout: 10
+    }),
+    httpAndHttpsProxyAgent: new HttpsProxyAgent(url)
+  }
+}
+/**
+ * Provide fetch with dispatcher ProxyAgent when http/s proxy url config has been set
+ * @param {string | URL } url
+ * @param {RequestInit} options
  * @returns {Promise}
  */
 function proxyFetch(url, options) {
@@ -49,11 +57,12 @@ function proxyFetch(url, options) {
   }
 
   logger.debug(
-    `Fetching: ${url} via the proxy: ${proxy?.url.origin}:${proxy.port}`
+    `Fetching: ${url.toString()} via the proxy: ${proxy?.url.origin}:${proxy.port}`
   )
 
   return fetch(url, {
     ...options,
+    // @ts-expect-error dispatcher has not been added to types
     dispatcher: proxy.proxyAgent
   })
 }
