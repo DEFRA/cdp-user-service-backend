@@ -2,17 +2,12 @@ import isNil from 'lodash/isNil.js'
 
 async function getTeams(db, queryParams) {
   const stages = []
-  const query = queryParams?.query
+  const name = queryParams?.name
   const hasGithub = queryParams?.hasGithub
 
-  if (!isNil(query)) {
+  if (!isNil(name)) {
     stages.push({
-      $match: {
-        $or: [
-          { name: { $regex: query, $options: 'i' } },
-          { description: { $regex: query, $options: 'i' } }
-        ]
-      }
+      $match: { name }
     })
   }
 
@@ -44,6 +39,7 @@ async function getTeams(db, queryParams) {
       description: 1,
       github: 1,
       serviceCodes: 1,
+      alertEmailAddresses: 1,
       users: {
         $map: {
           input: '$users',
