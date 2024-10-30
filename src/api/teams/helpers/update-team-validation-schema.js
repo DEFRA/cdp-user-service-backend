@@ -13,7 +13,8 @@ const updateTeamValidationSchema = Joi.object({
         .max(3)
         .regex(/^[A-Z]+$/)
     )
-    .optional()
+    .optional(),
+  alertEmailAddresses: Joi.array().items(Joi.string().email()).optional()
 })
 
 export { updateTeamValidationSchema }
