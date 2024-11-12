@@ -4,10 +4,11 @@ export default {
   resetModules: true,
   clearMocks: true,
   silent: false,
+  watchPathIgnorePatterns: ['globalConfig'],
   preset: '@shelf/jest-mongodb',
   testMatch: ['**/src/**/*.test.js'],
   reporters: ['default', ['github-actions', { silent: false }], 'summary'],
-  setupFilesAfterEnv: ['<rootDir>/.jest/setup-file-after-env.js'],
+  setupFilesAfterEnv: ['<rootDir>/.jest/setup.js'],
   collectCoverageFrom: ['src/**/*.js'],
   coveragePathIgnorePatterns: [
     '<rootDir>/node_modules/',
