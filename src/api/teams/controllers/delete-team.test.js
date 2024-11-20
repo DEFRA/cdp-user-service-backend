@@ -1,6 +1,9 @@
+import fetchMock from 'jest-fetch-mock'
+
 import { config } from '~/src/config/index.js'
 import { createServer } from '~/src/api/server.js'
 import { Client } from '@microsoft/microsoft-graph-client'
+import { wellKnownResponseFixture } from '~/src/__fixtures__/well-known.js'
 
 jest.mock('@microsoft/microsoft-graph-client')
 jest.mock('@azure/identity')
@@ -10,6 +13,9 @@ describe('/teams/{teamId}', () => {
   let mockMsGraph
 
   beforeAll(async () => {
+    fetchMock.enableMocks()
+    fetch.mockResponse(JSON.stringify(wellKnownResponseFixture))
+
     // Mock MsGraph client
     mockMsGraph = {
       api: jest.fn().mockReturnThis(),
@@ -28,6 +34,7 @@ describe('/teams/{teamId}', () => {
   })
 
   afterAll(async () => {
+    fetchMock.disableMocks()
     await server.mongoClient.close()
     await server.stop({ timeout: 0 })
   })
