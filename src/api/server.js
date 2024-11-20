@@ -13,6 +13,7 @@ import { secureContext } from '~/src/helpers/secure-context/index.js'
 import { setupWreckAgents } from '~/src/helpers/setup-wreck-agents.js'
 import { provideProxy } from '~/src/helpers/proxy.js'
 import { pulse } from '~/src/helpers/pulse.js'
+import { tracing } from '~/src/helpers/tracing/tracing.js'
 
 const isProduction = config.get('isProduction')
 
@@ -47,7 +48,8 @@ async function createServer() {
     }
   })
 
-  await server.register(requestLogger)
+  // Add tracer and request logger before all other plugins
+  await server.register([tracing, requestLogger])
 
   if (isProduction) {
     await server.register(secureContext)
