@@ -53,13 +53,17 @@ function provideProxy() {
  */
 function proxyFetch(url, options) {
   const proxy = provideProxy()
+  const urlString = typeof url === 'string' ? url : url.toString()
 
   if (!proxy) {
+    logger.debug({ url: urlString }, 'Fetching data')
+
     return fetch(url, options)
   }
 
   logger.debug(
-    `Fetching: ${url.toString()} via the proxy: ${proxy?.url.origin}:${proxy.port}`
+    { url: urlString },
+    `Fetching data via the proxy: ${proxy?.url.origin}:${proxy.port}`
   )
 
   return fetch(url, {
