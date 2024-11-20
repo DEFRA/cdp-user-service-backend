@@ -1,8 +1,9 @@
+import { cwd } from 'node:process'
 import convict from 'convict'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 
-const dirname = path.dirname(fileURLToPath(import.meta.url))
+const isProduction = process.env.NODE_ENV === 'production'
+const isTest = process.env.NODE_ENV === 'test'
+const isDevelopment = process.env.NODE_ENV === 'development'
 
 const config = convict({
   env: {
@@ -17,36 +18,73 @@ const config = convict({
     default: 3001,
     env: 'PORT'
   },
-  serviceName: {
-    doc: 'Api Service Name',
-    format: String,
-    default: 'cdp-user-service-backend'
+  service: {
+    name: {
+      doc: 'Api Service Name',
+      format: String,
+      default: 'cdp-user-service-backend'
+    },
+    version: {
+      doc: 'The service version, this variable is injected into your docker container in CDP environments',
+      format: String,
+      nullable: true,
+      default: null,
+      env: 'SERVICE_VERSION'
+    },
+    environment: {
+      doc: 'The environment the app is running in',
+      format: String,
+      nullable: true,
+      default: null,
+      env: 'ENVIRONMENT'
+    }
   },
   root: {
     doc: 'Project root',
     format: String,
-    default: path.resolve(dirname, '../..')
+    default: cwd()
   },
   isProduction: {
     doc: 'If this application running in the production environment',
     format: Boolean,
-    default: process.env.NODE_ENV === 'production'
+    default: isProduction
   },
   isDevelopment: {
     doc: 'If this application running in the development environment',
     format: Boolean,
-    default: process.env.NODE_ENV !== 'production'
+    default: isDevelopment
   },
   isTest: {
     doc: 'If this application running in the test environment',
     format: Boolean,
-    default: process.env.NODE_ENV === 'test'
+    default: isTest
   },
-  logLevel: {
-    doc: 'Logging level',
-    format: ['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'],
-    default: 'info',
-    env: 'LOG_LEVEL'
+  log: {
+    enabled: {
+      doc: 'Is logging enabled',
+      format: Boolean,
+      default: !isTest,
+      env: 'LOG_ENABLED'
+    },
+    level: {
+      doc: 'Logging level',
+      format: ['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'],
+      default: isProduction ? 'info' : 'debug',
+      env: 'LOG_LEVEL'
+    },
+    format: {
+      doc: 'Format to output logs in.',
+      format: ['ecs', 'pino-pretty'],
+      default: isProduction ? 'ecs' : 'pino-pretty',
+      env: 'LOG_FORMAT'
+    },
+    redact: {
+      doc: 'Log paths to redact',
+      format: Array,
+      default: isProduction
+        ? ['req.headers.authorization', 'req.headers.cookie', 'res.headers']
+        : ['req', 'res', 'responseTime']
+    }
   },
   mongoUri: {
     doc: 'URI for mongodb',
