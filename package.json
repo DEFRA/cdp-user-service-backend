@@ -23,7 +23,7 @@
     "test": "TZ=UTC jest --coverage --verbose --runInBand",
     "test:watch": "TZ=UTC jest --watch",
     "server:watch": "nodemon --exec tsx --enable-source-maps ./src",
-    "server:debug": "nodemon --exec tsx --enable-source-maps --inspect ./src",
+    "server:debug": "nodemon --exec tsx --enable-source-maps --inspect=9249 ./src",
     "prestart": "npm run build",
     "start": "NODE_ENV=production node --use-strict .",
     "setup:husky": "node -e \"try { (await import('husky')).default() } catch (e) { if (e.code !== 'ERR_MODULE_NOT_FOUND') throw e }\" --input-type module"
