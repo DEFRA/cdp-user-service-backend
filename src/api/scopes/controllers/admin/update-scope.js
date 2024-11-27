@@ -1,0 +1,35 @@
+import Joi from '~/src/helpers/extended-joi.js'
+
+import { config } from '~/src/config/index.js'
+import { updateScope } from '~/src/api/scopes/helpers/mongo/update-scope.js'
+
+const adminUpdateScopeController = {
+  options: {
+    validate: {
+      params: Joi.object({
+        scopeId: Joi.objectId().required()
+      }),
+      payload: Joi.object({
+        description: Joi.string().optional().max(256)
+      })
+    },
+    auth: {
+      strategy: 'azure-oidc',
+      access: {
+        scope: [config.get('oidcAdminGroupId')]
+      }
+    }
+  },
+  handler: async (request, h) => {
+    const payload = request.payload
+    const params = request.params
+
+    const scope = await updateScope(request.db, params.scopeId, {
+      description: payload.description
+    })
+
+    return h.response({ message: 'success', scope }).code(200)
+  }
+}
+
+export { adminUpdateScopeController }

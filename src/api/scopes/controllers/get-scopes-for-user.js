@@ -1,5 +1,5 @@
-import { getTeams } from '~/src/api/teams/helpers/mongo/get-teams.js'
 import { config } from '~/src/config/index.js'
+import { getTeams } from '~/src/api/teams/helpers/mongo/get-teams.js'
 
 function isUserInAServiceTeam(teamIds, userGroups) {
   return userGroups
