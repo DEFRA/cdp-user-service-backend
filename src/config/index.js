@@ -183,7 +183,7 @@ const config = convict({
     doc: 'Override the github base url for local testing',
     format: String,
     env: 'GITHUB_BASE_URL',
-    default: 'http://localhost:3939'
+    default: ''
   },
   oidcKeysUrl: {
     doc: 'Url to the oidc JWT keys endpoint',
