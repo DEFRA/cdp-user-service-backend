@@ -140,7 +140,7 @@ const config = convict({
     format: String,
     env: 'OIDC_WELL_KNOWN_CONFIGURATION_URL',
     default:
-      'https://login.microsoftonline.com/6f504113-6b64-43f2-ade9-242e05780007/v2.0/.well-known/openid-configuration'
+      'http://cdp.127.0.0.1.sslip.io:3939/63983fc2-cfff-45bb-8ec2-959e21062b9a/v2.0/.well-known/openid-configuration'
   },
   oidcAudience: {
     doc: 'OIDC Audience for verification',
@@ -183,7 +183,7 @@ const config = convict({
     doc: 'Override the github base url for local testing',
     format: String,
     env: 'GITHUB_BASE_URL',
-    default: ''
+    default: 'http://localhost:3939'
   },
   oidcKeysUrl: {
     doc: 'Url to the oidc JWT keys endpoint',
