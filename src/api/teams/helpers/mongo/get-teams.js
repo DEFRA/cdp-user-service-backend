@@ -40,6 +40,7 @@ async function getTeams(db, queryParams) {
       github: 1,
       serviceCodes: 1,
       alertEmailAddresses: 1,
+      customGroups: 1,
       users: {
         $map: {
           input: '$users',
