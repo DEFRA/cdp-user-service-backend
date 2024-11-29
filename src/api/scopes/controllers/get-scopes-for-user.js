@@ -15,14 +15,18 @@ const getScopesForUserController = {
   },
   handler: async (request, h) => {
     const jwtScopes = request.auth.credentials.scope
-    const teamsWithGithub = await getTeams(request.db, request.query)
-    const teamIds = teamsWithGithub?.map((team) => team.teamId)
-    const teamScopes = teamsWithGithub
+    const allTeamsWithGithub = await getTeams(request.db, request.query)
+    const allTeamIds = allTeamsWithGithub?.map((team) => team.teamId)
+
+    const scopes = jwtScopes
+      .slice()
+      .filter((group) => allTeamIds.includes(group))
+
+    const teamScopes = allTeamsWithGithub
+      .filter((team) => scopes.includes(team.teamId))
       .map((team) => team.scopes)
       .flat()
       .filter(Boolean)
-
-    const scopes = jwtScopes.slice().filter((group) => teamIds.includes(group))
 
     scopes.push(...teamScopes)
 
@@ -31,7 +35,7 @@ const getScopesForUserController = {
       scopes.push('admin')
     }
 
-    const isTenant = isUserInAServiceTeam(teamIds, scopes)
+    const isTenant = isUserInAServiceTeam(allTeamIds, scopes)
     if (isTenant) {
       scopes.push('tenant')
     }
