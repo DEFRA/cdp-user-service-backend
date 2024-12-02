@@ -1,7 +1,8 @@
-import { getTeam } from '~/src/api/teams/helpers/mongo/get-team.js'
 import Boom from '@hapi/boom'
+
+import { getTeam } from '~/src/api/teams/helpers/mongo/get-team.js'
 import { getUser } from '~/src/api/users/helpers/get-user.js'
-import { withMongoTransaction } from '~/src/api/helpers/mongo/transactions/with-mongo-transaction.js'
+import { withMongoTransaction } from '~/src/helpers/mongo/transactions/with-mongo-transaction.js'
 
 async function removeTeamFromUserDb(db, userId, teamId) {
   return await db.collection('users').findOneAndUpdate(

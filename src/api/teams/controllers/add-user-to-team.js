@@ -4,7 +4,7 @@ import { config } from '~/src/config/index.js'
 import { getTeam } from '~/src/api/teams/helpers/mongo/get-team.js'
 import { getUser } from '~/src/api/users/helpers/get-user.js'
 import { teamHasUser } from '~/src/api/teams/helpers/team-has-user.js'
-import { addUserToTeam } from '~/src/api/helpers/mongo/transactions/add-user-to-team.js'
+import { addUserToTeam } from '~/src/helpers/mongo/transactions/add-user-to-team.js'
 
 const addUserToTeamController = {
   options: {
