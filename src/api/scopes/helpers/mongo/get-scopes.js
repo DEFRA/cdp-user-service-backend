@@ -1,7 +1,21 @@
 async function getScopes(db) {
   return await db
     .collection('scopes')
-    .find({}, { sort: { name: 1 } })
+    .find(
+      {},
+      {
+        sort: { value: 1 },
+        projection: {
+          _id: 0,
+          scopeId: '$_id',
+          value: 1,
+          description: 1,
+          teams: 1,
+          createdAt: 1,
+          updatedAt: 1
+        }
+      }
+    )
     .toArray()
 }
 

@@ -4,7 +4,9 @@ import {
   adminCreateScopeController,
   adminUpdateScopeController,
   adminDeleteScopeController,
-  getScopesForUserController
+  adminAddScopeToTeamController,
+  getScopesForUserController,
+  adminRemoveScopeFromTeamController
 } from '~/src/api/scopes/controllers/index.js'
 
 const scopes = {
@@ -12,6 +14,11 @@ const scopes = {
     name: 'scopes',
     register: (server) => {
       server.route([
+        {
+          method: 'GET',
+          path: '/scopes',
+          ...getScopesForUserController
+        },
         {
           method: 'GET',
           path: '/scopes/admin',
@@ -38,9 +45,14 @@ const scopes = {
           ...adminDeleteScopeController
         },
         {
-          method: 'GET',
-          path: '/scopes',
-          ...getScopesForUserController
+          method: 'PATCH',
+          path: '/scopes/admin/{scopeId}/add/{teamId}',
+          ...adminAddScopeToTeamController
+        },
+        {
+          method: 'PATCH',
+          path: '/scopes/admin/{scopeId}/remove/{teamId}',
+          ...adminRemoveScopeFromTeamController
         }
       ])
     }
