@@ -1,6 +1,7 @@
 import { ObjectId } from 'mongodb'
 
 import { withMongoTransaction } from '~/src/helpers/mongo/transactions/with-mongo-transaction.js'
+import { removeTeamFromScope } from '~/src/helpers/mongo/transactions/remove-team-from-scope.js'
 
 async function removeScopeFromTeam(request, teamId, scopeId) {
   const db = request.db
@@ -17,12 +18,7 @@ async function removeScopeFromTeam(request, teamId, scopeId) {
       }
     )
 
-    return await db
-      .collection('scopes')
-      .findOneAndUpdate(
-        { _id: new ObjectId(scopeId) },
-        { $pull: { teams: teamId }, $set: { updatedAt: new Date() } }
-      )
+    return await removeTeamFromScope(request, teamId, scopeId)
   })
 }
 
