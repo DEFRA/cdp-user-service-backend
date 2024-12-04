@@ -6,6 +6,7 @@ const getTeamsController = {
   options: {
     validate: {
       query: Joi.object({
+        query: Joi.string(),
         hasGithub: Joi.boolean(),
         name: Joi.string()
       })
