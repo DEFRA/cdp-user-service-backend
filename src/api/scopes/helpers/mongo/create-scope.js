@@ -4,6 +4,7 @@ import { getScope } from '~/src/api/scopes/helpers/mongo/get-scope.js'
 async function createScope(db, scope) {
   const newScope = {
     ...removeNil(scope),
+    teams: [],
     createdAt: new Date(),
     updatedAt: new Date()
   }

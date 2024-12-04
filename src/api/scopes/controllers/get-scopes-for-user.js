@@ -22,11 +22,13 @@ const getScopesForUserController = {
       .slice()
       .filter((group) => allTeamIds.includes(group))
 
-    const teamScopes = allTeamsWithGithub
-      .filter((team) => scopes.includes(team.teamId))
-      .map((team) => team.scopes)
-      .flat()
-      .filter(Boolean)
+    const teamScopes = new Set(
+      allTeamsWithGithub
+        .filter((team) => scopes.includes(team.teamId))
+        .map((team) => team.scopes.map((scope) => scope.value))
+        .flat()
+        .filter(Boolean)
+    )
 
     scopes.push(...teamScopes)
 

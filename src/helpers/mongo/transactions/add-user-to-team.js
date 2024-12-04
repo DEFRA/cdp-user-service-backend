@@ -1,4 +1,4 @@
-import { withMongoTransaction } from '~/src/api/helpers/mongo/transactions/with-mongo-transaction.js'
+import { withMongoTransaction } from '~/src/helpers/mongo/transactions/with-mongo-transaction.js'
 
 async function addUserToTeam(request, userId, teamId) {
   const db = request.db

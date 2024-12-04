@@ -1,7 +1,9 @@
 import Joi from '~/src/helpers/extended-joi.js'
+import Boom from '@hapi/boom'
 
 import { config } from '~/src/config/index.js'
 import { updateScope } from '~/src/api/scopes/helpers/mongo/update-scope.js'
+import { scopeExists } from '~/src/api/scopes/helpers/mongo/scope-exists.js'
 
 const adminUpdateScopeController = {
   options: {
@@ -23,8 +25,14 @@ const adminUpdateScopeController = {
   handler: async (request, h) => {
     const payload = request.payload
     const params = request.params
+    const scopeId = params.scopeId
 
-    const scope = await updateScope(request.db, params.scopeId, {
+    const existingScope = await scopeExists(request.db, scopeId)
+    if (!existingScope) {
+      return Boom.conflict('Scope does not exist!')
+    }
+
+    const scope = await updateScope(request.db, scopeId, {
       description: payload.description
     })
 
