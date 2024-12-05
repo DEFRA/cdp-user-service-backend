@@ -1,5 +1,6 @@
 import { config } from '~/src/config/index.js'
 import { getTeams } from '~/src/api/teams/helpers/mongo/get-teams.js'
+import { getUser } from '~/src/api/users/helpers/get-user.js'
 
 function isUserInAServiceTeam(teamIds, userGroups) {
   return userGroups
@@ -14,7 +15,13 @@ const getScopesForUserController = {
     }
   },
   handler: async (request, h) => {
-    const jwtScopes = request.auth.credentials.scope
+    const credentials = request.auth.credentials
+    const jwtScopes = credentials.scope
+
+    const userId = credentials.id
+    const user = await getUser(request.db, userId)
+    const userScopes = user.scopes.map((scope) => scope.value)
+
     const allTeamsWithGithub = await getTeams(request.db, request.query)
     const allTeamIds = allTeamsWithGithub?.map((team) => team.teamId)
 
@@ -30,7 +37,7 @@ const getScopesForUserController = {
         .filter(Boolean)
     )
 
-    scopes.push(...teamScopes)
+    scopes.push(...userScopes, ...teamScopes)
 
     const isAdmin = scopes.includes(config.get('oidcAdminGroupId'))
     if (isAdmin) {
