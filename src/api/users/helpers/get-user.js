@@ -17,6 +17,19 @@ async function getUser(db, userId) {
         }
       },
       {
+        $lookup: {
+          from: 'scopes',
+          localField: 'scopes',
+          foreignField: '_id',
+          pipeline: [
+            {
+              $sort: { value: 1 }
+            }
+          ],
+          as: 'scopes'
+        }
+      },
+      {
         $project: {
           _id: 0,
           userId: '$_id',
@@ -25,6 +38,16 @@ async function getUser(db, userId) {
           github: 1,
           defraVpnId: 1,
           defraAwsId: 1,
+          scopes: {
+            $map: {
+              input: '$scopes',
+              as: 'scope',
+              in: {
+                scopeId: '$$scope._id',
+                value: '$$scope.value'
+              }
+            }
+          },
           teams: {
             $map: {
               input: '$teams',
