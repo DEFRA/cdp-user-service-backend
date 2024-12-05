@@ -8,6 +8,10 @@ import { wellKnownResponseFixture } from '~/src/__fixtures__/well-known.js'
 jest.mock('@microsoft/microsoft-graph-client')
 jest.mock('@azure/identity')
 
+const oidcWellKnownConfigurationUrl = config.get(
+  'oidcWellKnownConfigurationUrl'
+)
+
 describe('/users/{userId}', () => {
   const mockUser = {
     _id: '2fdc6295-b3e5-409e-846a-2ec237f20977',
@@ -44,7 +48,10 @@ describe('/users/{userId}', () => {
 
   beforeAll(async () => {
     fetchMock.enableMocks()
-    fetch.mockResponse(JSON.stringify(wellKnownResponseFixture))
+
+    fetchMock.mockIf(oidcWellKnownConfigurationUrl, () =>
+      Promise.resolve(JSON.stringify(wellKnownResponseFixture))
+    )
 
     // Mock MsGraph client
     mockMsGraph = {

@@ -8,13 +8,20 @@ import { wellKnownResponseFixture } from '~/src/__fixtures__/well-known.js'
 jest.mock('@microsoft/microsoft-graph-client')
 jest.mock('@azure/identity')
 
+const oidcWellKnownConfigurationUrl = config.get(
+  'oidcWellKnownConfigurationUrl'
+)
+
 describe('/teams/{teamId}', () => {
   let server
   let mockMsGraph
 
   beforeAll(async () => {
     fetchMock.enableMocks()
-    fetch.mockResponse(JSON.stringify(wellKnownResponseFixture))
+
+    fetchMock.mockIf(oidcWellKnownConfigurationUrl, () =>
+      Promise.resolve(JSON.stringify(wellKnownResponseFixture))
+    )
 
     // Mock MsGraph client
     mockMsGraph = {
