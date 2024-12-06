@@ -14,15 +14,12 @@ Core delivery platform User Service Backend.
     - [Updating dependencies](#updating-dependencies)
   - [Production](#production)
   - [Npm scripts](#npm-scripts)
-- [API endpoints](#api-endpoints)
-- [Calling API endpoints](#calling-api-endpoints)
-  - [Postman](#postman)
 - [Versioning](#versioning)
   - [Auto minor versioning](#auto-minor-versioning)
   - [Major or Patch versioning](#major-or-patch-versioning)
 - [Docker](#docker)
-  - [Development Image](#development-image)
-  - [Production Image](#production-image)
+  - [Development image](#development-image)
+  - [Production image](#production-image)
 - [Licence](#licence)
   - [About the licence](#about-the-licence)
 
@@ -84,24 +81,6 @@ To view them in your command line run:
 ```bash
 $ npm run
 ```
-
-## API endpoints
-
-| Endpoint                       | Description  |
-| :----------------------------- | :----------- |
-| `GET: /health`                 | Health       |
-| `GET: /v1/entities`            | Entities     |
-| `GET: /v1/entities/<entityId>` | Entity by ID |
-
-## Calling API endpoints
-
-### Postman
-
-A [Postman](https://www.postman.com/) collection and environment are available for making calls to the Teams and
-Repositories API. Simply import the collection and environment into Postman.
-
-- [CDP Node Backend Template Postman Collection](postman/cdp-user-service-backend.postman_collection.json)
-- [CDP Node Backend Template Postman Environment](postman/cdp-user-service-backend.postman_environment.json)
 
 ## Versioning
 
