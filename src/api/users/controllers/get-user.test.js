@@ -4,9 +4,7 @@ import { config } from '~/src/config/index.js'
 import { createServer } from '~/src/api/server.js'
 import { wellKnownResponseFixture } from '~/src/__fixtures__/well-known.js'
 import { userOneFixture } from '~/src/__fixtures__/users.js'
-
-jest.mock('@microsoft/microsoft-graph-client')
-jest.mock('@azure/identity')
+import { deleteMany, replaceOne } from '~/test-helpers/mongo-helpers.js'
 
 const oidcWellKnownConfigurationUrl = config.get(
   'oidcWellKnownConfigurationUrl'
@@ -14,6 +12,8 @@ const oidcWellKnownConfigurationUrl = config.get(
 
 describe('GET:/users/{userId}', () => {
   let server
+  let replaceOneTestHelper
+  let deleteManyTestHelper
 
   beforeAll(async () => {
     fetchMock.enableMocks()
@@ -24,6 +24,9 @@ describe('GET:/users/{userId}', () => {
 
     server = await createServer()
     await server.initialize()
+
+    replaceOneTestHelper = replaceOne(server.db)
+    deleteManyTestHelper = deleteMany(server.db)
   })
 
   afterAll(async () => {
@@ -41,11 +44,11 @@ describe('GET:/users/{userId}', () => {
 
   describe('When a user is in the DB', () => {
     beforeEach(async () => {
-      await server.db.collection('users').insertOne(userOneFixture)
+      await replaceOneTestHelper('users', userOneFixture)
     })
 
     afterEach(async () => {
-      await server.db.collection('users').drop()
+      await deleteManyTestHelper('users')
     })
 
     test('Should provide expected response', async () => {

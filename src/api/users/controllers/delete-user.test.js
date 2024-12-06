@@ -9,6 +9,7 @@ import {
   platformTeamFixture,
   tenantTeamFixture
 } from '~/src/__fixtures__/teams.js'
+import { deleteMany, replaceOne } from '~/test-helpers/mongo-helpers.js'
 
 jest.mock('@microsoft/microsoft-graph-client')
 jest.mock('@azure/identity')
@@ -20,6 +21,8 @@ const oidcWellKnownConfigurationUrl = config.get(
 describe('DELETE:/users/{userId}', () => {
   let server
   let mockMsGraph
+  let replaceOneTestHelper
+  let deleteManyTestHelper
 
   beforeAll(async () => {
     fetchMock.enableMocks()
@@ -38,6 +41,9 @@ describe('DELETE:/users/{userId}', () => {
 
     server = await createServer()
     await server.initialize()
+
+    replaceOneTestHelper = replaceOne(server.db)
+    deleteManyTestHelper = deleteMany(server.db)
   })
 
   afterAll(async () => {
@@ -96,8 +102,8 @@ describe('DELETE:/users/{userId}', () => {
     let deleteUserResponse
 
     beforeEach(async () => {
-      await server.db.collection('users').insertOne(userOneFixture)
-      await server.db.collection('teams').insertOne(tenantTeamFixture)
+      await replaceOneTestHelper('users', userOneFixture)
+      await replaceOneTestHelper('teams', tenantTeamFixture)
 
       deleteUserResponse = await deleteUserEndpoint(
         `/users/${userOneFixture._id}`
@@ -105,8 +111,7 @@ describe('DELETE:/users/{userId}', () => {
     })
 
     afterEach(async () => {
-      await server.db.collection('users').drop()
-      await server.db.collection('teams').drop()
+      await deleteManyTestHelper(['users', 'teams'])
     })
 
     test('Should have deleted the user from DB', async () => {
@@ -147,8 +152,8 @@ describe('DELETE:/users/{userId}', () => {
       })
       mockMsGraph.delete.mockResolvedValue()
 
-      await server.db.collection('users').insertOne(userOneFixture)
-      await server.db.collection('teams').insertOne(platformTeamFixture)
+      await replaceOneTestHelper('users', userOneFixture)
+      await replaceOneTestHelper('teams', platformTeamFixture)
 
       deleteUserResponse = await deleteUserEndpoint(
         `/users/${userOneFixture._id}`
@@ -156,8 +161,7 @@ describe('DELETE:/users/{userId}', () => {
     })
 
     afterEach(async () => {
-      await server.db.collection('users').drop()
-      await server.db.collection('teams').drop()
+      await deleteManyTestHelper(['users', 'teams'])
     })
 
     test('Should call AAD to get expected members of a group', () => {
@@ -229,8 +233,8 @@ describe('DELETE:/users/{userId}', () => {
     beforeEach(async () => {
       mockMsGraph.get.mockReturnValue({ value: [] })
 
-      await server.db.collection('users').insertOne(userTwoFixture)
-      await server.db.collection('teams').insertOne(tenantTeamFixture)
+      await replaceOneTestHelper('users', userTwoFixture)
+      await replaceOneTestHelper('teams', tenantTeamFixture)
 
       deleteUserResponse = await deleteUserEndpoint(
         `/users/${userTwoFixture._id}`
@@ -238,8 +242,7 @@ describe('DELETE:/users/{userId}', () => {
     })
 
     afterEach(async () => {
-      await server.db.collection('users').drop()
-      await server.db.collection('teams').drop()
+      await deleteManyTestHelper(['users', 'teams'])
     })
 
     test('Should call AAD to get expected members of a group', () => {

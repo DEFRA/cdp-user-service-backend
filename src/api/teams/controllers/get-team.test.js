@@ -2,12 +2,9 @@ import fetchMock from 'jest-fetch-mock'
 
 import { config } from '~/src/config/index.js'
 import { createServer } from '~/src/api/server.js'
-import { Client } from '@microsoft/microsoft-graph-client'
 import { wellKnownResponseFixture } from '~/src/__fixtures__/well-known.js'
 import { platformTeamFixture } from '~/src/__fixtures__/teams.js'
-
-jest.mock('@microsoft/microsoft-graph-client')
-jest.mock('@azure/identity')
+import { deleteMany, replaceOne } from '~/test-helpers/mongo-helpers.js'
 
 const oidcWellKnownConfigurationUrl = config.get(
   'oidcWellKnownConfigurationUrl'
@@ -15,7 +12,8 @@ const oidcWellKnownConfigurationUrl = config.get(
 
 describe('GET:/teams/{teamId}', () => {
   let server
-  let mockMsGraph
+  let replaceOneTestHelper
+  let deleteManyTestHelper
 
   beforeAll(async () => {
     fetchMock.enableMocks()
@@ -24,16 +22,11 @@ describe('GET:/teams/{teamId}', () => {
       Promise.resolve(JSON.stringify(wellKnownResponseFixture))
     )
 
-    // Mock MsGraph client
-    mockMsGraph = {
-      api: jest.fn().mockReturnThis(),
-      get: jest.fn(),
-      delete: jest.fn()
-    }
-    Client.initWithMiddleware = () => mockMsGraph
-
     server = await createServer()
     await server.initialize()
+
+    replaceOneTestHelper = replaceOne(server.db)
+    deleteManyTestHelper = deleteMany(server.db)
   })
 
   afterAll(async () => {
@@ -51,11 +44,11 @@ describe('GET:/teams/{teamId}', () => {
 
   describe('When a team is in the DB', () => {
     beforeEach(async () => {
-      await server.db.collection('teams').insertOne(platformTeamFixture)
+      await replaceOneTestHelper('teams', platformTeamFixture)
     })
 
     afterEach(async () => {
-      await server.db.collection('teams').drop()
+      await deleteManyTestHelper('teams')
     })
 
     test('Should provide expected response', async () => {

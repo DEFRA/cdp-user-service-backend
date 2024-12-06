@@ -14,6 +14,7 @@ import {
   terminalScopeFixture
 } from '~/src/__fixtures__/scopes.js'
 import { userOneFixture, userTwoFixture } from '~/src/__fixtures__/users.js'
+import { deleteMany, replaceMany } from '~/test-helpers/mongo-helpers.js'
 
 const oidcWellKnownConfigurationUrl = config.get(
   'oidcWellKnownConfigurationUrl'
@@ -21,6 +22,8 @@ const oidcWellKnownConfigurationUrl = config.get(
 
 describe('GET:/scopes', () => {
   let server
+  let replaceManyTestHelper
+  let deleteManyTestHelper
 
   beforeAll(async () => {
     fetchMock.enableMocks()
@@ -31,30 +34,27 @@ describe('GET:/scopes', () => {
 
     server = await createServer()
     await server.initialize()
+
+    replaceManyTestHelper = replaceMany(server.db)
+    deleteManyTestHelper = deleteMany(server.db)
   })
 
   beforeEach(async () => {
-    await server.db
-      .collection('users')
-      .insertMany([userOneFixture, userTwoFixture])
-
-    await server.db
-      .collection('teams')
-      .insertMany([platformTeamFixture, tenantTeamFixture])
-    await server.db
-      .collection('scopes')
-      .insertMany([
-        externalTestScopeFixture,
-        postgresScopeFixture,
-        terminalScopeFixture,
-        breakGlassFixture
-      ])
+    await replaceManyTestHelper('users', [userOneFixture, userTwoFixture])
+    await replaceManyTestHelper('teams', [
+      platformTeamFixture,
+      tenantTeamFixture
+    ])
+    await replaceManyTestHelper('scopes', [
+      externalTestScopeFixture,
+      postgresScopeFixture,
+      terminalScopeFixture,
+      breakGlassFixture
+    ])
   })
 
   afterEach(async () => {
-    await server.db.collection('users').drop()
-    await server.db.collection('teams').drop()
-    await server.db.collection('scopes').drop()
+    await deleteManyTestHelper(['users', 'teams', 'scopes'])
   })
 
   afterAll(async () => {
