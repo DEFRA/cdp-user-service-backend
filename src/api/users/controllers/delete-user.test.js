@@ -48,7 +48,6 @@ describe('DELETE:/users/{userId}', () => {
 
   afterAll(async () => {
     fetchMock.disableMocks()
-    await server.mongoClient?.close()
     await server.stop({ timeout: 0 })
   })
 

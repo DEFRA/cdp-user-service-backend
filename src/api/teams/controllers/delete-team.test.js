@@ -49,7 +49,6 @@ describe('DELETE:/teams/{teamId}', () => {
 
   afterAll(async () => {
     fetchMock.disableMocks()
-    await server.mongoClient.close()
     await server.stop({ timeout: 0 })
   })
 
