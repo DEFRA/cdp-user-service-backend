@@ -23,6 +23,7 @@ const deleteUserController = {
     try {
       const userId = request.params?.userId
       const user = await deleteUser(request, userId)
+
       if (user.teams?.length) {
         const removeFromAad = user.teams.map((team) =>
           removeUserFromAadGroup(
