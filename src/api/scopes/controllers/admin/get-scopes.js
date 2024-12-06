@@ -1,5 +1,5 @@
 import { config } from '~/src/config/index.js'
-import { getScopes } from '~/src/api/scopes/helpers/mongo/get-scopes.js'
+import { getScopes } from '~/src/api/scopes/helpers/get-scopes.js'
 
 const adminGetScopesController = {
   options: {

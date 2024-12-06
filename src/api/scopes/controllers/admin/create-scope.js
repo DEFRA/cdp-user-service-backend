@@ -2,8 +2,8 @@ import Joi from 'joi'
 import Boom from '@hapi/boom'
 
 import { config } from '~/src/config/index.js'
-import { createScope } from '~/src/api/scopes/helpers/mongo/create-scope.js'
-import { scopeNameExists } from '~/src/api/scopes/helpers/mongo/scope-name-exists.js'
+import { createScope } from '~/src/api/scopes/helpers/create-scope.js'
+import { scopeNameExists } from '~/src/api/scopes/helpers/scope-name-exists.js'
 
 const adminCreateScopeController = {
   options: {
