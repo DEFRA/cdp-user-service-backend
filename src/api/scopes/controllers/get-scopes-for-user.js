@@ -26,9 +26,7 @@ const getScopesForUserController = {
     const allTeamsWithGithub = await getTeams(request.db, request.query)
     const allTeamIds = allTeamsWithGithub.map((team) => team.teamId)
 
-    const scopes = jwtScopes
-      .slice()
-      .filter((group) => allTeamIds.includes(group))
+    const scopes = jwtScopes.filter((group) => allTeamIds.includes(group))
 
     const teamScopes = new Set(
       allTeamsWithGithub
