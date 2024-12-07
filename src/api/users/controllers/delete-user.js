@@ -1,12 +1,13 @@
 import Joi from 'joi'
 import Boom from '@hapi/boom'
 
-import { config } from '~/src/config/index.js'
+import { config } from '~/src/config/config.js'
 import { deleteUser } from '~/src/helpers/mongo/transactions/delete-transactions.js'
 import { removeUserFromAadGroup } from '~/src/api/teams/helpers/remove-user-from-aad-group.js'
 
 const deleteUserController = {
   options: {
+    tags: ['api', 'users'],
     validate: {
       params: Joi.object({
         userId: Joi.string().uuid().required()
@@ -23,6 +24,7 @@ const deleteUserController = {
     try {
       const userId = request.params?.userId
       const user = await deleteUser(request, userId)
+
       if (user.teams?.length) {
         const removeFromAad = user.teams.map((team) =>
           removeUserFromAadGroup(

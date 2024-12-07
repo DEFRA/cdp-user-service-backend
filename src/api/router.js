@@ -1,7 +1,7 @@
-import { health } from '~/src/api/health/index.js'
-import { users } from '~/src/api/users/index.js'
-import { teams } from '~/src/api/teams/index.js'
-import { scopes } from '~/src/api/scopes/index.js'
+import { health } from '~/src/api/health/routes.js'
+import { users } from '~/src/api/users/routes.js'
+import { teams } from '~/src/api/teams/routes.js'
+import { scopes } from '~/src/api/scopes/routes.js'
 
 const router = {
   plugin: {

@@ -1,8 +1,9 @@
-import { config } from '~/src/config/index.js'
-import { getScopes } from '~/src/api/scopes/helpers/mongo/get-scopes.js'
+import { config } from '~/src/config/config.js'
+import { getScopes } from '~/src/api/scopes/helpers/get-scopes.js'
 
 const adminGetScopesController = {
   options: {
+    tags: ['api', 'scopes'],
     auth: {
       strategy: 'azure-oidc',
       access: {

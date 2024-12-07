@@ -1,11 +1,11 @@
 import Boom from '@hapi/boom'
 
-import { config } from '~/src/config/index.js'
+import { config } from '~/src/config/config.js'
 import { updateTeamValidationSchema } from '~/src/api/teams/helpers/update-team-validation-schema.js'
-import { getTeam } from '~/src/api/teams/helpers/mongo/get-team.js'
-import { getTeamsCount } from '~/src/api/teams/helpers/mongo/get-teams.js'
+import { getTeam } from '~/src/api/teams/helpers/get-team.js'
+import { getTeamsCount } from '~/src/api/teams/helpers/get-teams.js'
 import { buildUpdateFields } from '~/src/helpers/build-update-fields.js'
-import { teamNameExists } from '~/src/api/teams/helpers/mongo/team-name-exists.js'
+import { teamNameExists } from '~/src/api/teams/helpers/team-name-exists.js'
 import { aadGroupIdExists } from '~/src/api/teams/helpers/aad/aad-group-id-exists.js'
 import { gitHubTeamExists } from '~/src/api/teams/helpers/github/github-team-exists.js'
 import { updateTeam } from '~/src/api/teams/helpers/update-team.js'
@@ -16,6 +16,7 @@ import {
 
 const updateTeamController = {
   options: {
+    tags: ['api', 'teams'],
     validate: {
       payload: updateTeamValidationSchema
     },

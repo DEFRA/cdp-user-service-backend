@@ -1,6 +1,6 @@
 import Boom from '@hapi/boom'
 
-import { getTeam } from '~/src/api/teams/helpers/mongo/get-team.js'
+import { getTeam } from '~/src/api/teams/helpers/get-team.js'
 import { getUser } from '~/src/api/users/helpers/get-user.js'
 import { withMongoTransaction } from '~/src/helpers/mongo/transactions/with-mongo-transaction.js'
 import { removeTeamFromScope } from '~/src/helpers/mongo/transactions/remove-team-from-scope.js'
@@ -42,9 +42,11 @@ async function removeUserFromTeam(request, userId, teamId) {
 async function deleteUser(request, userId) {
   const db = request.db
   const user = await getUser(db, userId)
+
   if (!user) {
     throw Boom.notFound('User not found')
   }
+
   await withMongoTransaction(request, async () => {
     if (user.teams?.length) {
       const removeFromTeams = user.teams.map((team) =>
@@ -66,9 +68,11 @@ async function deleteUser(request, userId) {
 async function deleteTeam(request, teamId) {
   const db = request.db
   const team = await getTeam(db, teamId)
+
   if (!team) {
     throw Boom.notFound('Team not found')
   }
+
   await withMongoTransaction(request, async () => {
     if (team.users?.length) {
       const removeFromUsers = team.users.map((user) =>

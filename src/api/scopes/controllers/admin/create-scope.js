@@ -1,12 +1,13 @@
 import Joi from 'joi'
 import Boom from '@hapi/boom'
 
-import { config } from '~/src/config/index.js'
-import { createScope } from '~/src/api/scopes/helpers/mongo/create-scope.js'
-import { scopeNameExists } from '~/src/api/scopes/helpers/mongo/scope-name-exists.js'
+import { config } from '~/src/config/config.js'
+import { createScope } from '~/src/api/scopes/helpers/create-scope.js'
+import { scopeNameExists } from '~/src/api/scopes/helpers/scope-name-exists.js'
 
 const adminCreateScopeController = {
   options: {
+    tags: ['api', 'scopes'],
     validate: {
       payload: Joi.object({
         value: Joi.string()

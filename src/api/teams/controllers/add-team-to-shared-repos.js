@@ -5,6 +5,7 @@ import { gitHubTeamExists } from '~/src/api/teams/helpers/github/github-team-exi
 
 const addTeamToSharedReposController = {
   options: {
+    tags: ['api', 'teams'],
     validate: {
       query: Joi.object({
         team: Joi.string().required()
