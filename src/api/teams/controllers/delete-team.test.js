@@ -1,6 +1,6 @@
 import fetchMock from 'jest-fetch-mock'
 
-import { config } from '~/src/config/index.js'
+import { config } from '~/src/config/config.js'
 import { createServer } from '~/src/api/server.js'
 import { Client } from '@microsoft/microsoft-graph-client'
 import { wellKnownResponseFixture } from '~/src/__fixtures__/well-known.js'

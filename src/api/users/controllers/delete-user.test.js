@@ -1,7 +1,7 @@
 import fetchMock from 'jest-fetch-mock'
 import { Client } from '@microsoft/microsoft-graph-client'
 
-import { config } from '~/src/config/index.js'
+import { config } from '~/src/config/config.js'
 import { createServer } from '~/src/api/server.js'
 import { wellKnownResponseFixture } from '~/src/__fixtures__/well-known.js'
 import { userOneFixture, userTwoFixture } from '~/src/__fixtures__/users.js'

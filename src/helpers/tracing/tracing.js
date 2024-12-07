@@ -2,7 +2,7 @@ import {
   asyncLocalStorage,
   getTraceId
 } from '~/src/helpers/tracing/async-local-storage.js'
-import { config } from '~/src/config/index.js'
+import { config } from '~/src/config/config.js'
 
 /**
  * Wrap the request lifecycle in an asyncLocalStorage run call. This allows the

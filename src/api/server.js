@@ -5,7 +5,7 @@ import Vision from '@hapi/vision'
 import HapiSwagger from 'hapi-swagger'
 
 import { azureOidc } from '~/src/helpers/azure-oidc.js'
-import { config } from '~/src/config/index.js'
+import { config } from '~/src/config/config.js'
 import { failAction } from '~/src/helpers/fail-action.js'
 import { mongoPlugin } from '~/src/helpers/mongodb.js'
 import { msGraphPlugin } from '~/src/helpers/ms-graph.js'

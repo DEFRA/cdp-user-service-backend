@@ -1,4 +1,4 @@
-import { config } from '~/src/config/index.js'
+import { config } from '~/src/config/config.js'
 import { getScopes } from '~/src/api/scopes/helpers/get-scopes.js'
 
 const adminGetScopesController = {
