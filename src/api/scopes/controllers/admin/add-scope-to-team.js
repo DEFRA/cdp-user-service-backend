@@ -1,7 +1,7 @@
 import Boom from '@hapi/boom'
 
 import Joi from '~/src/helpers/extended-joi.js'
-import { config } from '~/src/config/index.js'
+import { config } from '~/src/config/config.js'
 import { getTeam } from '~/src/api/teams/helpers/get-team.js'
 import { getScope } from '~/src/api/scopes/helpers/get-scope.js'
 import { addScopeToTeam } from '~/src/helpers/mongo/transactions/add-scope-to-team.js'

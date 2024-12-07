@@ -1,4 +1,4 @@
-import { config } from '~/src/config/index.js'
+import { config } from '~/src/config/config.js'
 import { getTeams } from '~/src/api/teams/helpers/get-teams.js'
 import { getUser } from '~/src/api/users/helpers/get-user.js'
 

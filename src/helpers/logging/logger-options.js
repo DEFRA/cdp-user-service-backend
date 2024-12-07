@@ -1,7 +1,7 @@
 import { ecsFormat } from '@elastic/ecs-pino-format'
 
 import { getTraceId } from '~/src/helpers/tracing/async-local-storage.js'
-import { config } from '~/src/config/index.js'
+import { config } from '~/src/config/config.js'
 
 const logConfig = config.get('log')
 const serviceConfig = config.get('service')

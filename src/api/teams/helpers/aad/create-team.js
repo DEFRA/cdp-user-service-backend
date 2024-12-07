@@ -1,4 +1,4 @@
-import { config } from '~/src/config/index.js'
+import { config } from '~/src/config/config.js'
 import { mailNicknameFromGroupName } from '~/src/api/teams/helpers/mail-nickname-from-group-name.js'
 import { groupNameFromTeamName } from '~/src/api/teams/helpers/group-name-from-team-name.js'
 import { getTeam } from '~/src/api/teams/helpers/get-team.js'
