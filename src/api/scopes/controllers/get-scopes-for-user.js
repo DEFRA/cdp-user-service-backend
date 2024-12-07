@@ -10,6 +10,7 @@ function isUserInAServiceTeam(teamIds, userGroups) {
 
 const getScopesForUserController = {
   options: {
+    tags: ['api', 'scopes'],
     auth: {
       strategy: 'azure-oidc'
     }

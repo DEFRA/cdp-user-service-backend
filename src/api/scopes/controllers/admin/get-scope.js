@@ -4,6 +4,7 @@ import { getScope } from '~/src/api/scopes/helpers/get-scope.js'
 
 const adminGetScopeController = {
   options: {
+    tags: ['api', 'scopes'],
     validate: {
       params: Joi.object({
         scopeId: Joi.objectId().required()

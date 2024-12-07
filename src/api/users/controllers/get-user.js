@@ -6,6 +6,7 @@ import { getUser } from '~/src/api/users/helpers/get-user.js'
 
 const getUserController = {
   options: {
+    tags: ['api', 'users'],
     validate: {
       params: Joi.object({
         userId: Joi.string().uuid().required()

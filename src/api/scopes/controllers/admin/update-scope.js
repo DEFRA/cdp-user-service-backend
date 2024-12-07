@@ -7,6 +7,7 @@ import { scopeExists } from '~/src/api/scopes/helpers/scope-exists.js'
 
 const adminUpdateScopeController = {
   options: {
+    tags: ['api', 'scopes'],
     validate: {
       params: Joi.object({
         scopeId: Joi.objectId().required()

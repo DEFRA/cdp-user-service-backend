@@ -7,6 +7,7 @@ import { deleteScope } from '~/src/helpers/mongo/transactions/delete-scope.js'
 
 const adminDeleteScopeController = {
   options: {
+    tags: ['api', 'scopes'],
     validate: {
       params: Joi.object({
         scopeId: Joi.objectId().required()

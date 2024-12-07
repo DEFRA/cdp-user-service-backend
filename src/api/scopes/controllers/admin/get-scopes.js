@@ -3,6 +3,7 @@ import { getScopes } from '~/src/api/scopes/helpers/get-scopes.js'
 
 const adminGetScopesController = {
   options: {
+    tags: ['api', 'scopes'],
     auth: {
       strategy: 'azure-oidc',
       access: {

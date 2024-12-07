@@ -9,6 +9,7 @@ import { createUser } from '~/src/api/users/helpers/create-user.js'
 
 const createUserController = {
   options: {
+    tags: ['api', 'users'],
     validate: {
       payload: createUserValidationSchema
     },

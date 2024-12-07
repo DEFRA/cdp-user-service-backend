@@ -7,6 +7,7 @@ import { removeUserFromAadGroup } from '~/src/api/teams/helpers/remove-user-from
 
 const deleteUserController = {
   options: {
+    tags: ['api', 'users'],
     validate: {
       params: Joi.object({
         userId: Joi.string().uuid().required()

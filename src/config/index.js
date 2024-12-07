@@ -238,6 +238,11 @@ const config = convict({
     format: Boolean,
     default: isProduction,
     env: 'ENABLE_SECURE_CONTEXT'
+  },
+  enableDocumentation: {
+    doc: 'Enable API documentation',
+    format: Boolean,
+    default: isDevelopment
   }
 })
 

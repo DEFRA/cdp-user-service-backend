@@ -11,6 +11,7 @@ import { requireLock } from '~/src/helpers/mongo-lock.js'
 
 const updateUserController = {
   options: {
+    tags: ['api', 'users'],
     validate: {
       payload: updateUserValidationSchema(config.get('isProduction'))
     },

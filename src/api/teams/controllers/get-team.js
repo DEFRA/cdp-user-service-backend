@@ -5,6 +5,7 @@ import Joi from 'joi'
 
 const getTeamController = {
   options: {
+    tags: ['api', 'teams'],
     validate: {
       params: Joi.object({
         teamId: Joi.string().uuid().required()

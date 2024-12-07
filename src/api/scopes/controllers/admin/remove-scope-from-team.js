@@ -6,6 +6,7 @@ import { removeScopeFromTeam } from '~/src/helpers/mongo/transactions/remove-sco
 
 const adminRemoveScopeFromTeamController = {
   options: {
+    tags: ['api', 'scopes'],
     auth: {
       strategy: 'azure-oidc',
       access: {

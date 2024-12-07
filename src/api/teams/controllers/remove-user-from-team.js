@@ -4,6 +4,7 @@ import { removeUserFromAadGroup } from '~/src/api/teams/helpers/remove-user-from
 
 const removeUserFromTeamController = {
   options: {
+    tags: ['api', 'teams'],
     auth: {
       strategy: 'azure-oidc',
       access: {

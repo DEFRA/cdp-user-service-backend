@@ -4,6 +4,7 @@ import { getTeams } from '~/src/api/teams/helpers/get-teams.js'
 
 const getTeamsController = {
   options: {
+    tags: ['api', 'teams'],
     validate: {
       query: Joi.object({
         query: Joi.string(),
