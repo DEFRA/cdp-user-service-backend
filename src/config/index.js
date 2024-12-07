@@ -232,6 +232,12 @@ const config = convict({
       default: 'x-cdp-request-id',
       env: 'TRACING_HEADER'
     }
+  },
+  enableSecureContext: {
+    doc: 'Enable Secure Context',
+    format: Boolean,
+    default: isProduction,
+    env: 'ENABLE_SECURE_CONTEXT'
   }
 })
 

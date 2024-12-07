@@ -51,7 +51,7 @@ async function createServer() {
   // Add tracer and request logger before all other plugins
   await server.register([tracing, requestLogger])
 
-  if (isProduction) {
+  if (enableSecureContext) {
     await server.register(secureContext)
   }
 
