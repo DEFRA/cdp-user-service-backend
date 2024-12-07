@@ -8,6 +8,7 @@ import { addUserToTeam } from '~/src/helpers/mongo/transactions/add-user-to-team
 
 const addUserToTeamController = {
   options: {
+    tags: ['api', 'teams'],
     auth: {
       strategy: 'azure-oidc',
       access: {

@@ -16,6 +16,7 @@ import {
 
 const updateTeamController = {
   options: {
+    tags: ['api', 'teams'],
     validate: {
       payload: updateTeamValidationSchema
     },

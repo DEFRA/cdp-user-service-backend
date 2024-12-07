@@ -7,6 +7,7 @@ import { scopeNameExists } from '~/src/api/scopes/helpers/scope-name-exists.js'
 
 const adminCreateScopeController = {
   options: {
+    tags: ['api', 'scopes'],
     validate: {
       payload: Joi.object({
         value: Joi.string()

@@ -10,6 +10,7 @@ import { addSharedRepoAccess } from '~/src/api/teams/helpers/github/github-share
 
 const createTeamController = {
   options: {
+    tags: ['api', 'teams'],
     validate: {
       payload: createTeamValidationSchema
     },

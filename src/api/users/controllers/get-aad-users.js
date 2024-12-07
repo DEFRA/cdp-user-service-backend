@@ -4,6 +4,7 @@ import { searchAadUsers } from '~/src/api/users/helpers/search-aad-users.js'
 
 const getAadUsersController = {
   options: {
+    tags: ['api', 'users'],
     validate: {
       query: Joi.object({
         query: Joi.string().required()

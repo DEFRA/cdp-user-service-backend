@@ -4,6 +4,7 @@ import { searchGitHubTeams } from '~/src/api/teams/helpers/github/search-github-
 
 const getGitHubTeamsController = {
   options: {
+    tags: ['api', 'teams'],
     validate: {
       query: Joi.object({
         query: Joi.string().required()

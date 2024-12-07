@@ -8,6 +8,7 @@ import { addScopeToTeam } from '~/src/helpers/mongo/transactions/add-scope-to-te
 
 const adminAddScopeToTeamController = {
   options: {
+    tags: ['api', 'scopes'],
     auth: {
       strategy: 'azure-oidc',
       access: {
