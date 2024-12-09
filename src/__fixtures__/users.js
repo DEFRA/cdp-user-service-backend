@@ -21,4 +21,14 @@ const userTwoFixture = {
   scopes: [new ObjectId('6751e5e9a171ebffac3cc9dc')] // terminalScopeFixture
 }
 
-export { userOneFixture, userTwoFixture }
+const userThreeFixture = {
+  _id: 'ad760f75-0930-434f-8a4e-174f74723c65',
+  name: 'RoboCop',
+  email: 'robocop@defra.onmicrosoft.com',
+  createdAt: '2023-10-28T13:55:42.049Z',
+  updatedAt: '2024-08-15T09:56:32.809Z',
+  teams: ['2a45e0cd-9f1b-4158-825d-40e561c55c55'], // tenantTeamFixture
+  scopes: [new ObjectId('6751b8bcfd2ecb117d6277de')] // postgresScopeFixture
+}
+
+export { userOneFixture, userTwoFixture, userThreeFixture }

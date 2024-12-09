@@ -13,7 +13,11 @@ import {
   postgresScopeFixture,
   terminalScopeFixture
 } from '~/src/__fixtures__/scopes.js'
-import { userOneFixture, userTwoFixture } from '~/src/__fixtures__/users.js'
+import {
+  userOneFixture,
+  userThreeFixture,
+  userTwoFixture
+} from '~/src/__fixtures__/users.js'
 import { deleteMany, replaceMany } from '~/test-helpers/mongo-helpers.js'
 
 const oidcWellKnownConfigurationUrl = config.get(
@@ -40,7 +44,11 @@ describe('GET:/scopes', () => {
   })
 
   beforeEach(async () => {
-    await replaceManyTestHelper('users', [userOneFixture, userTwoFixture])
+    await replaceManyTestHelper('users', [
+      userOneFixture,
+      userTwoFixture,
+      userThreeFixture
+    ])
     await replaceManyTestHelper('teams', [
       platformTeamFixture,
       tenantTeamFixture
@@ -156,6 +164,28 @@ describe('GET:/scopes', () => {
 
       expect(result).toMatchObject({
         message: 'Missing authentication'
+      })
+    })
+  })
+
+  describe('When team and user have the same scope', () => {
+    test('Should provide scopes without duplicates', async () => {
+      // User three and Tenant team have the same postgres scope
+      const { result, statusCode, statusMessage } = await scopesEndpoint({
+        id: userThreeFixture._id,
+        scope: [tenantTeamFixture._id]
+      })
+
+      expect(statusCode).toBe(200)
+      expect(statusMessage).toBe('OK')
+
+      expect(result).toMatchObject({
+        message: 'success',
+        scopes: ['2a45e0cd-9f1b-4158-825d-40e561c55c55', 'postgres', 'tenant'],
+        scopeFlags: {
+          isAdmin: false,
+          isTenant: true
+        }
       })
     })
   })
