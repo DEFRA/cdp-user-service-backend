@@ -1,6 +1,6 @@
 import Boom from '@hapi/boom'
 
-import { getScope } from '~/src/api/scopes/helpers/mongo/get-scope.js'
+import { getScope } from '~/src/api/scopes/helpers/get-scope.js'
 
 async function checkScopeExists(db, scopeId) {
   const existingScope = await getScope(db, scopeId)

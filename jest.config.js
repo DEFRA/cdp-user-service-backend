@@ -14,7 +14,9 @@ export default {
   coveragePathIgnorePatterns: [
     '<rootDir>/node_modules/',
     '<rootDir>/.server',
-    '<rootDir>/src/__fixtures__'
+    '<rootDir>/src/__fixtures__',
+    '<rootDir>/test-helpers',
+    'index.js'
   ],
   coverageDirectory: '<rootDir>/coverage'
 }

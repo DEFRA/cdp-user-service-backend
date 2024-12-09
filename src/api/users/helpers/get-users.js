@@ -1,4 +1,5 @@
 import isNil from 'lodash/isNil.js'
+import { userAggregation } from '~/src/api/users/helpers/aggregations/user.js'
 
 async function getUsers(db, query) {
   const stages = []
@@ -14,45 +15,7 @@ async function getUsers(db, query) {
     })
   }
 
-  stages.push({
-    $lookup: {
-      from: 'teams',
-      localField: 'teams',
-      foreignField: '_id',
-      pipeline: [
-        {
-          $sort: { name: 1 }
-        }
-      ],
-      as: 'teams'
-    }
-  })
-
-  stages.push({
-    $project: {
-      _id: 0,
-      userId: '$_id',
-      name: 1,
-      email: 1,
-      github: 1,
-      defraVpnId: 1,
-      defraAwsId: 1,
-      teams: {
-        $map: {
-          input: '$teams',
-          as: 'team',
-          in: {
-            teamId: '$$team._id',
-            name: '$$team.name'
-          }
-        }
-      },
-      createdAt: 1,
-      updatedAt: 1
-    }
-  })
-
-  stages.push({
+  stages.push(...userAggregation, {
     $sort: { name: 1 }
   })
 

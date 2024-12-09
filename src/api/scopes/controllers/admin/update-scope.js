@@ -1,12 +1,13 @@
 import Joi from '~/src/helpers/extended-joi.js'
 import Boom from '@hapi/boom'
 
-import { config } from '~/src/config/index.js'
-import { updateScope } from '~/src/api/scopes/helpers/mongo/update-scope.js'
-import { scopeExists } from '~/src/api/scopes/helpers/mongo/scope-exists.js'
+import { config } from '~/src/config/config.js'
+import { updateScope } from '~/src/api/scopes/helpers/update-scope.js'
+import { scopeExists } from '~/src/api/scopes/helpers/scope-exists.js'
 
 const adminUpdateScopeController = {
   options: {
+    tags: ['api', 'scopes'],
     validate: {
       params: Joi.object({
         scopeId: Joi.objectId().required()

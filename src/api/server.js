@@ -1,27 +1,34 @@
 import path from 'path'
 import hapi from '@hapi/hapi'
+import Inert from '@hapi/inert'
+import Vision from '@hapi/vision'
+import HapiSwagger from 'hapi-swagger'
 
-import { config } from '~/src/config/index.js'
+import { azureOidc } from '~/src/helpers/azure-oidc.js'
+import { config } from '~/src/config/config.js'
 import { failAction } from '~/src/helpers/fail-action.js'
-import { router } from '~/src/api/router.js'
-import { requestLogger } from '~/src/helpers/logging/request-logger.js'
 import { mongoPlugin } from '~/src/helpers/mongodb.js'
 import { msGraphPlugin } from '~/src/helpers/ms-graph.js'
 import { octokitPlugin } from '~/src/helpers/octokit.js'
-import { azureOidc } from '~/src/helpers/azure-oidc.js'
-import { secureContext } from '~/src/helpers/secure-context/index.js'
-import { setupWreckAgents } from '~/src/helpers/setup-wreck-agents.js'
 import { provideProxy } from '~/src/helpers/proxy.js'
 import { pulse } from '~/src/helpers/pulse.js'
+import { requestLogger } from '~/src/helpers/logging/request-logger.js'
+import { router } from '~/src/api/router.js'
+import { secureContext } from '~/src/helpers/secure-context/index.js'
+import { setupWreckAgents } from '~/src/helpers/setup-wreck-agents.js'
+import { swaggerOptions } from '~/src/helpers/docs/swagger-options.js'
 import { tracing } from '~/src/helpers/tracing/tracing.js'
 
-const isProduction = config.get('isProduction')
+const root = config.get('root')
+const port = config.get('port')
+const enableSecureContext = config.get('enableSecureContext')
+const enableDocumentation = config.get('enableDocumentation')
 
 async function createServer() {
   setupWreckAgents(provideProxy())
 
   const server = hapi.server({
-    port: config.get('port'),
+    port,
     routes: {
       validate: {
         options: {
@@ -30,7 +37,7 @@ async function createServer() {
         failAction
       },
       files: {
-        relativeTo: path.resolve(config.get('root'), '.public')
+        relativeTo: path.resolve(root, '.public')
       },
       security: {
         hsts: {
@@ -51,7 +58,7 @@ async function createServer() {
   // Add tracer and request logger before all other plugins
   await server.register([tracing, requestLogger])
 
-  if (isProduction) {
+  if (enableSecureContext) {
     await server.register(secureContext)
   }
 
@@ -63,6 +70,17 @@ async function createServer() {
     octokitPlugin,
     router
   ])
+
+  if (enableDocumentation) {
+    await server.register([
+      Inert,
+      Vision,
+      {
+        plugin: HapiSwagger,
+        options: swaggerOptions
+      }
+    ])
+  }
 
   return server
 }

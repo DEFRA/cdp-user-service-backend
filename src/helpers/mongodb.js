@@ -1,7 +1,7 @@
 import { MongoClient } from 'mongodb'
 import { LockManager } from 'mongo-locks'
 
-import { config } from '~/src/config/index.js'
+import { config } from '~/src/config/config.js'
 
 const mongoPlugin = {
   plugin: {

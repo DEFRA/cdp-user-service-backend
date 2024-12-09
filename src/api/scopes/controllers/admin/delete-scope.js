@@ -1,12 +1,13 @@
 import Boom from '@hapi/boom'
 import Joi from '~/src/helpers/extended-joi.js'
-import { config } from '~/src/config/index.js'
+import { config } from '~/src/config/config.js'
 
-import { scopeExists } from '~/src/api/scopes/helpers/mongo/scope-exists.js'
+import { scopeExists } from '~/src/api/scopes/helpers/scope-exists.js'
 import { deleteScope } from '~/src/helpers/mongo/transactions/delete-scope.js'
 
 const adminDeleteScopeController = {
   options: {
+    tags: ['api', 'scopes'],
     validate: {
       params: Joi.object({
         scopeId: Joi.objectId().required()

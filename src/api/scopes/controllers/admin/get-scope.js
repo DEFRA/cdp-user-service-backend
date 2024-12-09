@@ -1,9 +1,10 @@
 import Joi from '~/src/helpers/extended-joi.js'
-import { config } from '~/src/config/index.js'
-import { getScope } from '~/src/api/scopes/helpers/mongo/get-scope.js'
+import { config } from '~/src/config/config.js'
+import { getScope } from '~/src/api/scopes/helpers/get-scope.js'
 
 const adminGetScopeController = {
   options: {
+    tags: ['api', 'scopes'],
     validate: {
       params: Joi.object({
         scopeId: Joi.objectId().required()

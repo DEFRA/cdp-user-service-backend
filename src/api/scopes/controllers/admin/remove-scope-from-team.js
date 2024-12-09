@@ -1,11 +1,12 @@
 import Boom from '@hapi/boom'
 
-import { config } from '~/src/config/index.js'
+import { config } from '~/src/config/config.js'
 import Joi from '~/src/helpers/extended-joi.js'
 import { removeScopeFromTeam } from '~/src/helpers/mongo/transactions/remove-scope-from-team.js'
 
 const adminRemoveScopeFromTeamController = {
   options: {
+    tags: ['api', 'scopes'],
     auth: {
       strategy: 'azure-oidc',
       access: {
