@@ -1,14 +1,14 @@
 import { ObjectId } from 'mongodb'
 
 import { withMongoTransaction } from '~/src/helpers/mongo/transactions/with-mongo-transaction.js'
-import { removeTeamFromScope } from '~/src/helpers/mongo/transactions/remove-team-from-scope.js'
+import { removeUserFromScope } from '~/src/helpers/mongo/transactions/remove-user-from-scope.js'
 
-async function removeScopeFromTeam(request, teamId, scopeId) {
+async function removeScopeFromUser(request, userId, scopeId) {
   const db = request.db
   return await withMongoTransaction(request, async () => {
     // TODO dry up
-    await db.collection('teams').findOneAndUpdate(
-      { _id: teamId },
+    await db.collection('users').findOneAndUpdate(
+      { _id: userId },
       {
         $pull: { scopes: ObjectId.createFromHexString(scopeId) },
         $set: { updatedAt: new Date() }
@@ -19,8 +19,8 @@ async function removeScopeFromTeam(request, teamId, scopeId) {
       }
     )
 
-    return await removeTeamFromScope(request, teamId, scopeId)
+    return await removeUserFromScope(request, userId, scopeId)
   })
 }
 
-export { removeScopeFromTeam }
+export { removeScopeFromUser }

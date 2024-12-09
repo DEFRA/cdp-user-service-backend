@@ -4,7 +4,20 @@ async function getScope(db, scopeId) {
   const scopes = await db
     .collection('scopes')
     .aggregate([
-      { $match: { _id: new ObjectId(scopeId) } },
+      { $match: { _id: ObjectId.createFromHexString(scopeId) } },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'users',
+          foreignField: '_id',
+          pipeline: [
+            {
+              $sort: { name: 1 }
+            }
+          ],
+          as: 'users'
+        }
+      },
       {
         $lookup: {
           from: 'teams',
@@ -50,6 +63,16 @@ async function getScope(db, scopeId) {
           scopeId: '$_id',
           value: 1,
           description: 1,
+          users: {
+            $map: {
+              input: '$users',
+              as: 'user',
+              in: {
+                userId: '$$user._id',
+                name: '$$user.name'
+              }
+            }
+          },
           teams: {
             $map: {
               input: '$teams',

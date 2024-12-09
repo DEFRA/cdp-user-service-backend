@@ -2,11 +2,11 @@ import { ObjectId } from 'mongodb'
 
 import { withMongoTransaction } from '~/src/helpers/mongo/transactions/with-mongo-transaction.js'
 
-async function addScopeToTeam(request, teamId, scopeId) {
+async function addScopeToUser(request, userId, scopeId) {
   const db = request.db
   return await withMongoTransaction(request, async () => {
-    await db.collection('teams').findOneAndUpdate(
-      { _id: teamId },
+    await db.collection('users').findOneAndUpdate(
+      { _id: userId },
       {
         $addToSet: { scopes: ObjectId.createFromHexString(scopeId) },
         $set: { updatedAt: new Date() }
@@ -21,9 +21,9 @@ async function addScopeToTeam(request, teamId, scopeId) {
       .collection('scopes')
       .findOneAndUpdate(
         { _id: ObjectId.createFromHexString(scopeId) },
-        { $addToSet: { teams: teamId }, $set: { updatedAt: new Date() } }
+        { $addToSet: { users: userId }, $set: { updatedAt: new Date() } }
       )
   })
 }
 
-export { addScopeToTeam }
+export { addScopeToUser }
