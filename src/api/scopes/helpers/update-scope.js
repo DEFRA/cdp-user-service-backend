@@ -6,7 +6,7 @@ async function updateScope(db, scopeId, updatedScope) {
   await checkScopeExists(db, scopeId)
 
   return await db.collection('scopes').findOneAndUpdate(
-    { _id: new ObjectId(scopeId) },
+    { _id: ObjectId.createFromHexString(scopeId) },
     {
       $set: {
         ...updatedScope,

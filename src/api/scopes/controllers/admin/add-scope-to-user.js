@@ -2,11 +2,11 @@ import Boom from '@hapi/boom'
 
 import Joi from '~/src/helpers/extended-joi.js'
 import { config } from '~/src/config/config.js'
-import { getTeam } from '~/src/api/teams/helpers/get-team.js'
 import { getScope } from '~/src/api/scopes/helpers/get-scope.js'
-import { addScopeToTeamTransaction } from '~/src/helpers/mongo/transactions/scope/add-scope-to-team-transaction.js'
+import { getUser } from '~/src/api/users/helpers/get-user.js'
+import { addScopeToUserTransaction } from '~/src/helpers/mongo/transactions/scope/add-scope-to-user-transaction.js'
 
-const adminAddScopeToTeamController = {
+const adminAddScopeToUserController = {
   options: {
     tags: ['api', 'scopes'],
     auth: {
@@ -17,31 +17,31 @@ const adminAddScopeToTeamController = {
     },
     validate: {
       params: Joi.object({
-        teamId: Joi.string().guid().required(),
+        userId: Joi.string().guid().required(),
         scopeId: Joi.objectId().required()
       }),
       failAction: () => Boom.boomify(Boom.badRequest())
     }
   },
   handler: async (request, h) => {
-    const teamId = request.params.teamId
+    const userId = request.params.userId
     const scopeId = request.params.scopeId
 
-    const dbTeam = await getTeam(request.db, teamId)
+    const dbUser = await getUser(request.db, userId)
     const dbScope = await getScope(request.db, scopeId)
 
-    if (!dbTeam) {
-      throw Boom.notFound('Team not found')
+    if (!dbUser) {
+      throw Boom.notFound('User not found')
     }
 
     if (!dbScope) {
       throw Boom.notFound('Scope not found')
     }
 
-    const scope = await addScopeToTeamTransaction(request, teamId, scopeId)
+    const scope = await addScopeToUserTransaction(request, userId, scopeId)
 
     return h.response({ message: 'success', scope }).code(200)
   }
 }
 
-export { adminAddScopeToTeamController }
+export { adminAddScopeToUserController }

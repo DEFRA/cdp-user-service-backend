@@ -2,9 +2,9 @@ import Boom from '@hapi/boom'
 
 import { config } from '~/src/config/config.js'
 import Joi from '~/src/helpers/extended-joi.js'
-import { removeScopeFromTeamTransaction } from '~/src/helpers/mongo/transactions/scope/remove-scope-from-team-transaction.js'
+import { removeScopeFromUserTransaction } from '~/src/helpers/mongo/transactions/scope/remove-scope-from-user-transaction.js'
 
-const adminRemoveScopeFromTeamController = {
+const adminRemoveScopeFromUserController = {
   options: {
     tags: ['api', 'scopes'],
     auth: {
@@ -15,19 +15,19 @@ const adminRemoveScopeFromTeamController = {
     },
     validate: {
       params: Joi.object({
-        teamId: Joi.string().guid().required(),
+        userId: Joi.string().guid().required(),
         scopeId: Joi.objectId().required()
       }),
       failAction: () => Boom.boomify(Boom.badRequest())
     }
   },
   handler: async (request, h) => {
-    const teamId = request.params.teamId
+    const userId = request.params.userId
     const scopeId = request.params.scopeId
 
-    const scope = await removeScopeFromTeamTransaction(request, teamId, scopeId)
+    const scope = await removeScopeFromUserTransaction(request, userId, scopeId)
     return h.response({ message: 'success', scope }).code(200)
   }
 }
 
-export { adminRemoveScopeFromTeamController }
+export { adminRemoveScopeFromUserController }

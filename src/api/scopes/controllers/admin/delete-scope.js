@@ -3,7 +3,7 @@ import Joi from '~/src/helpers/extended-joi.js'
 import { config } from '~/src/config/config.js'
 
 import { scopeExists } from '~/src/api/scopes/helpers/scope-exists.js'
-import { deleteScope } from '~/src/helpers/mongo/transactions/delete-scope.js'
+import { deleteScopeTransaction } from '~/src/helpers/mongo/transactions/scope/delete-scope-transaction.js'
 
 const adminDeleteScopeController = {
   options: {
@@ -28,7 +28,7 @@ const adminDeleteScopeController = {
     if (!existingScope) {
       return Boom.conflict('Scope does not exist!')
     }
-    const scope = await deleteScope(request, params.scopeId)
+    const scope = await deleteScopeTransaction(request, params.scopeId)
 
     return h.response({ message: 'success', scope }).code(200)
   }
