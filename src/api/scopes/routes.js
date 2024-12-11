@@ -6,6 +6,8 @@ import { adminGetScopesController } from '~/src/api/scopes/controllers/admin/get
 import { adminRemoveScopeFromTeamController } from '~/src/api/scopes/controllers/admin/remove-scope-from-team.js'
 import { adminUpdateScopeController } from '~/src/api/scopes/controllers/admin/update-scope.js'
 import { getScopesForUserController } from '~/src/api/scopes/controllers/get-scopes-for-user.js'
+import { adminAddScopeToUserController } from '~/src/api/scopes/controllers/admin/add-scope-to-user.js'
+import { adminRemoveScopeFromUserController } from '~/src/api/scopes/controllers/admin/remove-scope-from-user.js'
 
 const scopes = {
   plugin: {
@@ -44,13 +46,23 @@ const scopes = {
         },
         {
           method: 'PATCH',
-          path: '/scopes/admin/{scopeId}/add/{teamId}',
+          path: '/scopes/admin/{scopeId}/team/add/{teamId}',
           ...adminAddScopeToTeamController
         },
         {
           method: 'PATCH',
-          path: '/scopes/admin/{scopeId}/remove/{teamId}',
+          path: '/scopes/admin/{scopeId}/team/remove/{teamId}',
           ...adminRemoveScopeFromTeamController
+        },
+        {
+          method: 'PATCH',
+          path: '/scopes/admin/{scopeId}/user/add/{userId}',
+          ...adminAddScopeToUserController
+        },
+        {
+          method: 'PATCH',
+          path: '/scopes/admin/{scopeId}/user/remove/{userId}',
+          ...adminRemoveScopeFromUserController
         }
       ])
     }
