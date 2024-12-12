@@ -13,6 +13,10 @@ const adminUpdateScopeController = {
         scopeId: Joi.objectId().required()
       }),
       payload: Joi.object({
+        kind: Joi.array()
+          .items(Joi.string())
+          .has(Joi.string().valid('user', 'team'))
+          .required(),
         description: Joi.string().optional().max(256)
       })
     },
@@ -34,6 +38,7 @@ const adminUpdateScopeController = {
     }
 
     const scope = await updateScope(request.db, scopeId, {
+      kind: payload.kind,
       description: payload.description
     })
 

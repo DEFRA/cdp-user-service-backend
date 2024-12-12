@@ -38,6 +38,11 @@ const adminAddScopeToUserController = {
       throw Boom.notFound('Scope not found')
     }
 
+    // TODO once migrated remove the optional chaining
+    if (!dbScope.kind?.includes('user')) {
+      throw Boom.badRequest('Scope cannot be applied to a user')
+    }
+
     const scope = await addScopeToUserTransaction(request, userId, scopeId)
 
     return h.response({ message: 'success', scope }).code(200)

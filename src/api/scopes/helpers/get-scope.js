@@ -4,7 +4,7 @@ async function getScope(db, scopeId) {
   const scopes = await db
     .collection('scopes')
     .aggregate([
-      { $match: { _id: ObjectId.createFromHexString(scopeId) } },
+      { $match: { _id: new ObjectId(scopeId) } },
       {
         $lookup: {
           from: 'users',
@@ -62,6 +62,7 @@ async function getScope(db, scopeId) {
           _id: 0,
           scopeId: '$_id',
           value: 1,
+          kind: 1,
           description: 1,
           users: {
             $map: {
