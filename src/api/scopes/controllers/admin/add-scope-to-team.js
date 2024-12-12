@@ -38,6 +38,11 @@ const adminAddScopeToTeamController = {
       throw Boom.notFound('Scope not found')
     }
 
+    // TODO once migrated remove the optional chaining
+    if (!dbScope.kind?.includes('team')) {
+      throw Boom.badRequest('Scope cannot be applied to a user')
+    }
+
     const scope = await addScopeToTeamTransaction(request, teamId, scopeId)
 
     return h.response({ message: 'success', scope }).code(200)
