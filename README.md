@@ -14,15 +14,13 @@ Core delivery platform User Service Backend.
     - [Updating dependencies](#updating-dependencies)
   - [Production](#production)
   - [Npm scripts](#npm-scripts)
-- [API endpoints](#api-endpoints)
-- [Calling API endpoints](#calling-api-endpoints)
-  - [Postman](#postman)
+- [Swagger API documentation](#swagger-api-documentation)
 - [Versioning](#versioning)
   - [Auto minor versioning](#auto-minor-versioning)
   - [Major or Patch versioning](#major-or-patch-versioning)
 - [Docker](#docker)
-  - [Development Image](#development-image)
-  - [Production Image](#production-image)
+  - [Development image](#development-image)
+  - [Production image](#production-image)
 - [Licence](#licence)
   - [About the licence](#about-the-licence)
 
@@ -85,23 +83,10 @@ To view them in your command line run:
 $ npm run
 ```
 
-## API endpoints
+## Swagger API documentation
 
-| Endpoint                       | Description  |
-| :----------------------------- | :----------- |
-| `GET: /health`                 | Health       |
-| `GET: /v1/entities`            | Entities     |
-| `GET: /v1/entities/<entityId>` | Entity by ID |
-
-## Calling API endpoints
-
-### Postman
-
-A [Postman](https://www.postman.com/) collection and environment are available for making calls to the Teams and
-Repositories API. Simply import the collection and environment into Postman.
-
-- [CDP Node Backend Template Postman Collection](postman/cdp-user-service-backend.postman_collection.json)
-- [CDP Node Backend Template Postman Environment](postman/cdp-user-service-backend.postman_environment.json)
+Swagger API docs are available locally only. You can view them
+at [http://localhost:3001/docs](http://localhost:3001/docs)
 
 ## Versioning
 

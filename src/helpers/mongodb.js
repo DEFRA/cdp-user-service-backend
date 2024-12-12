@@ -1,7 +1,7 @@
 import { MongoClient } from 'mongodb'
 import { LockManager } from 'mongo-locks'
 
-import { config } from '~/src/config/index.js'
+import { config } from '~/src/config/config.js'
 
 const mongoPlugin = {
   plugin: {
@@ -48,6 +48,7 @@ const mongoPlugin = {
 
 async function createIndexes(db) {
   await db.collection('mongo-locks').createIndex({ id: 1 })
+  await db.collection('scopes').createIndex({ value: 1 }, { unique: true })
 }
 
 export { mongoPlugin }

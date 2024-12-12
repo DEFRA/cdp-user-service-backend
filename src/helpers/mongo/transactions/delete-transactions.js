@@ -1,7 +1,10 @@
-import { getTeam } from '~/src/api/teams/helpers/mongo/get-team.js'
 import Boom from '@hapi/boom'
+
+import { getTeam } from '~/src/api/teams/helpers/get-team.js'
 import { getUser } from '~/src/api/users/helpers/get-user.js'
-import { withMongoTransaction } from '~/src/api/helpers/mongo/transactions/with-mongo-transaction.js'
+import { withMongoTransaction } from '~/src/helpers/mongo/transactions/with-mongo-transaction.js'
+import { removeTeamFromScope } from '~/src/helpers/mongo/transactions/scope/remove-scope-from-team-transaction.js'
+import { removeUserFromScope } from '~/src/helpers/mongo/transactions/scope/remove-scope-from-user-transaction.js'
 
 async function removeTeamFromUserDb(db, userId, teamId) {
   return await db.collection('users').findOneAndUpdate(
@@ -40,9 +43,11 @@ async function removeUserFromTeam(request, userId, teamId) {
 async function deleteUser(request, userId) {
   const db = request.db
   const user = await getUser(db, userId)
+
   if (!user) {
     throw Boom.notFound('User not found')
   }
+
   await withMongoTransaction(request, async () => {
     if (user.teams?.length) {
       const removeFromTeams = user.teams.map((team) =>
@@ -50,6 +55,14 @@ async function deleteUser(request, userId) {
       )
       await Promise.all(removeFromTeams)
     }
+
+    if (user.scopes?.length) {
+      const removeFromScopes = user.scopes.map((scope) =>
+        removeUserFromScope(db, user.userId, scope.scopeId)
+      )
+      await Promise.all(removeFromScopes)
+    }
+
     const { deletedCount } = await db.collection('users').deleteOne({
       _id: userId
     })
@@ -64,9 +77,11 @@ async function deleteUser(request, userId) {
 async function deleteTeam(request, teamId) {
   const db = request.db
   const team = await getTeam(db, teamId)
+
   if (!team) {
     throw Boom.notFound('Team not found')
   }
+
   await withMongoTransaction(request, async () => {
     if (team.users?.length) {
       const removeFromUsers = team.users.map((user) =>
@@ -74,9 +89,18 @@ async function deleteTeam(request, teamId) {
       )
       await Promise.all(removeFromUsers)
     }
+
+    if (team.scopes?.length) {
+      const removeFromScopes = team.scopes.map((scope) =>
+        removeTeamFromScope(db, team.teamId, scope.scopeId)
+      )
+      await Promise.all(removeFromScopes)
+    }
+
     const { deletedCount } = await db.collection('teams').deleteOne({
       _id: teamId
     })
+
     if (deletedCount === 1) {
       request.logger.info(`Team ${team.name} deleted from CDP`)
     }

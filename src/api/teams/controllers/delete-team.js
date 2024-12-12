@@ -1,9 +1,17 @@
-import { deleteTeam } from '~/src/api/helpers/mongo/transactions/delete-transactions.js'
-import { config } from '~/src/config/index.js'
+import Joi from 'joi'
+
+import { config } from '~/src/config/config.js'
+import { deleteTeam } from '~/src/helpers/mongo/transactions/delete-transactions.js'
 import { removeUserFromAadGroup } from '~/src/api/teams/helpers/remove-user-from-aad-group.js'
 
 const deleteTeamController = {
   options: {
+    tags: ['api', 'teams'],
+    validate: {
+      params: Joi.object({
+        teamId: Joi.string().uuid().required()
+      })
+    },
     auth: {
       strategy: 'azure-oidc',
       access: {

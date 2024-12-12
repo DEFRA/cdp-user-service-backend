@@ -1,17 +1,54 @@
-import ecsFormat from '@elastic/ecs-pino-format'
+import { ecsFormat } from '@elastic/ecs-pino-format'
 
-import { config } from '~/src/config/index.js'
+import { getTraceId } from '~/src/helpers/tracing/async-local-storage.js'
+import { config } from '~/src/config/config.js'
 
-const loggerOptions = {
-  enabled: !config.get('isTest'),
-  redact: {
-    paths: ['req.headers.authorization', 'req.headers.cookie', 'res.headers'],
-    remove: true
+const logConfig = config.get('log')
+const serviceConfig = config.get('service')
+
+/**
+ * @type {{ecs: Omit<LoggerOptions, "mixin"|"transport">, "pino-pretty": {transport: {target: string}}}}
+ */
+const formatters = {
+  ecs: {
+    ...ecsFormat(),
+    base: {
+      service: {
+        name: serviceConfig.name,
+        type: 'nodeJs',
+        version: serviceConfig.version,
+        environment: serviceConfig.environment
+      }
+    }
   },
-  level: config.get('logLevel'),
-  ...(config.get('isDevelopment')
-    ? { transport: { target: 'pino-pretty' } }
-    : ecsFormat())
+  'pino-pretty': { transport: { target: 'pino-pretty' } }
 }
 
-export { loggerOptions }
+/**
+ * @satisfies {Options}
+ */
+export const loggerOptions = {
+  enabled: logConfig.enabled,
+  ignorePaths: ['/health'],
+  redact: {
+    paths: logConfig.redact,
+    remove: true
+  },
+  level: logConfig.level,
+  ...formatters[logConfig.format],
+  mixin() {
+    const mixinValues = {}
+    const traceId = getTraceId()
+
+    if (traceId) {
+      mixinValues.trace = { id: traceId }
+    }
+
+    return mixinValues
+  }
+}
+
+/**
+ * @import { Options } from 'hapi-pino'
+ * @import { LoggerOptions } from 'pino'
+ */

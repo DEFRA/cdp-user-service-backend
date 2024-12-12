@@ -2,7 +2,7 @@ import { Octokit } from '@octokit/core'
 import { createAppAuth } from '@octokit/auth-app'
 import { paginateGraphql } from '@octokit/plugin-paginate-graphql'
 
-import { config } from '~/src/config/index.js'
+import { config } from '~/src/config/config.js'
 import { proxyFetch } from '~/src/helpers/proxy.js'
 
 const octokitPlugin = {

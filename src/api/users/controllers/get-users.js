@@ -4,6 +4,7 @@ import { getUsers } from '~/src/api/users/helpers/get-users.js'
 
 const getUsersController = {
   options: {
+    tags: ['api', 'users'],
     validate: {
       query: Joi.object({
         query: Joi.string()

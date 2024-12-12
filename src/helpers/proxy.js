@@ -2,11 +2,10 @@ import { URL } from 'node:url'
 import { ProxyAgent } from 'undici'
 import { HttpsProxyAgent } from 'https-proxy-agent'
 
-import { config } from '~/src/config/index.js'
+import { config } from '~/src/config/config.js'
 import { createLogger } from '~/src/helpers/logging/logger.js'
 
 const logger = createLogger()
-
 /**
  * @typedef Proxy
  * @property {URL} url
@@ -27,8 +26,10 @@ function provideProxy() {
   }
 
   const url = new URL(proxyUrl)
+  const httpPort = 80
+  const httpsPort = 443
   // The url.protocol value always has a colon at the end
-  const port = url.protocol.toLowerCase() === 'http:' ? 80 : 443
+  const port = url.protocol.toLowerCase() === 'http:' ? httpPort : httpsPort
 
   logger.debug(`Proxy set up using ${url.origin}:${port}`)
 
@@ -43,6 +44,7 @@ function provideProxy() {
     httpAndHttpsProxyAgent: new HttpsProxyAgent(url)
   }
 }
+
 /**
  * Provide fetch with dispatcher ProxyAgent when http/s proxy url config has been set
  * @param {string | URL } url
@@ -51,18 +53,21 @@ function provideProxy() {
  */
 function proxyFetch(url, options) {
   const proxy = provideProxy()
+  const urlString = typeof url === 'string' ? url : url.toString()
 
   if (!proxy) {
+    logger.debug({ url: urlString }, 'Fetching data')
+
     return fetch(url, options)
   }
 
   logger.debug(
-    `Fetching: ${url.toString()} via the proxy: ${proxy?.url.origin}:${proxy.port}`
+    { url: urlString },
+    `Fetching data via the proxy: ${proxy?.url.origin}:${proxy.port}`
   )
 
   return fetch(url, {
     ...options,
-    // @ts-expect-error dispatcher has not been added to types
     dispatcher: proxy.proxyAgent
   })
 }

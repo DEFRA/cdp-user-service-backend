@@ -1,15 +1,37 @@
-import { config } from '~/src/config/index.js'
+import fetchMock from 'jest-fetch-mock'
+
+import { config } from '~/src/config/config.js'
 import { createServer } from '~/src/api/server.js'
 import { Client } from '@microsoft/microsoft-graph-client'
+import { wellKnownResponseFixture } from '~/src/__fixtures__/well-known.js'
+import { userOneFixture, userTwoFixture } from '~/src/__fixtures__/users.js'
+import {
+  platformTeamFixture,
+  teamWithoutUsers,
+  tenantTeamFixture
+} from '~/src/__fixtures__/teams.js'
+import { deleteMany, replaceOne } from '~/test-helpers/mongo-helpers.js'
 
 jest.mock('@microsoft/microsoft-graph-client')
 jest.mock('@azure/identity')
 
-describe('/teams/{teamId}', () => {
+const oidcWellKnownConfigurationUrl = config.get(
+  'oidcWellKnownConfigurationUrl'
+)
+
+describe('DELETE:/teams/{teamId}', () => {
   let server
   let mockMsGraph
+  let replaceOneTestHelper
+  let deleteManyTestHelper
 
   beforeAll(async () => {
+    fetchMock.enableMocks()
+
+    fetchMock.mockIf(oidcWellKnownConfigurationUrl, () =>
+      Promise.resolve(JSON.stringify(wellKnownResponseFixture))
+    )
+
     // Mock MsGraph client
     mockMsGraph = {
       api: jest.fn().mockReturnThis(),
@@ -20,19 +42,17 @@ describe('/teams/{teamId}', () => {
 
     server = await createServer()
     await server.initialize()
-  })
 
-  afterEach(async () => {
-    await server.db.collection('users').deleteMany({})
-    await server.db.collection('teams').deleteMany({})
+    replaceOneTestHelper = replaceOne(server.db)
+    deleteManyTestHelper = deleteMany(server.db)
   })
 
   afterAll(async () => {
-    await server.mongoClient.close()
+    fetchMock.disableMocks()
     await server.stop({ timeout: 0 })
   })
 
-  async function invokeDeleteTeam(url) {
+  async function deleteTeamEndpoint(url) {
     return await server.inject({
       method: 'DELETE',
       url,
@@ -45,143 +65,257 @@ describe('/teams/{teamId}', () => {
     })
   }
 
-  test('Should error when team does not exist in the db', async () => {
-    const teamId = crypto.randomUUID()
-    const result = await invokeDeleteTeam(`/teams/${teamId}`)
-    expect(result).toMatchObject({
-      statusCode: 404,
-      statusMessage: 'Not Found'
+  describe('When non UUID passed as teamId param', () => {
+    test('Should provide expected error response', async () => {
+      const { result, statusCode, statusMessage } =
+        await deleteTeamEndpoint('/teams/not-a-uuid')
+
+      expect(statusCode).toBe(400)
+      expect(statusMessage).toBe('Bad Request')
+
+      expect(result).toMatchObject({
+        statusCode: 400,
+        error: 'Bad Request',
+        message: '"teamId" must be a valid GUID'
+      })
+    })
+  })
+
+  describe('When team UUID does not exist in the db', () => {
+    test('Should provide expected error response', async () => {
+      const { result, statusCode, statusMessage } = await deleteTeamEndpoint(
+        '/team/b4c0d7f5-afc7-4dd2-aac5-5467f72a5cfe'
+      )
+
+      expect(statusCode).toBe(404)
+      expect(statusMessage).toBe('Not Found')
+
+      expect(result).toMatchObject({
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'Not Found'
+      })
     })
   })
 
   describe('When a team does not have any users', () => {
-    test('Should delete a team from DB', async () => {
-      const teamId = crypto.randomUUID()
-      const mockTeam = {
-        _id: teamId,
-        name: 'a-team',
-        createdAt: new Date(),
-        users: []
-      }
-      await server.db.collection('teams').insertOne(mockTeam)
+    let deleteTeamResponse
 
-      const result = await invokeDeleteTeam(`/teams/${teamId}`)
+    beforeEach(async () => {
+      await replaceOneTestHelper('teams', teamWithoutUsers)
 
-      expect(result).toMatchObject({
-        statusCode: 200,
-        statusMessage: 'OK'
+      deleteTeamResponse = await deleteTeamEndpoint(
+        `/teams/${teamWithoutUsers._id}`
+      )
+    })
+
+    afterEach(async () => {
+      await deleteManyTestHelper('teams')
+    })
+
+    test('Should have deleted the team from DB', async () => {
+      const {
+        result: teamResult,
+        statusCode: teamStatusCode,
+        statusMessage: teamStatusMessage
+      } = await server.inject(`/teams/${teamWithoutUsers._id}`)
+
+      expect(teamStatusCode).toBe(404)
+      expect(teamStatusMessage).toBe('Not Found')
+
+      expect(teamResult).toMatchObject({
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'Team not found'
       })
-      const teams = await server.db.collection('teams').find({}).toArray()
-      expect(teams).toEqual([])
+    })
+
+    test('Should provide expected delete success response', () => {
+      const { result, statusCode, statusMessage } = deleteTeamResponse
+
+      expect(statusCode).toBe(200)
+      expect(statusMessage).toBe('OK')
+
+      expect(result).toEqual({
+        message: 'success'
+      })
     })
   })
 
   describe('When a team has users', () => {
-    test('Should remove user from AAD and team from user', async () => {
-      const userId = crypto.randomUUID()
-      const teamId = crypto.randomUUID()
-      const mockUser = {
-        _id: userId,
-        name: 'test',
-        teams: [teamId],
-        createdAt: new Date()
-      }
-      const mockTeam = {
-        _id: teamId,
-        name: 'a-team',
-        createdAt: new Date(),
-        users: [userId]
-      }
+    let deleteTeamResponse
 
-      await server.db.collection('teams').insertOne(mockTeam)
-      await server.db.collection('users').insertOne(mockUser)
-
+    beforeEach(async () => {
       mockMsGraph.get.mockReturnValue({
-        value: [{ id: userId }]
+        value: [{ id: userOneFixture._id }]
       })
       mockMsGraph.delete.mockResolvedValue()
 
-      const result = await invokeDeleteTeam(`/teams/${teamId}`)
-      // Call to get members of a group
+      await replaceOneTestHelper('users', userOneFixture)
+      await replaceOneTestHelper('teams', platformTeamFixture)
+
+      deleteTeamResponse = await deleteTeamEndpoint(
+        `/teams/${platformTeamFixture._id}`
+      )
+    })
+
+    afterEach(async () => {
+      await deleteManyTestHelper(['users', 'teams'])
+    })
+
+    test('Should call AAD to get expected members of a group', () => {
       expect(mockMsGraph.api).toHaveBeenNthCalledWith(
         1,
-        `/groups/${teamId}/members`
+        `/groups/${platformTeamFixture._id}/members`
       )
       expect(mockMsGraph.get).toHaveBeenCalledTimes(1)
+    })
 
-      // Call to remove user from a group
+    test('Should call AAD to remove user from a group', () => {
       expect(mockMsGraph.api).toHaveBeenNthCalledWith(
         2,
-        `/groups/${teamId}/members/${userId}/$ref`
+        `/groups/${platformTeamFixture._id}/members/${userOneFixture._id}/$ref`
       )
       expect(mockMsGraph.delete).toHaveBeenCalledTimes(1)
-      expect(result).toMatchObject({
-        statusCode: 200,
-        statusMessage: 'OK'
+    })
+
+    test('Team should have been removed from DB', async () => {
+      const {
+        result: teamResult,
+        statusCode: teamStatusCode,
+        statusMessage: teamStatusMessage
+      } = await server.inject(`/teams/${platformTeamFixture._id}`)
+
+      expect(teamStatusCode).toBe(404)
+      expect(teamStatusMessage).toBe('Not Found')
+
+      expect(teamResult).toMatchObject({
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'Team not found'
       })
+    })
 
-      const teams = await server.db.collection('teams').find({}).toArray()
-      const users = await server.db.collection('users').find({}).toArray()
+    test('User should no longer have team', async () => {
+      const {
+        result: userResult,
+        statusCode: userStatusCode,
+        statusMessage: userStatusMessage
+      } = await server.inject(`/users/${userOneFixture._id}`)
 
-      expect(teams).toEqual([])
-      expect(users).toMatchObject([
-        {
-          _id: userId,
-          name: 'test',
+      expect(userStatusCode).toBe(200)
+      expect(userStatusMessage).toBe('OK')
+
+      expect(userResult).toMatchObject({
+        message: 'success',
+        user: expect.objectContaining({
           teams: []
-        }
-      ])
+        })
+      })
+    })
+
+    test('Delete team response should be as expected', () => {
+      const { result, statusCode, statusMessage } = deleteTeamResponse
+
+      expect(statusCode).toBe(200)
+      expect(statusMessage).toBe('OK')
+
+      expect(result).toEqual({
+        message: 'success'
+      })
     })
   })
 
   describe('When DB and AAD are out of sync', () => {
-    test('Should complete DB user removal from team and DB user deletion', async () => {
-      const userId = crypto.randomUUID()
-      const teamId = crypto.randomUUID()
-      const mockUser = {
-        _id: userId,
-        name: 'test',
-        teams: [teamId],
-        createdAt: new Date()
-      }
-      const mockTeam = {
-        _id: teamId,
-        name: 'a-team',
-        createdAt: new Date(),
-        users: [userId]
-      }
-      await server.db.collection('teams').insertOne(mockTeam)
-      await server.db.collection('users').insertOne(mockUser)
+    let deleteTeamResponse
 
+    beforeEach(async () => {
       mockMsGraph.get.mockReturnValue({ value: [] })
 
-      const result = await invokeDeleteTeam(`/teams/${teamId}`)
+      await replaceOneTestHelper('users', userTwoFixture)
+      await replaceOneTestHelper('teams', tenantTeamFixture)
 
-      // Call to get members of a group
+      deleteTeamResponse = await deleteTeamEndpoint(
+        `/teams/${tenantTeamFixture._id}`
+      )
+    })
+
+    afterEach(async () => {
+      await deleteManyTestHelper(['users', 'teams'])
+    })
+
+    test('Should call AAD to get expected members of a group', () => {
       expect(mockMsGraph.api).toHaveBeenNthCalledWith(
         1,
-        `/groups/${mockTeam._id}/members`
+        `/groups/${tenantTeamFixture._id}/members`
       )
       expect(mockMsGraph.get).toHaveBeenCalledTimes(1)
+    })
 
-      // No call to remove user from a group
+    test('Should not call AAD to remove user from a group', () => {
       expect(mockMsGraph.delete).not.toHaveBeenCalled()
+    })
+
+    test('Team should have been removed from DB', async () => {
+      const {
+        result: teamResult,
+        statusCode: teamStatusCode,
+        statusMessage: teamStatusMessage
+      } = await server.inject(`/teams/${tenantTeamFixture._id}`)
+
+      expect(teamStatusCode).toBe(404)
+      expect(teamStatusMessage).toBe('Not Found')
+
+      expect(teamResult).toMatchObject({
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'Team not found'
+      })
+    })
+
+    test('User should no longer have team', async () => {
+      const {
+        result: userResult,
+        statusCode: userStatusCode,
+        statusMessage: userStatusMessage
+      } = await server.inject(`/users/${userTwoFixture._id}`)
+
+      expect(userStatusCode).toBe(200)
+      expect(userStatusMessage).toBe('OK')
+
+      expect(userResult).toMatchObject({
+        message: 'success',
+        user: expect.objectContaining({
+          teams: []
+        })
+      })
+    })
+
+    test('Delete team response should be as expected', () => {
+      const { result, statusCode, statusMessage } = deleteTeamResponse
+
+      expect(statusCode).toBe(200)
+      expect(statusMessage).toBe('OK')
+
+      expect(result).toEqual({
+        message: 'success'
+      })
+    })
+  })
+
+  describe('Without auth', () => {
+    test('Should provide expected unauthorized response', async () => {
+      const { result, statusCode, statusMessage } = await server.inject({
+        method: 'DELETE',
+        url: `/teams/${platformTeamFixture._id}`
+      })
+
+      expect(statusCode).toBe(401)
+      expect(statusMessage).toBe('Unauthorized')
 
       expect(result).toMatchObject({
-        statusCode: 200,
-        statusMessage: 'OK'
+        message: 'Missing authentication'
       })
-      const teams = await server.db.collection('teams').find({}).toArray()
-      const users = await server.db.collection('users').find({}).toArray()
-
-      expect(teams).toEqual([])
-      expect(users).toMatchObject([
-        {
-          _id: userId,
-          name: 'test',
-          teams: []
-        }
-      ])
     })
   })
 })

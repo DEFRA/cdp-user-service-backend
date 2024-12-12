@@ -1,13 +1,15 @@
 import Joi from 'joi'
 
-import { getTeams } from '~/src/api/teams/helpers/mongo/get-teams.js'
+import { getTeams } from '~/src/api/teams/helpers/get-teams.js'
 
 const getTeamsController = {
   options: {
+    tags: ['api', 'teams'],
     validate: {
       query: Joi.object({
         query: Joi.string(),
-        hasGithub: Joi.boolean()
+        hasGithub: Joi.boolean(),
+        name: Joi.string()
       })
     }
   },

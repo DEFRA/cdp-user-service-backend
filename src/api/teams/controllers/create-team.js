@@ -1,15 +1,16 @@
 import Boom from '@hapi/boom'
 
-import { config } from '~/src/config/index.js'
+import { config } from '~/src/config/config.js'
 import { createTeamValidationSchema } from '~/src/api/teams/helpers/create-team-validation-schema.js'
 import { MongoErrors } from '~/src/helpers/mongodb-errors.js'
-import { teamNameExists } from '~/src/api/teams/helpers/mongo/team-name-exists.js'
+import { teamNameExists } from '~/src/api/teams/helpers/team-name-exists.js'
 import { gitHubTeamExists } from '~/src/api/teams/helpers/github/github-team-exists.js'
 import { createTeam } from '~/src/api/teams/helpers/aad/create-team.js'
 import { addSharedRepoAccess } from '~/src/api/teams/helpers/github/github-shared-repo-access.js'
 
 const createTeamController = {
   options: {
+    tags: ['api', 'teams'],
     validate: {
       payload: createTeamValidationSchema
     },
@@ -26,7 +27,8 @@ const createTeamController = {
       name: payload.name,
       description: payload?.description,
       github: payload?.github,
-      serviceCodes: payload?.serviceCodes
+      serviceCodes: payload?.serviceCodes,
+      alertEmailAddresses: payload?.alertEmailAddresses
     }
     const teamExists = await teamNameExists(request.db, dbTeam.name)
     if (teamExists) {
