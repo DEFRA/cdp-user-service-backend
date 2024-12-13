@@ -220,12 +220,6 @@ const config = convict({
     env: 'CDP_HTTPS_PROXY'
   },
   tracing: {
-    enabled: {
-      doc: 'Propagate trace headers across calls',
-      format: Boolean,
-      default: true,
-      env: 'TRACING_ENABLED'
-    },
     header: {
       doc: 'Which header to track',
       format: String,
