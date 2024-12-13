@@ -18,5 +18,9 @@ export default {
     '<rootDir>/test-helpers',
     'index.js'
   ],
-  coverageDirectory: '<rootDir>/coverage'
+  coverageDirectory: '<rootDir>/coverage',
+  // Ignore ESM Modules
+  transformIgnorePatterns: [
+    '/node_modules(?!/(universal-user-agent|@defra/hapi-tracing))'
+  ]
 }

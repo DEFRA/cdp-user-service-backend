@@ -17,7 +17,7 @@ import { router } from '~/src/api/router.js'
 import { secureContext } from '~/src/helpers/secure-context/index.js'
 import { setupWreckAgents } from '~/src/helpers/setup-wreck-agents.js'
 import { swaggerOptions } from '~/src/helpers/docs/swagger-options.js'
-import { tracing } from '~/src/helpers/tracing/tracing.js'
+import { requestTracing } from '~/src/helpers/request-tracing.js'
 
 const root = config.get('root')
 const port = config.get('port')
@@ -56,7 +56,7 @@ async function createServer() {
   })
 
   // Add tracer and request logger before all other plugins
-  await server.register([tracing, requestLogger])
+  await server.register([requestTracing, requestLogger])
 
   if (enableSecureContext) {
     await server.register(secureContext)
