@@ -38,8 +38,7 @@ const adminAddScopeToUserController = {
       throw Boom.notFound('Scope not found')
     }
 
-    // TODO once migrated remove the optional chaining
-    if (!dbScope.kind?.includes('user')) {
+    if (!dbScope.kind.includes('user')) {
       throw Boom.badRequest('Scope cannot be applied to a user')
     }
 
