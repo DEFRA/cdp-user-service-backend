@@ -34,7 +34,9 @@ function provideProxy() {
   const defaultPort =
     url.protocol.toLowerCase() === 'http:' ? httpPort : httpsPort
 
-  logger.debug(`Proxy set up using ${url.hostname}:${url.port ?? defaultPort}`)
+  logger.debug(
+    `Proxy set up using ${url.hostname}:${url.port === '' ? defaultPort : url.port}`
+  )
 
   return {
     url,
@@ -49,12 +51,6 @@ function provideProxy() {
 }
 
 /**
- *
- * @type {Proxy|null}
- */
-export const proxy = provideProxy()
-
-/**
  * Provide fetch with dispatcher ProxyAgent when http/s proxy url config has been set
  * @param {string | URL } url
  * @param {RequestInit} options
@@ -63,6 +59,7 @@ export const proxy = provideProxy()
 function proxyFetch(url, options) {
   const urlString = typeof url === 'string' ? url : url.toString()
 
+  const proxy = provideProxy()
   if (!proxy) {
     logger.debug({ url: urlString }, 'Fetching data')
     return fetch(url, options)

@@ -11,9 +11,7 @@ jest.mock('~/src/helpers/logging/logger.js', () => ({
 
 const fetchSpy = jest.spyOn(global, 'fetch')
 const httpProxyUrl = 'http://proxy.example.com'
-const httpsProxyUrl = 'https://proxy.example.com'
 const httpPort = 80
-const httpsPort = 443
 
 describe('#proxy', () => {
   beforeEach(() => {
@@ -43,7 +41,7 @@ describe('#proxy', () => {
 
       test('Should make expected set up message', () => {
         expect(mockLoggerDebug).toHaveBeenCalledWith(
-          `Proxy set up using ${httpProxyUrl}:${httpPort}`
+          `Proxy set up using proxy.example.com:80`
         )
       })
 
@@ -52,31 +50,6 @@ describe('#proxy', () => {
       })
 
       test('Should return expected HTTP Proxy object', () => {
-        expect(result).toHaveProperty('url')
-        expect(result).toHaveProperty('proxyAgent')
-        expect(result).toHaveProperty('httpAndHttpsProxyAgent')
-      })
-    })
-
-    describe('When a HTTPS Proxy URL has been set', () => {
-      let result
-
-      beforeEach(() => {
-        config.set('httpsProxy', httpsProxyUrl)
-        result = provideProxy()
-      })
-
-      test('Should call debug with expected message', () => {
-        expect(mockLoggerDebug).toHaveBeenCalledWith(
-          `Proxy set up using ${httpsProxyUrl}:${httpsPort}`
-        )
-      })
-
-      test('Should set the correct port for HTTPS', () => {
-        expect(result).toHaveProperty('port', httpsPort)
-      })
-
-      test('Should return expected HTTPS Proxy object', () => {
         expect(result).toHaveProperty('url')
         expect(result).toHaveProperty('proxyAgent')
         expect(result).toHaveProperty('httpAndHttpsProxyAgent')
@@ -107,7 +80,7 @@ describe('#proxy', () => {
 
     describe('When proxy is configured', () => {
       beforeEach(async () => {
-        config.set('httpProxy', httpsProxyUrl)
+        config.set('httpProxy', httpProxyUrl)
         fetch.mockResponse(() => Promise.resolve({}))
 
         await proxyFetch(secureUrl, {})
@@ -125,7 +98,7 @@ describe('#proxy', () => {
       test('Should make expected set up message', () => {
         expect(mockLoggerDebug).toHaveBeenNthCalledWith(
           1,
-          `Proxy set up using ${httpsProxyUrl}:${httpsPort}`
+          `Proxy set up using proxy.example.com:80`
         )
       })
 
@@ -133,7 +106,7 @@ describe('#proxy', () => {
         expect(mockLoggerDebug).toHaveBeenNthCalledWith(
           2,
           { url: 'https://beepboopbeep.com' },
-          'Fetching data via the proxy: https://proxy.example.com:443'
+          'Fetching data via the proxy: proxy.example.com:80'
         )
       })
     })
