@@ -5,7 +5,6 @@ import { HttpsProxyAgent } from 'https-proxy-agent'
 import { config } from '~/src/config/config.js'
 import { createLogger } from '~/src/helpers/logging/logger.js'
 import { bootstrap } from 'global-agent'
-import Wreck from '@hapi/wreck'
 
 const logger = createLogger()
 /**
@@ -33,20 +32,20 @@ function provideProxy() {
   // The url.protocol value always has a colon at the end
   const defaultPort =
     url.protocol.toLowerCase() === 'http:' ? httpPort : httpsPort
+  const port = url.port !== '' ? Number(url.port) : defaultPort
 
-  logger.debug(
-    `Proxy set up using ${url.hostname}:${url.port === '' ? defaultPort : url.port}`
-  )
+  logger.debug(`Proxy set up using ${url.hostname}:${port}`)
 
+  const httpsProxy = new HttpsProxyAgent(url, {})
   return {
     url,
-    port: defaultPort,
+    port,
     proxyAgent: new ProxyAgent({
       uri: proxyUrl,
       keepAliveTimeout: 10,
       keepAliveMaxTimeout: 10
     }),
-    httpAndHttpsProxyAgent: new HttpsProxyAgent(url)
+    httpAndHttpsProxyAgent: httpsProxy
   }
 }
 
@@ -83,16 +82,9 @@ function setupProxy() {
   const proxy = provideProxy()
   if (!proxy) return
 
-  // global-agent (axios/request/and others)
-  global.GLOBAL_AGENT_ENVIRONMENT_VARIABLE_NAMESPACE = ''
+  // global-agent (axios/request/wreck)
   bootstrap()
-
-  // Hapi built in http client
-  Wreck.agents = {
-    https: proxy.agent,
-    http: proxy.agent,
-    httpsAllowUnauthorized: proxy.agent
-  }
+  global.GLOBAL_AGENT.HTTP_PROXY = proxy.url.toString()
 
   // undici proxy setup
   setGlobalDispatcher(proxy.proxyAgent)
