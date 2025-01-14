@@ -10,12 +10,11 @@ import { failAction } from '~/src/helpers/fail-action.js'
 import { mongoPlugin } from '~/src/helpers/mongodb.js'
 import { msGraphPlugin } from '~/src/helpers/ms-graph.js'
 import { octokitPlugin } from '~/src/helpers/octokit.js'
-import { provideProxy } from '~/src/helpers/proxy.js'
+import { setupProxy } from '~/src/helpers/proxy.js'
 import { pulse } from '~/src/helpers/pulse.js'
 import { requestLogger } from '~/src/helpers/logging/request-logger.js'
 import { router } from '~/src/api/router.js'
 import { secureContext } from '~/src/helpers/secure-context/index.js'
-import { setupWreckAgents } from '~/src/helpers/setup-wreck-agents.js'
 import { swaggerOptions } from '~/src/helpers/docs/swagger-options.js'
 import { requestTracing } from '~/src/helpers/request-tracing.js'
 
@@ -25,7 +24,7 @@ const enableSecureContext = config.get('enableSecureContext')
 const enableDocumentation = config.get('enableDocumentation')
 
 async function createServer() {
-  setupWreckAgents(provideProxy())
+  setupProxy()
 
   const server = hapi.server({
     port,
