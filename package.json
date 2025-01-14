@@ -48,6 +48,7 @@
     "aws4": "1.13.0",
     "babel-plugin-module-resolver": "5.0.2",
     "convict": "6.2.4",
+    "global-agent": "3.0.0",
     "hapi-pino": "12.1.0",
     "hapi-pulse": "3.0.1",
     "hapi-swagger": "17.3.1",
