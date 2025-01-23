@@ -1,6 +1,5 @@
 import Boom from '@hapi/boom'
 
-import { config } from '~/src/config/config.js'
 import { updateTeamValidationSchema } from '~/src/api/teams/helpers/update-team-validation-schema.js'
 import { getTeam } from '~/src/api/teams/helpers/get-team.js'
 import { getTeamsCount } from '~/src/api/teams/helpers/get-teams.js'
@@ -23,7 +22,7 @@ const updateTeamController = {
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: [config.get('oidcAdminGroupId'), '{params.teamId}']
+        scope: ['admin', '{params.teamId}']
       }
     }
   },
