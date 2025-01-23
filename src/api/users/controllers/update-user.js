@@ -18,7 +18,7 @@ const updateUserController = {
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: [config.get('oidcAdminGroupId'), '{params.userId}']
+        scope: ['admin', '{params.userId}']
       }
     }
   },

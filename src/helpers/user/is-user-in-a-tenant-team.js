@@ -1,16 +1,13 @@
-import { config } from '~/src/config/config.js'
-
 /**
  * Check if a teamId is in the provide scopes
  * @param {Array<string>} teamIds
  * @param {Array<string>} scopes
+ * @param {string} adminGroupId
  * @returns {boolean}
  */
-function isUserInATenantTeam(teamIds, scopes) {
-  const oidcAdminGroupId = config.get('oidcAdminGroupId')
-
+function isUserInATenantTeam(teamIds, scopes, adminGroupId) {
   return scopes
-    .filter((scope) => scope !== oidcAdminGroupId)
+    .filter((scope) => scope !== adminGroupId)
     .some((scope) => teamIds.includes(scope))
 }
 

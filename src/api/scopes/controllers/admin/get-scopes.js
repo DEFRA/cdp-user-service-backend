@@ -1,4 +1,3 @@
-import { config } from '~/src/config/config.js'
 import { getScopes } from '~/src/api/scopes/helpers/get-scopes.js'
 
 const adminGetScopesController = {
@@ -7,7 +6,7 @@ const adminGetScopesController = {
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: [config.get('oidcAdminGroupId')]
+        scope: ['admin']
       }
     }
   },
