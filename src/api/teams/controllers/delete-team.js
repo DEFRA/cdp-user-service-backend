@@ -1,6 +1,5 @@
 import Joi from 'joi'
 
-import { config } from '~/src/config/config.js'
 import { deleteTeam } from '~/src/helpers/mongo/transactions/delete-transactions.js'
 import { removeUserFromAadGroup } from '~/src/api/teams/helpers/remove-user-from-aad-group.js'
 
@@ -15,7 +14,7 @@ const deleteTeamController = {
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: [config.get('oidcAdminGroupId')]
+        scope: ['admin']
       }
     }
   },

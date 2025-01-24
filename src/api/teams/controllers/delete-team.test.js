@@ -59,7 +59,7 @@ describe('DELETE:/teams/{teamId}', () => {
       auth: {
         strategy: 'azure-oidc',
         credentials: {
-          scope: [config.get('oidcAdminGroupId')]
+          scope: ['admin']
         }
       }
     })

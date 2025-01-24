@@ -2,6 +2,7 @@ import jwt from '@hapi/jwt'
 
 import { config } from '~/src/config/config.js'
 import { proxyFetch } from '~/src/helpers/proxy.js'
+import { scopesForUser } from '~/src/api/scopes/helpers/scopes-for-user.js'
 
 const azureOidc = {
   plugin: {
@@ -29,15 +30,29 @@ const azureOidc = {
           maxAgeSec: 5400, // 90 minutes
           timeSkewSec: 15
         },
-        validate: (artifacts) => {
+        validate: async (artifacts) => {
           const payload = artifacts.decoded.payload
+
+          const credentials = {
+            id: payload.oid,
+            displayName: payload.name,
+            email: payload.upn ?? payload.preferred_username,
+            scope: [...payload.groups, payload.oid]
+          }
+
+          const { scopes, scopeFlags } = await scopesForUser(
+            credentials,
+            server.db
+          )
+
           return {
             isValid: true,
             credentials: {
               id: payload.oid,
               displayName: payload.name,
               email: payload.upn ?? payload.preferred_username,
-              scope: [...payload.groups, payload.oid]
+              scope: scopes,
+              scopeFlags
             }
           }
         }
