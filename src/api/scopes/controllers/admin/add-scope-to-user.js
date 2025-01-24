@@ -1,6 +1,7 @@
 import Boom from '@hapi/boom'
 
 import Joi from '~/src/helpers/extended-joi.js'
+import { config } from '~/src/config/config.js'
 import { getScope } from '~/src/api/scopes/helpers/get-scope.js'
 import { getUser } from '~/src/api/users/helpers/get-user.js'
 import { addScopeToUserTransaction } from '~/src/helpers/mongo/transactions/scope/add-scope-to-user-transaction.js'
@@ -11,7 +12,7 @@ const adminAddScopeToUserController = {
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: ['admin']
+        scope: [config.get('oidcAdminGroupId')]
       }
     },
     validate: {
