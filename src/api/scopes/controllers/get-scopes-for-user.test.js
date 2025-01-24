@@ -97,6 +97,7 @@ describe('GET:/scopes', () => {
           '2a45e0cd-9f1b-4158-825d-40e561c55c55',
           'breakGlass',
           'postgres',
+          '62bb35d2-d4f2-4cf6-abd3-262d99727677',
           'tenant'
         ],
         scopeFlags: {
@@ -144,6 +145,7 @@ describe('GET:/scopes', () => {
           'aabe63e7-87ef-4beb-a596-c810631fc474',
           'terminal',
           'externalTest',
+          'b7606810-f0c6-4db7-b067-ba730ef706e8',
           'admin'
         ],
         scopeFlags: {
@@ -181,7 +183,12 @@ describe('GET:/scopes', () => {
 
       expect(result).toMatchObject({
         message: 'success',
-        scopes: ['2a45e0cd-9f1b-4158-825d-40e561c55c55', 'postgres', 'tenant'],
+        scopes: [
+          '2a45e0cd-9f1b-4158-825d-40e561c55c55',
+          'postgres',
+          'ad760f75-0930-434f-8a4e-174f74723c65',
+          'tenant'
+        ],
         scopeFlags: {
           isAdmin: false,
           isTenant: true
