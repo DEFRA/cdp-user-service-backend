@@ -1,6 +1,7 @@
 import Joi from 'joi'
 import Boom from '@hapi/boom'
 
+import { config } from '~/src/config/config.js'
 import { createScope } from '~/src/api/scopes/helpers/create-scope.js'
 import { scopeNameExists } from '~/src/api/scopes/helpers/scope-name-exists.js'
 
@@ -24,7 +25,7 @@ const adminCreateScopeController = {
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: ['admin']
+        scope: [config.get('oidcAdminGroupId')]
       }
     }
   },

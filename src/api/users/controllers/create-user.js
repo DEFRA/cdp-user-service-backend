@@ -1,5 +1,6 @@
 import Boom from '@hapi/boom'
 
+import { config } from '~/src/config/config.js'
 import { createUserValidationSchema } from '~/src/api/users/helpers/create-user-validation-schema.js'
 import { MongoErrors } from '~/src/helpers/mongodb-errors.js'
 import { aadUserIdExists } from '~/src/api/users/helpers/aad-user-id-exists.js'
@@ -15,7 +16,7 @@ const createUserController = {
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: ['admin']
+        scope: [config.get('oidcAdminGroupId')]
       }
     }
   },

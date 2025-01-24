@@ -13,7 +13,7 @@ const getScopesForUserController = {
   handler: async (request, h) => {
     const credentials = request.auth.credentials
     const jwtScopes = credentials.scope
-    const adminGroupId = config.get('oidcAdminGroupId')
+    const oidcAdminGroupId = config.get('oidcAdminGroupId')
 
     const userId = credentials.id
     const user = await getUser(request.db, userId)
@@ -34,12 +34,12 @@ const getScopesForUserController = {
 
     scopes.push(...userScopes, ...teamScopes)
 
-    const isAdmin = scopes.includes(adminGroupId)
+    const isAdmin = scopes.includes(oidcAdminGroupId)
     if (isAdmin) {
       scopes.push('admin')
     }
 
-    const isTenant = isUserInATenantTeam(allTeamIds, scopes, adminGroupId)
+    const isTenant = isUserInATenantTeam(allTeamIds, scopes)
     if (isTenant) {
       scopes.push('tenant')
     }
