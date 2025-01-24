@@ -1,6 +1,5 @@
 import Boom from '@hapi/boom'
 
-import { config } from '~/src/config/config.js'
 import Joi from '~/src/helpers/extended-joi.js'
 import { removeScopeFromTeamTransaction } from '~/src/helpers/mongo/transactions/scope/remove-scope-from-team-transaction.js'
 
@@ -10,7 +9,7 @@ const adminRemoveScopeFromTeamController = {
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: [config.get('oidcAdminGroupId')]
+        scope: ['admin']
       }
     },
     validate: {

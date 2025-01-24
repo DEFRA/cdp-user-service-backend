@@ -1,7 +1,6 @@
 import Joi from 'joi'
 import Boom from '@hapi/boom'
 
-import { config } from '~/src/config/config.js'
 import { deleteUser } from '~/src/helpers/mongo/transactions/delete-transactions.js'
 import { removeUserFromAadGroup } from '~/src/api/teams/helpers/remove-user-from-aad-group.js'
 
@@ -16,7 +15,7 @@ const deleteUserController = {
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: [config.get('oidcAdminGroupId')]
+        scope: ['admin']
       }
     }
   },
