@@ -108,13 +108,13 @@ const config = convict({
     doc: 'Azure Service Principal ID',
     format: String,
     env: 'AZURE_SERVICE_PRINCIPAL_ID',
-    default: '921c6ceb-e3d7-4408-8e23-5d5fe5495a6e'
+    default: '0ddf3c00-ebab-4dad-aeb8-c07f2e3daeac'
   },
   azureClientId: {
     doc: 'Azure App Client ID',
     format: String,
     env: 'AZURE_CLIENT_ID',
-    default: '81f438d7-b6e6-4f39-a2d8-10759536fb8a'
+    default: 'df53c4ec-92bf-4fc3-a672-cda33b0d9c00'
   },
   azureClientSecret: {
     doc: 'Azure App Client Secret',
@@ -135,12 +135,13 @@ const config = convict({
     env: 'AZURE_CLIENT_BASE_URL',
     default: 'http://localhost:3939/msgraph/'
   },
-  oidcWellKnownConfigurationUrl: {
-    doc: 'OIDC .well-known configuration URL',
-    format: String,
-    env: 'OIDC_WELL_KNOWN_CONFIGURATION_URL',
-    default:
-      'http://cdp.127.0.0.1.sslip.io:3939/63983fc2-cfff-45bb-8ec2-959e21062b9a/v2.0/.well-known/openid-configuration'
+  get oidcWellKnownConfigurationUrl() {
+    return {
+      doc: 'OIDC .well-known configuration URL',
+      format: String,
+      env: 'OIDC_WELL_KNOWN_CONFIGURATION_URL',
+      default: `http://cdp.127.0.0.1.sslip.io:3939/${this.azureTenantId.default}/v2.0/.well-known/openid-configuration`
+    }
   },
   oidcAudience: {
     doc: 'OIDC Audience for verification',
