@@ -98,6 +98,20 @@ const config = convict({
     default: 'cdp-user-service-backend',
     env: 'MONGO_DATABASE'
   },
+  azureFederatedCredentials: {
+    enabled: {
+      doc: 'Use Azure Federated Credentials',
+      format: Boolean,
+      env: 'AZURE_FEDERATED_CREDENTIALS_ENABLED',
+      default: false
+    },
+    identityPoolId: {
+      doc: 'Azure Federated Credential Pool ID',
+      format: String,
+      env: 'AZURE_IDENTITY_POOL_ID',
+      nullable: true
+    }
+  },
   azureTenantId: {
     doc: 'Azure Active Directory Tenant ID',
     format: String,

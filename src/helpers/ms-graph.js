@@ -1,9 +1,13 @@
-import { ClientSecretCredential } from '@azure/identity'
+import {
+  ClientSecretCredential,
+  ClientAssertionCredential
+} from '@azure/identity'
 import { Client } from '@microsoft/microsoft-graph-client'
 import { TokenCredentialAuthenticationProvider } from '@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials/index.js'
 
 import { config } from '~/src/config/config.js'
 import { provideProxy } from '~/src/helpers/proxy.js'
+import { getFederatedLoginToken } from '~/src/helpers/cognito.js'
 
 const msGraphPlugin = {
   plugin: {
@@ -29,12 +33,24 @@ const msGraphPlugin = {
           }
         : {}
 
-      const credential = new ClientSecretCredential(
-        azureTenantId,
-        azureClientId,
-        azureClientSecret,
-        credentialOptions
-      )
+      let credential
+
+      if (config.get('azureFederatedCredentials.enabled') === true) {
+        server.logger.info('Using federated credentials')
+        credential = new ClientAssertionCredential(
+          azureTenantId,
+          azureClientId,
+          getFederatedLoginToken
+        )
+      } else {
+        server.logger.info('Using client secret credentials')
+        credential = new ClientSecretCredential(
+          azureTenantId,
+          azureClientId,
+          azureClientSecret,
+          credentialOptions
+        )
+      }
 
       const authProvider = new TokenCredentialAuthenticationProvider(
         credential,
