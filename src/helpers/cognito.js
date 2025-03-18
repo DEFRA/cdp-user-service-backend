@@ -16,20 +16,26 @@ const client = new CognitoIdentityClient()
  */
 export async function getFederatedLoginToken() {
   const serviceName = config.get('service.name')
-  const poolId = config.get('azure.azureFederatedCredentials.identityPoolId')
+  const poolId = config.get('azureFederatedCredentials.identityPoolId')
   if (poolId === null) {
     throw new Error('AZURE_IDENTITY_POOL_ID is not set')
   }
 
-  const logins = {}
-  logins[`${serviceName}-aad-access`] = serviceName
+  try {
+    const logins = {}
+    logins[`${serviceName}-aad-access`] = serviceName
 
-  const input = {
-    IdentityPoolId: poolId,
-    Logins: logins
+    const input = {
+      IdentityPoolId: poolId,
+      Logins: logins
+    }
+    const command = new GetOpenIdTokenForDeveloperIdentityCommand(input)
+    const result = await client.send(command)
+
+    logger.info(`Got token from Cognition ${result?.IdentityId}`)
+    return result.Token
+  } catch (e) {
+    logger.error(e)
+    throw e
   }
-  const command = new GetOpenIdTokenForDeveloperIdentityCommand(input)
-  const result = await client.send(command)
-  logger.info(`Got token from Cognition ${result?.IdentityId}`)
-  return result.Token
 }
