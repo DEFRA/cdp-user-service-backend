@@ -109,7 +109,8 @@ const config = convict({
       doc: 'Azure Federated Credential Pool ID',
       format: String,
       env: 'AZURE_IDENTITY_POOL_ID',
-      nullable: true
+      nullable: true,
+      default: null
     }
   },
   azureTenantId: {
