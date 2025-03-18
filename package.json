@@ -31,6 +31,7 @@
   "author": "Defra DDTS",
   "license": "OGL-UK-3.0",
   "dependencies": {
+    "@aws-sdk/client-cognito-identity": "3.768.0",
     "@azure/identity": "4.3.0",
     "@babel/runtime": "7.24.7",
     "@defra/hapi-tracing": "1.0.0",
