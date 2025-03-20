@@ -1,0 +1,11 @@
+Apply fix for Node 22.12 issue with shelf dep
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch testing-github-runner
+# Your branch is behind 'origin/testing-github-runner' by 1 commit, and can be fast-forwarded.
+#   (use "git pull" to update your local branch)
+#
+# Changes to be committed:
+#	modified:   package.json
+#
