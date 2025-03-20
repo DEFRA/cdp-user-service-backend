@@ -42,7 +42,7 @@ $ nvm use
 
 ### Setup
 
-Install application dependencies:
+Install the application dependencies:
 
 ```bash
 $ npm install
