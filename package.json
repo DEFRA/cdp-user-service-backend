@@ -5,7 +5,7 @@
   "main": ".server/index.js",
   "type": "module",
   "engines": {
-    "node": ">=20.11.1"
+    "node": ">=22.13.1"
   },
   "scripts": {
     "build": "npm run build:server",
@@ -20,7 +20,7 @@
     "lint:fix": "eslint . --fix",
     "lint:js": "eslint .",
     "postversion": "git add package.json package-lock.json && git commit -m $npm_package_version",
-    "test": "TZ=UTC jest --coverage --verbose --runInBand",
+    "test": "TZ=UTC node --no-experimental-require-module ./node_modules/jest/bin/jest.js --coverage --verbose --runInBand",
     "test:watch": "TZ=UTC jest --watch",
     "server:watch": "nodemon --exec tsx --enable-source-maps ./src",
     "server:debug": "nodemon --exec tsx --enable-source-maps --inspect=9249 ./src",
@@ -67,7 +67,7 @@
     "@babel/cli": "7.24.7",
     "@babel/core": "7.24.7",
     "@babel/preset-env": "7.24.7",
-    "@shelf/jest-mongodb": "4.3.2",
+    "@shelf/jest-mongodb": "5.1.0",
     "@types/convict": "6.1.6",
     "@types/eslint": "9.6.0",
     "@types/jest": "29.5.13",
