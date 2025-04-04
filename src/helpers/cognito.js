@@ -15,14 +15,14 @@ const client = new CognitoIdentityClient()
  * @returns {Promise<string>}
  */
 export async function getFederatedLoginToken() {
-  const serviceName = config.get('service.name')
   const poolId = config.get('azureFederatedCredentials.identityPoolId')
   if (poolId === null) {
     throw new Error('AZURE_IDENTITY_POOL_ID is not set')
   }
 
-  const logins = {}
-  logins[`${serviceName}-aad-access`] = serviceName
+  const logins = {
+    'cdp-user-service-backend-aad-access': 'cdp-user-service-backend'
+  }
 
   const input = {
     IdentityPoolId: poolId,

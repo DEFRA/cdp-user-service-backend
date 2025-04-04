@@ -35,12 +35,13 @@ const msGraphPlugin = {
 
       let credential
 
-      if (config.get('azureFederatedCredentials.enabled') === true) {
+      if (config.get('azureFederatedCredentials.enabled')) {
         server.logger.info('Using federated credentials')
         credential = new ClientAssertionCredential(
           azureTenantId,
           azureClientId,
-          getFederatedLoginToken
+          getFederatedLoginToken,
+          credentialOptions
         )
       } else {
         server.logger.info('Using client secret credentials')
