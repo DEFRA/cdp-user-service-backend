@@ -1,11 +1,10 @@
-import { config } from '~/src/config/config.js'
 import { getUser } from '~/src/api/users/helpers/get-user.js'
 import { getTeams } from '~/src/api/teams/helpers/get-teams.js'
 import { isUserInATenantTeam } from '~/src/helpers/user/is-user-in-a-tenant-team.js'
 
 async function scopesForUser(credentials, db) {
   const jwtScopes = credentials.scope
-  const adminScope = config.get('adminScope')
+  const adminScope = 'admin'
 
   const userId = credentials.id
   const user = await getUser(db, userId)
