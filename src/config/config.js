@@ -164,11 +164,10 @@ const config = convict({
     env: 'OIDC_AUDIENCE',
     default: '26372ac9-d8f0-4da9-a17e-938eb3161d8e'
   },
-  oidcAdminGroupId: {
-    doc: 'OIDC Admin Group ID',
+  adminScope: {
+    doc: 'OIDC Admin Scope',
     format: String,
-    env: 'OIDC_ADMIN_GROUP_ID',
-    default: 'aabe63e7-87ef-4beb-a596-c810631fc474'
+    default: 'admin'
   },
   gitHubAppId: {
     doc: 'GitHub Api authentication App Id',

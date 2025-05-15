@@ -3,7 +3,10 @@ import fetchMock from 'jest-fetch-mock'
 import { config } from '~/src/config/config.js'
 import { createServer } from '~/src/api/server.js'
 import { wellKnownResponseFixture } from '~/src/__fixtures__/well-known.js'
-import { userOneFixture, userTwoFixture } from '~/src/__fixtures__/users.js'
+import {
+  userAdminFixture,
+  userTenantFixture
+} from '~/src/__fixtures__/users.js'
 import { deleteMany, replaceMany } from '~/test-helpers/mongo-helpers.js'
 
 const oidcWellKnownConfigurationUrl = config.get(
@@ -43,7 +46,10 @@ describe('GET:/users', () => {
 
   describe('When users are in the DB', () => {
     beforeEach(async () => {
-      await replaceManyTestHelper('users', [userOneFixture, userTwoFixture])
+      await replaceManyTestHelper('users', [
+        userAdminFixture,
+        userTenantFixture
+      ])
     })
 
     afterEach(async () => {

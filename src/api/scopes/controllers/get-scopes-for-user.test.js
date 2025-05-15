@@ -8,15 +8,16 @@ import {
   tenantTeamFixture
 } from '~/src/__fixtures__/teams.js'
 import {
+  adminFixture,
   breakGlassFixture,
   externalTestScopeFixture,
   postgresScopeFixture,
   terminalScopeFixture
 } from '~/src/__fixtures__/scopes.js'
 import {
-  userOneFixture,
-  userThreeFixture,
-  userTwoFixture
+  userAdminFixture,
+  userPostgresFixture,
+  userTenantFixture
 } from '~/src/__fixtures__/users.js'
 import { deleteMany, replaceMany } from '~/test-helpers/mongo-helpers.js'
 
@@ -45,9 +46,9 @@ describe('GET:/scopes', () => {
 
   beforeEach(async () => {
     await replaceManyTestHelper('users', [
-      userOneFixture,
-      userTwoFixture,
-      userThreeFixture
+      userAdminFixture,
+      userTenantFixture,
+      userPostgresFixture
     ])
     await replaceManyTestHelper('teams', [
       platformTeamFixture,
@@ -57,7 +58,8 @@ describe('GET:/scopes', () => {
       externalTestScopeFixture,
       postgresScopeFixture,
       terminalScopeFixture,
-      breakGlassFixture
+      breakGlassFixture,
+      adminFixture
     ])
   })
 
@@ -84,7 +86,7 @@ describe('GET:/scopes', () => {
   describe('With tenant scope', () => {
     test('Should provide response with expected scopes and flags', async () => {
       const { result, statusCode, statusMessage } = await scopesEndpoint({
-        id: userOneFixture._id,
+        id: userTenantFixture._id,
         scope: [tenantTeamFixture._id]
       })
 
@@ -95,9 +97,9 @@ describe('GET:/scopes', () => {
         message: 'success',
         scopes: [
           '2a45e0cd-9f1b-4158-825d-40e561c55c55',
-          'breakGlass',
+          'terminal',
           'postgres',
-          '62bb35d2-d4f2-4cf6-abd3-262d99727677',
+          userTenantFixture._id,
           'tenant'
         ],
         scopeFlags: {
@@ -132,21 +134,22 @@ describe('GET:/scopes', () => {
   describe('With admin scope', () => {
     test('Should provide response with expected scopes and flags', async () => {
       const { result, statusCode, statusMessage } = await scopesEndpoint({
-        id: userTwoFixture._id,
+        id: userAdminFixture._id,
         scope: [platformTeamFixture._id]
       })
 
+      result.scopes.sort()
+
       expect(statusCode).toBe(200)
       expect(statusMessage).toBe('OK')
-
       expect(result).toMatchObject({
         message: 'success',
         scopes: [
-          'aabe63e7-87ef-4beb-a596-c810631fc474',
-          'terminal',
-          'externalTest',
-          'b7606810-f0c6-4db7-b067-ba730ef706e8',
-          'admin'
+          userAdminFixture._id,
+          platformTeamFixture._id,
+          'admin',
+          'breakGlass',
+          'externalTest'
         ],
         scopeFlags: {
           isAdmin: true,
@@ -174,7 +177,7 @@ describe('GET:/scopes', () => {
     test('Should provide scopes without duplicates', async () => {
       // User three and Tenant team have the same postgres scope
       const { result, statusCode, statusMessage } = await scopesEndpoint({
-        id: userThreeFixture._id,
+        id: userPostgresFixture._id,
         scope: [tenantTeamFixture._id]
       })
 

@@ -5,7 +5,7 @@ import { isUserInATenantTeam } from '~/src/helpers/user/is-user-in-a-tenant-team
 
 async function scopesForUser(credentials, db) {
   const jwtScopes = credentials.scope
-  const adminGroupId = config.get('oidcAdminGroupId')
+  const adminScope = config.get('adminScope')
 
   const userId = credentials.id
   const user = await getUser(db, userId)
@@ -30,12 +30,9 @@ async function scopesForUser(credentials, db) {
     scopes.push(userId)
   }
 
-  const isAdmin = scopes.includes(adminGroupId)
-  if (isAdmin) {
-    scopes.push('admin')
-  }
+  const isAdmin = scopes.includes(adminScope)
 
-  const isTenant = isUserInATenantTeam(allTeamIds, scopes, adminGroupId)
+  const isTenant = !isAdmin && isUserInATenantTeam(allTeamIds, scopes)
   if (isTenant) {
     scopes.push('tenant')
   }

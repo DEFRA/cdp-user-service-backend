@@ -4,7 +4,10 @@ import { config } from '~/src/config/config.js'
 import { createServer } from '~/src/api/server.js'
 import { Client } from '@microsoft/microsoft-graph-client'
 import { wellKnownResponseFixture } from '~/src/__fixtures__/well-known.js'
-import { userOneFixture, userTwoFixture } from '~/src/__fixtures__/users.js'
+import {
+  userAdminFixture,
+  userTenantFixture
+} from '~/src/__fixtures__/users.js'
 import {
   platformTeamFixture,
   teamWithoutUsers,
@@ -147,11 +150,11 @@ describe('DELETE:/teams/{teamId}', () => {
 
     beforeEach(async () => {
       mockMsGraph.get.mockReturnValue({
-        value: [{ id: userOneFixture._id }]
+        value: [{ id: userAdminFixture._id }]
       })
       mockMsGraph.delete.mockResolvedValue()
 
-      await replaceOneTestHelper('users', userOneFixture)
+      await replaceOneTestHelper('users', userAdminFixture)
       await replaceOneTestHelper('teams', platformTeamFixture)
 
       deleteTeamResponse = await deleteTeamEndpoint(
@@ -174,7 +177,7 @@ describe('DELETE:/teams/{teamId}', () => {
     test('Should call AAD to remove user from a group', () => {
       expect(mockMsGraph.api).toHaveBeenNthCalledWith(
         2,
-        `/groups/${platformTeamFixture._id}/members/${userOneFixture._id}/$ref`
+        `/groups/${platformTeamFixture._id}/members/${userAdminFixture._id}/$ref`
       )
       expect(mockMsGraph.delete).toHaveBeenCalledTimes(1)
     })
@@ -201,7 +204,7 @@ describe('DELETE:/teams/{teamId}', () => {
         result: userResult,
         statusCode: userStatusCode,
         statusMessage: userStatusMessage
-      } = await server.inject(`/users/${userOneFixture._id}`)
+      } = await server.inject(`/users/${userAdminFixture._id}`)
 
       expect(userStatusCode).toBe(200)
       expect(userStatusMessage).toBe('OK')
@@ -232,7 +235,7 @@ describe('DELETE:/teams/{teamId}', () => {
     beforeEach(async () => {
       mockMsGraph.get.mockReturnValue({ value: [] })
 
-      await replaceOneTestHelper('users', userTwoFixture)
+      await replaceOneTestHelper('users', userTenantFixture)
       await replaceOneTestHelper('teams', tenantTeamFixture)
 
       deleteTeamResponse = await deleteTeamEndpoint(
@@ -278,7 +281,7 @@ describe('DELETE:/teams/{teamId}', () => {
         result: userResult,
         statusCode: userStatusCode,
         statusMessage: userStatusMessage
-      } = await server.inject(`/users/${userTwoFixture._id}`)
+      } = await server.inject(`/users/${userTenantFixture._id}`)
 
       expect(userStatusCode).toBe(200)
       expect(userStatusMessage).toBe('OK')

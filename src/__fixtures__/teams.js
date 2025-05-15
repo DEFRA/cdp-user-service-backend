@@ -9,8 +9,11 @@ const platformTeamFixture = {
   alertEmailAddresses: ['mary@mary.com'],
   createdAt: '2023-09-28T13:52:01.906Z',
   updatedAt: '2024-12-04T08:17:06.795Z',
-  users: ['62bb35d2-d4f2-4cf6-abd3-262d99727677'], // userOneFixture
-  scopes: [new ObjectId('67500e94922c4fe819dd8832')] // externalTestScopeFixture
+  users: ['62bb35d2-d4f2-4cf6-abd3-262d99727677'], // admin user
+  scopes: [
+    new ObjectId('67500e94922c4fe819dd8832'), // externalTestScopeFixture
+    new ObjectId('7751e606a171ebffac3cc9dd') // adminScopeFixture
+  ]
 }
 
 const tenantTeamFixture = {
