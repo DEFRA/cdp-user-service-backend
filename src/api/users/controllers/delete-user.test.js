@@ -4,7 +4,10 @@ import { Client } from '@microsoft/microsoft-graph-client'
 import { config } from '~/src/config/config.js'
 import { createServer } from '~/src/api/server.js'
 import { wellKnownResponseFixture } from '~/src/__fixtures__/well-known.js'
-import { userOneFixture, userTwoFixture } from '~/src/__fixtures__/users.js'
+import {
+  userAdminFixture,
+  userTenantFixture
+} from '~/src/__fixtures__/users.js'
 import {
   platformTeamFixture,
   tenantTeamFixture
@@ -101,11 +104,11 @@ describe('DELETE:/users/{userId}', () => {
     let deleteUserResponse
 
     beforeEach(async () => {
-      await replaceOneTestHelper('users', userOneFixture)
+      await replaceOneTestHelper('users', userAdminFixture)
       await replaceOneTestHelper('teams', tenantTeamFixture)
 
       deleteUserResponse = await deleteUserEndpoint(
-        `/users/${userOneFixture._id}`
+        `/users/${userAdminFixture._id}`
       )
     })
 
@@ -118,7 +121,7 @@ describe('DELETE:/users/{userId}', () => {
         result: userResult,
         statusCode: userStatusCode,
         statusMessage: userStatusMessage
-      } = await server.inject(`/users/${userOneFixture._id}`)
+      } = await server.inject(`/users/${userAdminFixture._id}`)
 
       expect(userStatusCode).toBe(404)
       expect(userStatusMessage).toBe('Not Found')
@@ -147,15 +150,15 @@ describe('DELETE:/users/{userId}', () => {
 
     beforeEach(async () => {
       mockMsGraph.get.mockReturnValue({
-        value: [{ id: userOneFixture._id }]
+        value: [{ id: userAdminFixture._id }]
       })
       mockMsGraph.delete.mockResolvedValue()
 
-      await replaceOneTestHelper('users', userOneFixture)
+      await replaceOneTestHelper('users', userAdminFixture)
       await replaceOneTestHelper('teams', platformTeamFixture)
 
       deleteUserResponse = await deleteUserEndpoint(
-        `/users/${userOneFixture._id}`
+        `/users/${userAdminFixture._id}`
       )
     })
 
@@ -174,7 +177,7 @@ describe('DELETE:/users/{userId}', () => {
     test('Should call AAD to remove user from a group', () => {
       expect(mockMsGraph.api).toHaveBeenNthCalledWith(
         2,
-        `/groups/${platformTeamFixture._id}/members/${userOneFixture._id}/$ref`
+        `/groups/${platformTeamFixture._id}/members/${userAdminFixture._id}/$ref`
       )
       expect(mockMsGraph.delete).toHaveBeenCalledTimes(1)
     })
@@ -184,7 +187,7 @@ describe('DELETE:/users/{userId}', () => {
         result: userResult,
         statusCode: userStatusCode,
         statusMessage: userStatusMessage
-      } = await server.inject(`/users/${userOneFixture._id}`)
+      } = await server.inject(`/users/${userAdminFixture._id}`)
 
       expect(userStatusCode).toBe(404)
       expect(userStatusMessage).toBe('Not Found')
@@ -232,11 +235,11 @@ describe('DELETE:/users/{userId}', () => {
     beforeEach(async () => {
       mockMsGraph.get.mockReturnValue({ value: [] })
 
-      await replaceOneTestHelper('users', userTwoFixture)
+      await replaceOneTestHelper('users', userTenantFixture)
       await replaceOneTestHelper('teams', tenantTeamFixture)
 
       deleteUserResponse = await deleteUserEndpoint(
-        `/users/${userTwoFixture._id}`
+        `/users/${userTenantFixture._id}`
       )
     })
 
@@ -261,7 +264,7 @@ describe('DELETE:/users/{userId}', () => {
         result: userResult,
         statusCode: userStatusCode,
         statusMessage: userStatusMessage
-      } = await server.inject(`/users/${userTwoFixture._id}`)
+      } = await server.inject(`/users/${userTenantFixture._id}`)
 
       expect(userStatusCode).toBe(404)
       expect(userStatusMessage).toBe('Not Found')
@@ -307,7 +310,7 @@ describe('DELETE:/users/{userId}', () => {
     test('Should provide expected unauthorized response', async () => {
       const { result, statusCode, statusMessage } = await server.inject({
         method: 'DELETE',
-        url: `/users/${userTwoFixture._id}`
+        url: `/users/${userTenantFixture._id}`
       })
 
       expect(statusCode).toBe(401)

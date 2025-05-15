@@ -2,7 +2,7 @@ import { config } from '~/src/config/config.js'
 import { isUserInATenantTeam } from '~/src/helpers/user/is-user-in-a-tenant-team.js'
 
 describe('#isUserInATenantTeam', () => {
-  const adminGroupId = config.get('oidcAdminGroupId')
+  const adminGroupId = config.get('adminScope')
 
   test('With matching team id, should return true', () => {
     const teamIds = ['mockService']

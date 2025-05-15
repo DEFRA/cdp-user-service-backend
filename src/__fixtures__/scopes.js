@@ -40,9 +40,20 @@ const breakGlassFixture = {
   updatedAt: '2024-12-05T17:42:30.508Z'
 }
 
+const adminFixture = {
+  _id: new ObjectId('7751e606a171ebffac3cc9dd'),
+  userId: '62bb35d2-d4f2-4cf6-abd3-262d99727677',
+  value: 'admin',
+  description: 'Allows team to administer the Portal',
+  teams: ['aabe63e7-87ef-4beb-a596-c810631fc474'], // platformTeamFixture
+  createdAt: '2024-12-05T17:42:30.508Z',
+  updatedAt: '2024-12-05T17:42:30.508Z'
+}
+
 export {
   externalTestScopeFixture,
   postgresScopeFixture,
   terminalScopeFixture,
-  breakGlassFixture
+  breakGlassFixture,
+  adminFixture
 }

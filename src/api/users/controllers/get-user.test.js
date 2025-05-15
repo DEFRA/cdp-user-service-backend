@@ -3,7 +3,7 @@ import fetchMock from 'jest-fetch-mock'
 import { config } from '~/src/config/config.js'
 import { createServer } from '~/src/api/server.js'
 import { wellKnownResponseFixture } from '~/src/__fixtures__/well-known.js'
-import { userOneFixture } from '~/src/__fixtures__/users.js'
+import { userAdminFixture } from '~/src/__fixtures__/users.js'
 import { deleteMany, replaceOne } from '~/test-helpers/mongo-helpers.js'
 
 const oidcWellKnownConfigurationUrl = config.get(
@@ -43,7 +43,7 @@ describe('GET:/users/{userId}', () => {
 
   describe('When a user is in the DB', () => {
     beforeEach(async () => {
-      await replaceOneTestHelper('users', userOneFixture)
+      await replaceOneTestHelper('users', userAdminFixture)
     })
 
     afterEach(async () => {
@@ -52,7 +52,7 @@ describe('GET:/users/{userId}', () => {
 
     test('Should provide expected response', async () => {
       const { result, statusCode, statusMessage } = await getUserEndpoint(
-        `/users/${userOneFixture._id}`
+        `/users/${userAdminFixture._id}`
       )
 
       expect(statusCode).toBe(200)
