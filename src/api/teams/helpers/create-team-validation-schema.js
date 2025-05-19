@@ -1,4 +1,5 @@
 import Joi from 'joi'
+import { environments } from '~/src/config/environments.js'
 
 const createTeamValidationSchema = Joi.object({
   name: Joi.string()
@@ -15,7 +16,10 @@ const createTeamValidationSchema = Joi.object({
         .regex(/^[A-Z]+$/)
     )
     .optional(),
-  alertEmailAddresses: Joi.array().items(Joi.string().email()).optional()
+  alertEmailAddresses: Joi.array().items(Joi.string().email()).optional(),
+  alertEnvironments: Joi.array()
+    .items(Joi.string().valid(...Object.values(environments)))
+    .optional()
 })
 
 export { createTeamValidationSchema }
