@@ -27,7 +27,8 @@ const createTeamController = {
       description: payload?.description,
       github: payload?.github,
       serviceCodes: payload?.serviceCodes,
-      alertEmailAddresses: payload?.alertEmailAddresses
+      alertEmailAddresses: payload?.alertEmailAddresses,
+      alertEnvironments: payload?.alertEnvironments
     }
     const teamExists = await teamNameExists(request.db, dbTeam.name)
     if (teamExists) {

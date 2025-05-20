@@ -62,6 +62,7 @@ describe('GET:/teams/{teamId}', () => {
         message: 'success',
         team: expect.objectContaining({
           alertEmailAddresses: ['mary@mary.com'],
+          alertEnvironments: ['infra-dev', 'management'],
           description: 'The team that runs the platform',
           github: 'cdp-platform',
           name: 'Platform',

@@ -34,6 +34,7 @@ export const teamAggregation = [
       github: 1,
       serviceCodes: 1,
       alertEmailAddresses: 1,
+      alertEnvironments: 1,
       users: {
         $map: {
           input: '$users',

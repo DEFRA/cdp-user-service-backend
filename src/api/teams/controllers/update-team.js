@@ -43,7 +43,8 @@ const updateTeamController = {
       'description',
       'github',
       'serviceCodes',
-      'alertEmailAddresses'
+      'alertEmailAddresses',
+      'alertEnvironments'
     ])
     await existingTeamInDb(updateFields?.$set?.name, request)
     await updateGithubSharedRepos(
