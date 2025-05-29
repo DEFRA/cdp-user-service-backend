@@ -1,4 +1,3 @@
-import fetchMock from 'jest-fetch-mock'
 import { Client } from '@microsoft/microsoft-graph-client'
 
 import { config } from '~/src/config/config.js'
@@ -14,8 +13,12 @@ import {
 } from '~/src/__fixtures__/teams.js'
 import { deleteMany, replaceOne } from '~/test-helpers/mongo-helpers.js'
 
-jest.mock('@microsoft/microsoft-graph-client')
-jest.mock('@azure/identity')
+import { vi } from 'vitest'
+import createFetchMock from 'vitest-fetch-mock'
+const fetchMock = createFetchMock(vi)
+
+vi.mock('@microsoft/microsoft-graph-client')
+vi.mock('@azure/identity')
 
 const oidcWellKnownConfigurationUrl = config.get(
   'oidcWellKnownConfigurationUrl'
@@ -36,9 +39,9 @@ describe('DELETE:/users/{userId}', () => {
 
     // Mock MsGraph client
     mockMsGraph = {
-      api: jest.fn().mockReturnThis(),
-      get: jest.fn(),
-      delete: jest.fn()
+      api: vi.fn().mockReturnThis(),
+      get: vi.fn(),
+      delete: vi.fn()
     }
     Client.initWithMiddleware = () => mockMsGraph
 
