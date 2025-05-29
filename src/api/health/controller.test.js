@@ -1,9 +1,10 @@
 import { healthController } from '~/src/api/health/controller.js'
+import { vi } from 'vitest'
 
 describe('#healthController', () => {
   const mockViewHandler = {
-    response: jest.fn().mockReturnThis(),
-    code: jest.fn().mockReturnThis()
+    response: vi.fn().mockReturnThis(),
+    code: vi.fn().mockReturnThis()
   }
 
   it('should provide expected response', () => {

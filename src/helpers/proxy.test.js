@@ -1,15 +1,18 @@
-import fetchMock from 'jest-fetch-mock'
 import { ProxyAgent } from 'undici'
 
 import { config } from '~/src/config/config.js'
 import { provideProxy, proxyFetch } from '~/src/helpers/proxy.js'
+import { vi } from 'vitest'
+import createFetchMock from 'vitest-fetch-mock'
 
-const mockLoggerDebug = jest.fn()
-jest.mock('~/src/helpers/logging/logger.js', () => ({
+const fetchMock = createFetchMock(vi)
+
+const mockLoggerDebug = vi.fn()
+vi.mock('~/src/helpers/logging/logger.js', () => ({
   createLogger: () => ({ debug: (...args) => mockLoggerDebug(...args) })
 }))
 
-const fetchSpy = jest.spyOn(global, 'fetch')
+const fetchSpy = vi.spyOn(global, 'fetch')
 const httpProxyUrl = 'http://proxy.example.com'
 const httpPort = 80
 

@@ -1,5 +1,3 @@
-import fetchMock from 'jest-fetch-mock'
-
 import { config } from '~/src/config/config.js'
 import { createServer } from '~/src/api/server.js'
 import { wellKnownResponseFixture } from '~/src/__fixtures__/well-known.js'
@@ -8,6 +6,10 @@ import {
   tenantTeamFixture
 } from '~/src/__fixtures__/teams.js'
 import { deleteMany, replaceMany } from '~/test-helpers/mongo-helpers.js'
+
+import { vi } from 'vitest'
+import createFetchMock from 'vitest-fetch-mock'
+const fetchMock = createFetchMock(vi)
 
 const oidcWellKnownConfigurationUrl = config.get(
   'oidcWellKnownConfigurationUrl'

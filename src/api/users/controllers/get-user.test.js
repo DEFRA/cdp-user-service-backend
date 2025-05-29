@@ -1,14 +1,18 @@
-import fetchMock from 'jest-fetch-mock'
-
 import { config } from '~/src/config/config.js'
 import { createServer } from '~/src/api/server.js'
 import { wellKnownResponseFixture } from '~/src/__fixtures__/well-known.js'
 import { userAdminFixture } from '~/src/__fixtures__/users.js'
 import { deleteMany, replaceOne } from '~/test-helpers/mongo-helpers.js'
+import { vi } from 'vitest'
+
+import createFetchMock from 'vitest-fetch-mock'
+const fetchMock = createFetchMock(vi)
 
 const oidcWellKnownConfigurationUrl = config.get(
   'oidcWellKnownConfigurationUrl'
 )
+
+
 
 describe('GET:/users/{userId}', () => {
   let server
@@ -65,7 +69,12 @@ describe('GET:/users/{userId}', () => {
           github: 'TetsuoShima',
           name: 'TetsuoShima',
           scopes: [],
-          teams: [],
+          teams: [
+            {
+              name: 'Platform',
+              teamId: 'aabe63e7-87ef-4beb-a596-c810631fc474'
+            }
+          ],
           userId: '62bb35d2-d4f2-4cf6-abd3-262d99727677'
         })
       })
