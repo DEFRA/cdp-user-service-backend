@@ -78,12 +78,7 @@ describe('GET:/users', () => {
             github: 'TetsuoShima',
             name: 'TetsuoShima',
             scopes: [],
-            teams: [
-              {
-                name: 'Platform',
-                teamId: 'aabe63e7-87ef-4beb-a596-c810631fc474'
-              }
-            ],
+            teams: [],
             userId: '62bb35d2-d4f2-4cf6-abd3-262d99727677'
           })
         ]
@@ -128,12 +123,7 @@ describe('GET:/users', () => {
               github: 'TetsuoShima',
               name: 'TetsuoShima',
               scopes: [],
-              teams: [
-                {
-                  name: 'Platform',
-                  teamId: 'aabe63e7-87ef-4beb-a596-c810631fc474'
-                }
-              ],
+              teams: [],
               userId: '62bb35d2-d4f2-4cf6-abd3-262d99727677'
             })
           ]

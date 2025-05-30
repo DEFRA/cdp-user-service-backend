@@ -23,7 +23,9 @@ const port = config.get('port')
 const enableSecureContext = config.get('enableSecureContext')
 const enableDocumentation = config.get('enableDocumentation')
 
-async function createServer() {
+async function createServer(configOverrides = {}) {
+  config.load(configOverrides)
+
   setupProxy()
 
   const server = hapi.server({
@@ -64,7 +66,7 @@ async function createServer() {
   await server.register([
     pulse,
     azureOidc,
-    mongoPlugin,
+    mongoPlugin(config),
     msGraphPlugin,
     octokitPlugin,
     router

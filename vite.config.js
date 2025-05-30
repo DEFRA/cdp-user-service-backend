@@ -4,14 +4,17 @@ import path from 'path'
 export default defineConfig({
   resolve: {
     alias: {
-      '~': path.resolve(__dirname)
+      '~': path.resolve(import.meta.dirname)
     }
   },
   test: {
+    environment: 'node',
     globals: true,
     clearMocks: true,
     coverage: {
-      reporter: ['clover']
-    }
+      reporter: ['text', 'clover']
+    },
+    setupFiles: ['./vite.mongo.config.js'],
+    hookTimeout: 60000
   }
 })
