@@ -18,13 +18,13 @@ import { secureContext } from '~/src/helpers/secure-context/index.js'
 import { swaggerOptions } from '~/src/helpers/docs/swagger-options.js'
 import { requestTracing } from '~/src/helpers/request-tracing.js'
 
-const root = config.get('root')
-const port = config.get('port')
-const enableSecureContext = config.get('enableSecureContext')
-const enableDocumentation = config.get('enableDocumentation')
-
 async function createServer(configOverrides = {}) {
   config.load(configOverrides)
+
+  const root = config.get('root')
+  const port = config.get('port')
+  const enableSecureContext = config.get('enableSecureContext')
+  const enableDocumentation = config.get('enableDocumentation')
 
   setupProxy()
 
@@ -66,7 +66,10 @@ async function createServer(configOverrides = {}) {
   await server.register([
     pulse,
     azureOidc,
-    mongoPlugin(config),
+    {
+      plugin: mongoPlugin,
+      options: config.get('mongo')
+    },
     msGraphPlugin,
     octokitPlugin,
     router

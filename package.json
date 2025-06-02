@@ -20,7 +20,7 @@
     "lint:fix": "eslint . --fix",
     "lint:js": "eslint .",
     "postversion": "git add package.json package-lock.json && git commit -m $npm_package_version",
-    "test": "TZ=UTC vitest --run",
+    "test": "TZ=UTC vitest --run --coverage",
     "test:watch": "TZ=UTC vitest --watch",
     "server:watch": "nodemon --exec tsx --enable-source-maps ./src",
     "server:debug": "nodemon --exec tsx --enable-source-maps --inspect=9249 ./src",
