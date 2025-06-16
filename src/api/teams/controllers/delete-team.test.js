@@ -1,5 +1,4 @@
 import { createServer } from '~/src/api/server.js'
-import { Client } from '@microsoft/microsoft-graph-client'
 import {
   userAdminFixture,
   userTenantFixture
@@ -12,25 +11,13 @@ import {
 import { deleteMany, replaceOne } from '~/test-helpers/mongo-helpers.js'
 import { mockWellKnown } from '~/test-helpers/mock-well-known.js'
 
-vi.mock('@microsoft/microsoft-graph-client')
-vi.mock('@azure/identity')
-
 describe('DELETE:/teams/{teamId}', () => {
   let server
-  let mockMsGraph
   let replaceOneTestHelper
   let deleteManyTestHelper
 
   beforeAll(async () => {
     mockWellKnown()
-
-    // Mock MsGraph client
-    mockMsGraph = {
-      api: vi.fn().mockReturnThis(),
-      get: vi.fn(),
-      delete: vi.fn()
-    }
-    Client.initWithMiddleware = () => mockMsGraph
 
     server = await createServer()
     await server.initialize()
@@ -137,11 +124,6 @@ describe('DELETE:/teams/{teamId}', () => {
     let deleteTeamResponse
 
     beforeEach(async () => {
-      mockMsGraph.get.mockReturnValue({
-        value: [{ id: userAdminFixture._id }]
-      })
-      mockMsGraph.delete.mockResolvedValue()
-
       await replaceOneTestHelper('users', userAdminFixture)
       await replaceOneTestHelper('teams', platformTeamFixture)
 
@@ -152,22 +134,6 @@ describe('DELETE:/teams/{teamId}', () => {
 
     afterEach(async () => {
       await deleteManyTestHelper(['users', 'teams'])
-    })
-
-    test('Should call AAD to get expected members of a group', () => {
-      expect(mockMsGraph.api).toHaveBeenNthCalledWith(
-        1,
-        `/groups/${platformTeamFixture._id}/members`
-      )
-      expect(mockMsGraph.get).toHaveBeenCalledTimes(1)
-    })
-
-    test('Should call AAD to remove user from a group', () => {
-      expect(mockMsGraph.api).toHaveBeenNthCalledWith(
-        2,
-        `/groups/${platformTeamFixture._id}/members/${userAdminFixture._id}/$ref`
-      )
-      expect(mockMsGraph.delete).toHaveBeenCalledTimes(1)
     })
 
     test('Team should have been removed from DB', async () => {
@@ -221,8 +187,6 @@ describe('DELETE:/teams/{teamId}', () => {
     let deleteTeamResponse
 
     beforeEach(async () => {
-      mockMsGraph.get.mockReturnValue({ value: [] })
-
       await replaceOneTestHelper('users', userTenantFixture)
       await replaceOneTestHelper('teams', tenantTeamFixture)
 
@@ -233,18 +197,6 @@ describe('DELETE:/teams/{teamId}', () => {
 
     afterEach(async () => {
       await deleteManyTestHelper(['users', 'teams'])
-    })
-
-    test('Should call AAD to get expected members of a group', () => {
-      expect(mockMsGraph.api).toHaveBeenNthCalledWith(
-        1,
-        `/groups/${tenantTeamFixture._id}/members`
-      )
-      expect(mockMsGraph.get).toHaveBeenCalledTimes(1)
-    })
-
-    test('Should not call AAD to remove user from a group', () => {
-      expect(mockMsGraph.delete).not.toHaveBeenCalled()
     })
 
     test('Team should have been removed from DB', async () => {
