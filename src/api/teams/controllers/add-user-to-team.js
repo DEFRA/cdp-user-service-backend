@@ -33,9 +33,6 @@ const addUserToTeamController = {
     }
 
     const team = await addUserToTeam(request, userId, teamId)
-    await request.msGraph
-      .api(`/groups/${teamId}/members/$ref`)
-      .post({ '@odata.id': `https://graph.microsoft.com/v1.0/users/${userId}` })
 
     return h.response({ message: 'success', team }).code(200)
   }
