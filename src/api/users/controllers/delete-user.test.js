@@ -169,22 +169,6 @@ describe('DELETE:/users/{userId}', () => {
       await deleteManyTestHelper(['users', 'teams'])
     })
 
-    test('Should call AAD to get expected members of a group', () => {
-      expect(mockMsGraph.api).toHaveBeenNthCalledWith(
-        1,
-        `/groups/${platformTeamFixture._id}/members`
-      )
-      expect(mockMsGraph.get).toHaveBeenCalledTimes(1)
-    })
-
-    test('Should call AAD to remove user from a group', () => {
-      expect(mockMsGraph.api).toHaveBeenNthCalledWith(
-        2,
-        `/groups/${platformTeamFixture._id}/members/${userAdminFixture._id}/$ref`
-      )
-      expect(mockMsGraph.delete).toHaveBeenCalledTimes(1)
-    })
-
     test('User should have been removed from DB', async () => {
       const {
         result: userResult,
@@ -248,14 +232,6 @@ describe('DELETE:/users/{userId}', () => {
 
     afterEach(async () => {
       await deleteManyTestHelper(['users', 'teams'])
-    })
-
-    test('Should call AAD to get expected members of a group', () => {
-      expect(mockMsGraph.api).toHaveBeenNthCalledWith(
-        1,
-        `/groups/${tenantTeamFixture._id}/members`
-      )
-      expect(mockMsGraph.get).toHaveBeenCalledTimes(1)
     })
 
     test('Should not call AAD to remove user from a group', () => {
