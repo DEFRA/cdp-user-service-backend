@@ -5,7 +5,6 @@ import { getTeam } from '~/src/api/teams/helpers/get-team.js'
 import { getTeamsCount } from '~/src/api/teams/helpers/get-teams.js'
 import { buildUpdateFields } from '~/src/helpers/build-update-fields.js'
 import { teamNameExists } from '~/src/api/teams/helpers/team-name-exists.js'
-import { aadGroupIdExists } from '~/src/api/teams/helpers/aad/aad-group-id-exists.js'
 import { gitHubTeamExists } from '~/src/api/teams/helpers/github/github-team-exists.js'
 import { updateTeam } from '~/src/api/teams/helpers/update-team.js'
 import {
@@ -33,11 +32,6 @@ const updateTeamController = {
       throw Boom.notFound('Team not found in DB')
     }
 
-    const groupIdExists = await aadGroupIdExists(request.msGraph, teamId)
-    if (!groupIdExists) {
-      throw Boom.notFound('Team not found in AAD')
-    }
-
     const updateFields = buildUpdateFields(existingTeam, request?.payload, [
       'name',
       'description',
@@ -52,12 +46,7 @@ const updateTeamController = {
       updateFields?.$set?.github,
       request
     )
-    const updatedTeam = await updateTeam(
-      request.msGraph,
-      request.db,
-      teamId,
-      updateFields
-    )
+    const updatedTeam = await updateTeam(request.db, teamId, updateFields)
     return h.response({ message: 'success', team: updatedTeam }).code(200)
   }
 }

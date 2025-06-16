@@ -4,7 +4,7 @@ import { createTeamValidationSchema } from '~/src/api/teams/helpers/create-team-
 import { MongoErrors } from '~/src/helpers/mongodb-errors.js'
 import { teamNameExists } from '~/src/api/teams/helpers/team-name-exists.js'
 import { gitHubTeamExists } from '~/src/api/teams/helpers/github/github-team-exists.js'
-import { createTeam } from '~/src/api/teams/helpers/aad/create-team.js'
+import { createTeam } from '~/src/api/teams/helpers/create-team.js'
 import { addSharedRepoAccess } from '~/src/api/teams/helpers/github/github-shared-repo-access.js'
 
 const createTeamController = {
@@ -38,7 +38,7 @@ const createTeamController = {
     await addGithubSharedRepos(payload?.github, request)
 
     try {
-      const team = await createTeam(request.msGraph, request.db, dbTeam)
+      const team = await createTeam(request.db, dbTeam)
 
       return h.response({ message: 'success', team }).code(201)
     } catch (error) {

@@ -103,7 +103,7 @@ describe('GET:/scopes', () => {
           'postgres',
           userTenantFixture._id,
           'tenant'
-        ],
+        ].sort(),
         scopeFlags: {
           isAdmin: false,
           isTenant: true
@@ -193,7 +193,7 @@ describe('GET:/scopes', () => {
           'postgres',
           'ad760f75-0930-434f-8a4e-174f74723c65',
           'tenant'
-        ],
+        ].sort(),
         scopeFlags: {
           isAdmin: false,
           isTenant: true

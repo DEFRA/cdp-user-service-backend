@@ -1,43 +1,47 @@
 import { getUser } from '~/src/api/users/helpers/get-user.js'
 import { getTeams } from '~/src/api/teams/helpers/get-teams.js'
-import { isUserInATenantTeam } from '~/src/helpers/user/is-user-in-a-tenant-team.js'
 
 async function scopesForUser(credentials, db) {
-  const jwtScopes = credentials.scope
   const adminScope = 'admin'
+  const tenantScope = 'tenant'
+
+  const scopes = new Set()
 
   const userId = credentials.id
   const user = await getUser(db, userId)
-  const userScopes = user?.scopes.map((scope) => scope.value) ?? []
 
-  const allTeamsWithGithub = await getTeams(db)
-  const allTeamIds = allTeamsWithGithub.map((team) => team.teamId)
-
-  const scopes = jwtScopes.filter((group) => allTeamIds.includes(group))
-
-  const teamScopes = new Set(
-    allTeamsWithGithub
-      .filter((team) => scopes.includes(team.teamId))
-      .map((team) => team.scopes.map((scope) => scope.value))
-      .flat()
-      .filter(Boolean)
-  )
-
-  scopes.push(...userScopes, ...teamScopes)
-
-  if (userId) {
-    scopes.push(userId)
+  // user level scopes
+  if (user) {
+    scopes.add(userId)
+    user.scopes.forEach((s) => scopes.add(s.value))
   }
 
-  const isAdmin = scopes.includes(adminScope)
+  // team level scopes
+  if (user?.teams) {
+    const allTeamsWithGithub = await getTeams(db)
+    const teamLookup = new Map(
+      allTeamsWithGithub.map((team) => [team.teamId, team])
+    )
 
-  const isTenant = !isAdmin && isUserInATenantTeam(allTeamIds, scopes)
+    for (const team of user.teams) {
+      scopes.add(team.teamId)
+      const userTeam = teamLookup.get(team.teamId)
+      if (userTeam) {
+        userTeam.scopes.forEach((s) => scopes.add(s.value))
+      }
+    }
+  }
+
+  const isAdmin = scopes.has(adminScope)
+  const teamCount = user?.teams?.length ?? 0
+
+  const isTenant = !isAdmin && teamCount > 0
   if (isTenant) {
-    scopes.push('tenant')
+    scopes.add(tenantScope)
   }
 
   return {
-    scopes: Array.from(new Set(scopes)),
+    scopes: Array.from(scopes).sort(),
     scopeFlags: {
       isAdmin,
       isTenant

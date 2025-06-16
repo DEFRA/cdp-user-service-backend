@@ -1,7 +1,6 @@
 import Joi from 'joi'
 
 import { deleteTeam } from '~/src/helpers/mongo/transactions/delete-transactions.js'
-import { removeUserFromAadGroup } from '~/src/api/teams/helpers/remove-user-from-aad-group.js'
 
 const deleteTeamController = {
   options: {
@@ -19,20 +18,7 @@ const deleteTeamController = {
     }
   },
   handler: async (request, h) => {
-    const team = await deleteTeam(request, request.params.teamId)
-
-    if (team.users?.length) {
-      const removeFromAad = team.users.map((user) =>
-        removeUserFromAadGroup(
-          request.msGraph,
-          team.teamId,
-          user.userId,
-          request.logger
-        )
-      )
-      await Promise.all(removeFromAad)
-    }
-
+    await deleteTeam(request, request.params.teamId)
     return h.response({ message: 'success' }).code(200)
   }
 }
