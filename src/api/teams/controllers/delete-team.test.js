@@ -1,7 +1,5 @@
-import { config } from '~/src/config/config.js'
 import { createServer } from '~/src/api/server.js'
 import { Client } from '@microsoft/microsoft-graph-client'
-import { wellKnownResponseFixture } from '~/src/__fixtures__/well-known.js'
 import {
   userAdminFixture,
   userTenantFixture
@@ -12,17 +10,10 @@ import {
   tenantTeamFixture
 } from '~/src/__fixtures__/teams.js'
 import { deleteMany, replaceOne } from '~/test-helpers/mongo-helpers.js'
-
-import { vi } from 'vitest'
-import createFetchMock from 'vitest-fetch-mock'
-const fetchMock = createFetchMock(vi)
+import { mockWellKnown } from '~/test-helpers/mock-well-known.js'
 
 vi.mock('@microsoft/microsoft-graph-client')
 vi.mock('@azure/identity')
-
-const oidcWellKnownConfigurationUrl = config.get(
-  'oidcWellKnownConfigurationUrl'
-)
 
 describe('DELETE:/teams/{teamId}', () => {
   let server
@@ -31,11 +22,7 @@ describe('DELETE:/teams/{teamId}', () => {
   let deleteManyTestHelper
 
   beforeAll(async () => {
-    fetchMock.enableMocks()
-
-    fetchMock.mockIf(oidcWellKnownConfigurationUrl, () =>
-      Promise.resolve(JSON.stringify(wellKnownResponseFixture))
-    )
+    mockWellKnown()
 
     // Mock MsGraph client
     mockMsGraph = {
@@ -53,7 +40,6 @@ describe('DELETE:/teams/{teamId}', () => {
   })
 
   afterAll(async () => {
-    fetchMock.disableMocks()
     await server.stop({ timeout: 0 })
   })
 

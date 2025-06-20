@@ -1,16 +1,7 @@
-import { config } from '~/src/config/config.js'
 import { createServer } from '~/src/api/server.js'
-import { wellKnownResponseFixture } from '~/src/__fixtures__/well-known.js'
 import { platformTeamFixture } from '~/src/__fixtures__/teams.js'
 import { deleteMany, replaceOne } from '~/test-helpers/mongo-helpers.js'
-
-import { vi } from 'vitest'
-import createFetchMock from 'vitest-fetch-mock'
-const fetchMock = createFetchMock(vi)
-
-const oidcWellKnownConfigurationUrl = config.get(
-  'oidcWellKnownConfigurationUrl'
-)
+import { mockWellKnown } from '~/test-helpers/mock-well-known.js'
 
 describe('GET:/teams/{teamId}', () => {
   let server
@@ -18,11 +9,7 @@ describe('GET:/teams/{teamId}', () => {
   let deleteManyTestHelper
 
   beforeAll(async () => {
-    fetchMock.enableMocks()
-
-    fetchMock.mockIf(oidcWellKnownConfigurationUrl, () =>
-      Promise.resolve(JSON.stringify(wellKnownResponseFixture))
-    )
+    mockWellKnown()
 
     server = await createServer()
     await server.initialize()
@@ -32,7 +19,6 @@ describe('GET:/teams/{teamId}', () => {
   })
 
   afterAll(async () => {
-    fetchMock.disableMocks()
     await server.stop({ timeout: 0 })
   })
 

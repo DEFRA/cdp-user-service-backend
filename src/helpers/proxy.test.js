@@ -1,11 +1,8 @@
+import { vi } from 'vitest'
 import { ProxyAgent } from 'undici'
 
 import { config } from '~/src/config/config.js'
 import { provideProxy, proxyFetch } from '~/src/helpers/proxy.js'
-import { vi } from 'vitest'
-import createFetchMock from 'vitest-fetch-mock'
-
-const fetchMock = createFetchMock(vi)
 
 const mockLoggerDebug = vi.fn()
 vi.mock('~/src/helpers/logging/logger.js', () => ({
@@ -16,12 +13,7 @@ const httpProxyUrl = 'http://proxy.example.com'
 const httpPort = 80
 
 describe('#proxy', () => {
-  beforeEach(() => {
-    fetchMock.enableMocks()
-  })
-
   afterEach(() => {
-    fetchMock.disableMocks()
     config.set('httpProxy', null)
     config.set('httpsProxy', null)
   })
@@ -63,33 +55,35 @@ describe('#proxy', () => {
     const secureUrl = 'https://beepboopbeep.com'
 
     test('Should pass options through', async () => {
-      fetchMock.mockResponse(() => Promise.resolve({}))
+      global.fetchMock.mockResolvedValue({})
 
       await proxyFetch(secureUrl, { method: 'GET' })
 
-      expect(fetchMock).toHaveBeenCalledWith(secureUrl, { method: 'GET' })
+      expect(global.fetch).toHaveBeenCalledWith(secureUrl, {
+        method: 'GET'
+      })
     })
 
     describe('When no Proxy is configured', () => {
       test('Should fetch without Proxy Agent', async () => {
-        fetchMock.mockResponse(() => Promise.resolve({}))
+        global.fetchMock.mockResolvedValue({})
 
         await proxyFetch(secureUrl, {})
 
-        expect(fetchMock).toHaveBeenCalledWith(secureUrl, {})
+        expect(global.fetch).toHaveBeenCalledWith(secureUrl, {})
       })
     })
 
     describe('When proxy is configured', () => {
       beforeEach(async () => {
         config.set('httpProxy', httpProxyUrl)
-        fetchMock.mockResponse(() => Promise.resolve({}))
+        global.fetchMock.mockResolvedValue({})
 
         await proxyFetch(secureUrl, {})
       })
 
       test('Should fetch with Proxy Agent', () => {
-        expect(fetchMock).toHaveBeenCalledWith(
+        expect(global.fetch).toHaveBeenCalledWith(
           secureUrl,
           expect.objectContaining({
             dispatcher: expect.any(ProxyAgent)
