@@ -25,6 +25,7 @@ const mongoPlugin = {
     server.decorate('server', 'db', db)
     server.decorate('request', 'db', db)
 
+    server.decorate('server', 'locker', locker)
     server.decorate('request', 'locker', locker)
 
     server.events.on('stop', async () => {

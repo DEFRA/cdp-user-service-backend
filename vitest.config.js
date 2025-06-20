@@ -14,7 +14,6 @@ export default defineConfig({
     coverage: {
       reporter: ['text', 'clover']
     },
-    setupFiles: ['./vite.mongo.config.js'],
-    hookTimeout: 60000
+    setupFiles: ['.vite/mongo-memory-server.js', '.vite/setup-files.js']
   }
 })
