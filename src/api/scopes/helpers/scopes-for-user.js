@@ -4,6 +4,7 @@ import { getTeams } from '~/src/api/teams/helpers/get-teams.js'
 async function scopesForUser(credentials, db) {
   const adminScope = 'admin'
   const tenantScope = 'tenant'
+  const testAsTenantScope = 'testAsTenant'
 
   const scopes = new Set()
 
@@ -30,6 +31,10 @@ async function scopesForUser(credentials, db) {
         userTeam.scopes.forEach((s) => scopes.add(s.value))
       }
     }
+  }
+
+  if (scopes.has(testAsTenantScope)) {
+    scopes.delete(adminScope)
   }
 
   const isAdmin = scopes.has(adminScope)

@@ -8,6 +8,7 @@ import { adminUpdateScopeController } from '~/src/api/scopes/controllers/admin/u
 import { getScopesForUserController } from '~/src/api/scopes/controllers/get-scopes-for-user.js'
 import { adminAddScopeToUserController } from '~/src/api/scopes/controllers/admin/add-scope-to-user.js'
 import { adminRemoveScopeFromUserController } from '~/src/api/scopes/controllers/admin/remove-scope-from-user.js'
+import { adminGetScopeByNameController } from '~/src/api/scopes/controllers/admin/get-scope-by-name.js'
 
 const scopes = {
   plugin: {
@@ -33,6 +34,11 @@ const scopes = {
           method: 'GET',
           path: '/scopes/admin/{scopeId}',
           ...adminGetScopeController
+        },
+        {
+          method: 'GET',
+          path: '/scopes/admin/name/{scopeName}',
+          ...adminGetScopeByNameController
         },
         {
           method: 'PATCH',

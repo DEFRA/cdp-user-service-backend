@@ -14,6 +14,21 @@ const userAdminFixture = {
   ]
 }
 
+const userAdminWithTestAsTenantFixture = {
+  _id: '62bb35d2-d4f2-4cf6-abd3-262d997276dd',
+  name: 'Admin AsTenant',
+  email: 'admin.astenant@defra.onmicrosoft.com',
+  createdAt: '2023-09-28T13:53:44.948Z',
+  updatedAt: '2024-12-03T12:26:28.965Z',
+  github: 'AdminAsTenant',
+  teams: ['aabe63e7-87ef-4beb-a596-c810631fc474'], // platformTeamFixture
+  scopes: [
+    new ObjectId('6751e606a171ebffac3cc9dd'), // breakGlassFixture
+    new ObjectId('7751e606a171ebffac3cc9dd'), // adminScopeFixture
+    new ObjectId('7751e606a171ebffac3cc9ff') // testAsTenantScopeFixture
+  ]
+}
+
 const userTenantFixture = {
   _id: 'b7606810-f0c6-4db7-b067-ba730ef706e8',
   name: 'Akira',
@@ -34,4 +49,9 @@ const userPostgresFixture = {
   scopes: [new ObjectId('6751b8bcfd2ecb117d6277de')] // postgresScopeFixture
 }
 
-export { userAdminFixture, userTenantFixture, userPostgresFixture }
+export {
+  userAdminFixture,
+  userAdminWithTestAsTenantFixture,
+  userTenantFixture,
+  userPostgresFixture
+}
