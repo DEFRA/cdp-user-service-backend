@@ -50,10 +50,21 @@ const adminFixture = {
   updatedAt: '2024-12-05T17:42:30.508Z'
 }
 
+const testAsTenantFixture = {
+  _id: new ObjectId('7751e606a171ebffac3cc9ff'),
+  userId: '62bb35d2-d4f2-4cf6-abd3-262d99727677',
+  value: 'testAsTenant',
+  description: 'Allows team to test the Portal without admin rights',
+  teams: [],
+  createdAt: '2024-12-05T17:42:30.508Z',
+  updatedAt: '2024-12-05T17:42:30.508Z'
+}
+
 export {
   externalTestScopeFixture,
   postgresScopeFixture,
   terminalScopeFixture,
   breakGlassFixture,
-  adminFixture
+  adminFixture,
+  testAsTenantFixture
 }
