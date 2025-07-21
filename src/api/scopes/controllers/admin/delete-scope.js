@@ -1,8 +1,8 @@
 import Boom from '@hapi/boom'
-import Joi from '~/src/helpers/extended-joi.js'
+import Joi from '../../../../helpers/extended-joi.js'
 
-import { scopeExists } from '~/src/api/scopes/helpers/scope-exists.js'
-import { deleteScopeTransaction } from '~/src/helpers/mongo/transactions/scope/delete-scope-transaction.js'
+import { scopeExists } from '../../helpers/scope-exists.js'
+import { deleteScopeTransaction } from '../../../../helpers/mongo/transactions/scope/delete-scope-transaction.js'
 
 const adminDeleteScopeController = {
   options: {

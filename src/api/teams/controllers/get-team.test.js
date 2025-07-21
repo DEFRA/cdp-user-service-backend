@@ -1,7 +1,10 @@
-import { createServer } from '~/src/api/server.js'
-import { platformTeamFixture } from '~/src/__fixtures__/teams.js'
-import { deleteMany, replaceOne } from '~/test-helpers/mongo-helpers.js'
-import { mockWellKnown } from '~/test-helpers/mock-well-known.js'
+import { createServer } from '../../server.js'
+import { platformTeamFixture } from '../../../__fixtures__/teams.js'
+import {
+  deleteMany,
+  replaceOne
+} from '../../../../test-helpers/mongo-helpers.js'
+import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
 
 describe('GET:/teams/{teamId}', () => {
   let server

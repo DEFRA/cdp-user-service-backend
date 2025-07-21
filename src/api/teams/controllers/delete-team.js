@@ -1,6 +1,6 @@
 import Joi from 'joi'
 
-import { deleteTeam } from '~/src/helpers/mongo/transactions/delete-transactions.js'
+import { deleteTeam } from '../../../helpers/mongo/transactions/delete-transactions.js'
 
 const deleteTeamController = {
   options: {

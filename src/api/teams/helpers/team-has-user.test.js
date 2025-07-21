@@ -1,4 +1,4 @@
-import { teamHasUser } from '~/src/api/teams/helpers/team-has-user.js'
+import { teamHasUser } from './team-has-user.js'
 import { describe, expect, it } from 'vitest'
 
 describe('#teamHasUser', () => {

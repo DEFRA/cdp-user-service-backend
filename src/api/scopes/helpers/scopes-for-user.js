@@ -1,5 +1,5 @@
-import { getUser } from '~/src/api/users/helpers/get-user.js'
-import { getTeams } from '~/src/api/teams/helpers/get-teams.js'
+import { getUser } from '../../users/helpers/get-user.js'
+import { getTeams } from '../../teams/helpers/get-teams.js'
 
 async function scopesForUser(credentials, db) {
   const adminScope = 'admin'

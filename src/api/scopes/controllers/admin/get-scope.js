@@ -1,5 +1,5 @@
-import Joi from '~/src/helpers/extended-joi.js'
-import { getScope } from '~/src/api/scopes/helpers/get-scope.js'
+import Joi from '../../../../helpers/extended-joi.js'
+import { getScope } from '../../helpers/get-scope.js'
 
 const adminGetScopeController = {
   options: {

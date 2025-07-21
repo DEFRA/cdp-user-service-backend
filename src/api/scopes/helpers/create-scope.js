@@ -1,5 +1,5 @@
-import { removeNil } from '~/src/helpers/remove-nil.js'
-import { getScope } from '~/src/api/scopes/helpers/get-scope.js'
+import { removeNil } from '../../../helpers/remove-nil.js'
+import { getScope } from './get-scope.js'
 
 async function createScope(db, scope) {
   const newScope = {

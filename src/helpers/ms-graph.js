@@ -5,9 +5,9 @@ import {
 import { Client } from '@microsoft/microsoft-graph-client'
 import { TokenCredentialAuthenticationProvider } from '@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials/index.js'
 
-import { config } from '~/src/config/config.js'
-import { provideProxy } from '~/src/helpers/proxy.js'
-import { getFederatedLoginToken } from '~/src/helpers/cognito.js'
+import { config } from '../config/config.js'
+import { provideProxy } from './proxy.js'
+import { getFederatedLoginToken } from './cognito.js'
 
 const msGraphPlugin = {
   plugin: {

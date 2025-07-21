@@ -1,15 +1,18 @@
-import { createServer } from '~/src/api/server.js'
+import { createServer } from '../../server.js'
 import {
   userAdminFixture,
   userTenantFixture
-} from '~/src/__fixtures__/users.js'
+} from '../../../__fixtures__/users.js'
 import {
   platformTeamFixture,
   teamWithoutUsers,
   tenantTeamFixture
-} from '~/src/__fixtures__/teams.js'
-import { deleteMany, replaceOne } from '~/test-helpers/mongo-helpers.js'
-import { mockWellKnown } from '~/test-helpers/mock-well-known.js'
+} from '../../../__fixtures__/teams.js'
+import {
+  deleteMany,
+  replaceOne
+} from '../../../../test-helpers/mongo-helpers.js'
+import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
 
 describe('DELETE:/teams/{teamId}', () => {
   let server

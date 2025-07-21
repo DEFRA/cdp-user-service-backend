@@ -1,6 +1,6 @@
 import isNull from 'lodash/isNull.js'
 
-import { getUser } from '~/src/api/users/helpers/get-user.js'
+import { getUser } from './get-user.js'
 
 async function updateUser(db, userId, updateFields) {
   if (!isNull(updateFields)) {

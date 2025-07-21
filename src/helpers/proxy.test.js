@@ -1,11 +1,11 @@
 import { vi } from 'vitest'
 import { ProxyAgent } from 'undici'
 
-import { config } from '~/src/config/config.js'
-import { provideProxy, proxyFetch } from '~/src/helpers/proxy.js'
+import { config } from '../config/config.js'
+import { provideProxy, proxyFetch } from './proxy.js'
 
 const mockLoggerDebug = vi.fn()
-vi.mock('~/src/helpers/logging/logger.js', () => ({
+vi.mock('./logging/logger.js', () => ({
   createLogger: () => ({ debug: (...args) => mockLoggerDebug(...args) })
 }))
 

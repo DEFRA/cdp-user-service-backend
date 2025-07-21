@@ -1,4 +1,4 @@
-import { teamAggregation } from '~/src/api/teams/helpers/aggregations/team.js'
+import { teamAggregation } from './aggregations/team.js'
 
 async function getTeam(db, teamId) {
   const teams = await db

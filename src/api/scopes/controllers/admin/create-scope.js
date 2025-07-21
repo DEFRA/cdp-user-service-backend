@@ -1,8 +1,8 @@
 import Joi from 'joi'
 import Boom from '@hapi/boom'
 
-import { createScope } from '~/src/api/scopes/helpers/create-scope.js'
-import { scopeNameExists } from '~/src/api/scopes/helpers/scope-name-exists.js'
+import { createScope } from '../../helpers/create-scope.js'
+import { scopeNameExists } from '../../helpers/scope-name-exists.js'
 
 const adminCreateScopeController = {
   options: {

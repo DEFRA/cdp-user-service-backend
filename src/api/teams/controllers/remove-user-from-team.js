@@ -1,4 +1,4 @@
-import { removeUserFromTeam } from '~/src/helpers/mongo/transactions/delete-transactions.js'
+import { removeUserFromTeam } from '../../../helpers/mongo/transactions/delete-transactions.js'
 
 const removeUserFromTeamController = {
   options: {

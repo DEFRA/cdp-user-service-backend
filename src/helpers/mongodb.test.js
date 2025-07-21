@@ -1,8 +1,8 @@
 import { Db, MongoClient } from 'mongodb'
 import { LockManager } from 'mongo-locks'
 
-import { createServer } from '~/src/api/server.js'
-import { mockWellKnown } from '~/test-helpers/mock-well-known.js'
+import { createServer } from '../api/server.js'
+import { mockWellKnown } from '../../test-helpers/mock-well-known.js'
 
 describe('#mongoDb', () => {
   let server

@@ -1,10 +1,10 @@
-import { createUserController } from '~/src/api/users/controllers/create-user.js'
-import { deleteUserController } from '~/src/api/users/controllers/delete-user.js'
-import { getAadUsersController } from '~/src/api/users/controllers/get-aad-users.js'
-import { getGitHubUsersController } from '~/src/api/users/controllers/get-github-users.js'
-import { getUserController } from '~/src/api/users/controllers/get-user.js'
-import { getUsersController } from '~/src/api/users/controllers/get-users.js'
-import { updateUserController } from '~/src/api/users/controllers/update-user.js'
+import { createUserController } from './controllers/create-user.js'
+import { deleteUserController } from './controllers/delete-user.js'
+import { getAadUsersController } from './controllers/get-aad-users.js'
+import { getGitHubUsersController } from './controllers/get-github-users.js'
+import { getUserController } from './controllers/get-user.js'
+import { getUsersController } from './controllers/get-users.js'
+import { updateUserController } from './controllers/update-user.js'
 
 const users = {
   plugin: {
