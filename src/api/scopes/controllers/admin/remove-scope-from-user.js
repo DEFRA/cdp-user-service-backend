@@ -1,7 +1,7 @@
 import Boom from '@hapi/boom'
 
-import Joi from '~/src/helpers/extended-joi.js'
-import { removeScopeFromUserTransaction } from '~/src/helpers/mongo/transactions/scope/remove-scope-from-user-transaction.js'
+import Joi from '../../../../helpers/extended-joi.js'
+import { removeScopeFromUserTransaction } from '../../../../helpers/mongo/transactions/scope/remove-scope-from-user-transaction.js'
 
 const adminRemoveScopeFromUserController = {
   options: {

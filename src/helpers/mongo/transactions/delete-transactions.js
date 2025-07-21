@@ -1,10 +1,10 @@
 import Boom from '@hapi/boom'
 
-import { getTeam } from '~/src/api/teams/helpers/get-team.js'
-import { getUser } from '~/src/api/users/helpers/get-user.js'
-import { withMongoTransaction } from '~/src/helpers/mongo/transactions/with-mongo-transaction.js'
-import { removeTeamFromScope } from '~/src/helpers/mongo/transactions/scope/remove-scope-from-team-transaction.js'
-import { removeUserFromScope } from '~/src/helpers/mongo/transactions/scope/remove-scope-from-user-transaction.js'
+import { getTeam } from '../../../api/teams/helpers/get-team.js'
+import { getUser } from '../../../api/users/helpers/get-user.js'
+import { withMongoTransaction } from './with-mongo-transaction.js'
+import { removeTeamFromScope } from './scope/remove-scope-from-team-transaction.js'
+import { removeUserFromScope } from './scope/remove-scope-from-user-transaction.js'
 
 async function removeTeamFromUserDb(db, userId, teamId) {
   return await db.collection('users').findOneAndUpdate(

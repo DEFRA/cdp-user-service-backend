@@ -1,4 +1,4 @@
-import { mailNicknameFromGroupName } from '~/src/api/teams/helpers/mail-nickname-from-group-name.js'
+import { mailNicknameFromGroupName } from './mail-nickname-from-group-name.js'
 
 describe('#mailNicknameFromGroupName', () => {
   it('should remove non-ASCII characters', () => {

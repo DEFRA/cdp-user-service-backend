@@ -1,6 +1,6 @@
 import Boom from '@hapi/boom'
 
-import { getTeam } from '~/src/api/teams/helpers/get-team.js'
+import { getTeam } from '../helpers/get-team.js'
 import Joi from 'joi'
 
 const getTeamController = {

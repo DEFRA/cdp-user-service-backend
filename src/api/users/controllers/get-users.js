@@ -1,6 +1,6 @@
 import Joi from 'joi'
 
-import { getUsers } from '~/src/api/users/helpers/get-users.js'
+import { getUsers } from '../helpers/get-users.js'
 
 const getUsersController = {
   options: {

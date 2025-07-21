@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb'
 
-import { withMongoTransaction } from '~/src/helpers/mongo/transactions/with-mongo-transaction.js'
+import { withMongoTransaction } from '../with-mongo-transaction.js'
 
 async function addScopeToUserTransaction(request, userId, scopeId) {
   const db = request.db

@@ -1,10 +1,13 @@
-import { createServer } from '~/src/api/server.js'
-import { deleteMany, replaceMany } from '~/test-helpers/mongo-helpers.js'
+import { createServer } from '../../server.js'
+import {
+  deleteMany,
+  replaceMany
+} from '../../../../test-helpers/mongo-helpers.js'
 import {
   platformTeamFixture,
   tenantTeamFixture
-} from '~/src/__fixtures__/teams.js'
-import { mockWellKnown } from '~/test-helpers/mock-well-known.js'
+} from '../../../__fixtures__/teams.js'
+import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
 
 describe('GET:/teams', () => {
   let server

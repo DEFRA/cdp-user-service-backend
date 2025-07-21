@@ -1,8 +1,8 @@
 import { ObjectId } from 'mongodb'
 
-import { withMongoTransaction } from '~/src/helpers/mongo/transactions/with-mongo-transaction.js'
-import { removeScopeFromTeam } from '~/src/helpers/mongo/transactions/scope/remove-scope-from-team-transaction.js'
-import { removeScopeFromUser } from '~/src/helpers/mongo/transactions/scope/remove-scope-from-user-transaction.js'
+import { withMongoTransaction } from '../with-mongo-transaction.js'
+import { removeScopeFromTeam } from './remove-scope-from-team-transaction.js'
+import { removeScopeFromUser } from './remove-scope-from-user-transaction.js'
 
 async function deleteScopeTransaction(request, scopeId) {
   const db = request.db

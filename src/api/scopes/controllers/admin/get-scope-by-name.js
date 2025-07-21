@@ -1,5 +1,5 @@
-import Joi from '~/src/helpers/extended-joi.js'
-import { getScopeByName } from '~/src/api/scopes/helpers/get-scope-by-name.js'
+import Joi from '../../../../helpers/extended-joi.js'
+import { getScopeByName } from '../../helpers/get-scope-by-name.js'
 
 const adminGetScopeByNameController = {
   options: {

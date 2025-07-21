@@ -1,4 +1,4 @@
-import { getScopes } from '~/src/api/scopes/helpers/get-scopes.js'
+import { getScopes } from '../../helpers/get-scopes.js'
 
 const adminGetScopesController = {
   options: {

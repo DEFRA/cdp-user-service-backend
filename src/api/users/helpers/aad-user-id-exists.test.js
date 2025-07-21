@@ -1,5 +1,5 @@
 import { vi } from 'vitest'
-import { aadUserIdExists } from '~/src/api/users/helpers/aad-user-id-exists.js'
+import { aadUserIdExists } from './aad-user-id-exists.js'
 
 vi.mock('@microsoft/microsoft-graph-client')
 

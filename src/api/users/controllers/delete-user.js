@@ -1,7 +1,7 @@
 import Joi from 'joi'
 import Boom from '@hapi/boom'
 
-import { deleteUser } from '~/src/helpers/mongo/transactions/delete-transactions.js'
+import { deleteUser } from '../../../helpers/mongo/transactions/delete-transactions.js'
 
 const deleteUserController = {
   options: {

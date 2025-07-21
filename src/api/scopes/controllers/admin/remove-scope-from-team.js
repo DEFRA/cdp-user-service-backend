@@ -1,7 +1,7 @@
 import Boom from '@hapi/boom'
 
-import Joi from '~/src/helpers/extended-joi.js'
-import { removeScopeFromTeamTransaction } from '~/src/helpers/mongo/transactions/scope/remove-scope-from-team-transaction.js'
+import Joi from '../../../../helpers/extended-joi.js'
+import { removeScopeFromTeamTransaction } from '../../../../helpers/mongo/transactions/scope/remove-scope-from-team-transaction.js'
 
 const adminRemoveScopeFromTeamController = {
   options: {

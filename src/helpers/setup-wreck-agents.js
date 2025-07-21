@@ -1,6 +1,6 @@
 import Wreck from '@hapi/wreck'
 
-import { createLogger } from '~/src/helpers/logging/logger.js'
+import { createLogger } from './logging/logger.js'
 
 /**
  * Provide Wreck http client agents when http/s proxy url config has been set

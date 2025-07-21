@@ -2,7 +2,7 @@ import Joi from 'joi'
 import Boom from '@hapi/boom'
 import isNull from 'lodash/isNull.js'
 
-import { getUser } from '~/src/api/users/helpers/get-user.js'
+import { getUser } from '../helpers/get-user.js'
 
 const getUserController = {
   options: {

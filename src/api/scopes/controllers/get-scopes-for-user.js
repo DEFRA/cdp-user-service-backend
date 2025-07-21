@@ -1,4 +1,4 @@
-import { scopesForUser } from '~/src/api/scopes/helpers/scopes-for-user.js'
+import { scopesForUser } from '../helpers/scopes-for-user.js'
 
 const getScopesForUserController = {
   options: {

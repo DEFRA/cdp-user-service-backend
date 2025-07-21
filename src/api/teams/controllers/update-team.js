@@ -1,16 +1,16 @@
 import Boom from '@hapi/boom'
 
-import { updateTeamValidationSchema } from '~/src/api/teams/helpers/update-team-validation-schema.js'
-import { getTeam } from '~/src/api/teams/helpers/get-team.js'
-import { getTeamsCount } from '~/src/api/teams/helpers/get-teams.js'
-import { buildUpdateFields } from '~/src/helpers/build-update-fields.js'
-import { teamNameExists } from '~/src/api/teams/helpers/team-name-exists.js'
-import { gitHubTeamExists } from '~/src/api/teams/helpers/github/github-team-exists.js'
-import { updateTeam } from '~/src/api/teams/helpers/update-team.js'
+import { updateTeamValidationSchema } from '../helpers/update-team-validation-schema.js'
+import { getTeam } from '../helpers/get-team.js'
+import { getTeamsCount } from '../helpers/get-teams.js'
+import { buildUpdateFields } from '../../../helpers/build-update-fields.js'
+import { teamNameExists } from '../helpers/team-name-exists.js'
+import { gitHubTeamExists } from '../helpers/github/github-team-exists.js'
+import { updateTeam } from '../helpers/update-team.js'
 import {
   addSharedRepoAccess,
   deleteSharedRepoAccess
-} from '~/src/api/teams/helpers/github/github-shared-repo-access.js'
+} from '../helpers/github/github-shared-repo-access.js'
 
 const updateTeamController = {
   options: {

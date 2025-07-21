@@ -1,16 +1,19 @@
 import { Client } from '@microsoft/microsoft-graph-client'
 
-import { createServer } from '~/src/api/server.js'
-import { deleteMany, replaceOne } from '~/test-helpers/mongo-helpers.js'
+import { createServer } from '../../server.js'
+import {
+  deleteMany,
+  replaceOne
+} from '../../../../test-helpers/mongo-helpers.js'
 import {
   userAdminFixture,
   userTenantFixture
-} from '~/src/__fixtures__/users.js'
+} from '../../../__fixtures__/users.js'
 import {
   platformTeamFixture,
   tenantTeamFixture
-} from '~/src/__fixtures__/teams.js'
-import { mockWellKnown } from '~/test-helpers/mock-well-known.js'
+} from '../../../__fixtures__/teams.js'
+import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
 
 vi.mock('@microsoft/microsoft-graph-client')
 vi.mock('@azure/identity')

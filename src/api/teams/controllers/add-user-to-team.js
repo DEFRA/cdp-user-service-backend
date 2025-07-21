@@ -1,9 +1,9 @@
 import Boom from '@hapi/boom'
 
-import { getTeam } from '~/src/api/teams/helpers/get-team.js'
-import { getUser } from '~/src/api/users/helpers/get-user.js'
-import { teamHasUser } from '~/src/api/teams/helpers/team-has-user.js'
-import { addUserToTeam } from '~/src/helpers/mongo/transactions/add-user-to-team.js'
+import { getTeam } from '../helpers/get-team.js'
+import { getUser } from '../../users/helpers/get-user.js'
+import { teamHasUser } from '../helpers/team-has-user.js'
+import { addUserToTeam } from '../../../helpers/mongo/transactions/add-user-to-team.js'
 
 const addUserToTeamController = {
   options: {

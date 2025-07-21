@@ -1,9 +1,9 @@
 import Boom from '@hapi/boom'
 
-import Joi from '~/src/helpers/extended-joi.js'
-import { getTeam } from '~/src/api/teams/helpers/get-team.js'
-import { getScope } from '~/src/api/scopes/helpers/get-scope.js'
-import { addScopeToTeamTransaction } from '~/src/helpers/mongo/transactions/scope/add-scope-to-team-transaction.js'
+import Joi from '../../../../helpers/extended-joi.js'
+import { getTeam } from '../../../teams/helpers/get-team.js'
+import { getScope } from '../../helpers/get-scope.js'
+import { addScopeToTeamTransaction } from '../../../../helpers/mongo/transactions/scope/add-scope-to-team-transaction.js'
 
 const adminAddScopeToTeamController = {
   options: {

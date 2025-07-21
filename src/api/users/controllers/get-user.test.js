@@ -1,7 +1,10 @@
-import { createServer } from '~/src/api/server.js'
-import { userAdminFixture } from '~/src/__fixtures__/users.js'
-import { deleteMany, replaceOne } from '~/test-helpers/mongo-helpers.js'
-import { mockWellKnown } from '~/test-helpers/mock-well-known.js'
+import { createServer } from '../../server.js'
+import { userAdminFixture } from '../../../__fixtures__/users.js'
+import {
+  deleteMany,
+  replaceOne
+} from '../../../../test-helpers/mongo-helpers.js'
+import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
 
 describe('GET:/users/{userId}', () => {
   let server

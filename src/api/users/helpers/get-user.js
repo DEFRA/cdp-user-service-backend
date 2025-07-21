@@ -1,4 +1,4 @@
-import { userAggregation } from '~/src/api/users/helpers/aggregations/user.js'
+import { userAggregation } from './aggregations/user.js'
 
 async function getUser(db, userId) {
   const users = await db

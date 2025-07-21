@@ -1,4 +1,4 @@
-import { buildUpdateFields } from '~/src/helpers/build-update-fields.js'
+import { buildUpdateFields } from './build-update-fields.js'
 
 describe('#buildUpdateFields', () => {
   it('should return null when any input is null', () => {

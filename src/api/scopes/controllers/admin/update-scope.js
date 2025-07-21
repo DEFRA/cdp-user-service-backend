@@ -1,8 +1,8 @@
-import Joi from '~/src/helpers/extended-joi.js'
+import Joi from '../../../../helpers/extended-joi.js'
 import Boom from '@hapi/boom'
 
-import { updateScope } from '~/src/api/scopes/helpers/update-scope.js'
-import { scopeExists } from '~/src/api/scopes/helpers/scope-exists.js'
+import { updateScope } from '../../helpers/update-scope.js'
+import { scopeExists } from '../../helpers/scope-exists.js'
 
 const adminUpdateScopeController = {
   options: {

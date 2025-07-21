@@ -1,11 +1,11 @@
 import Boom from '@hapi/boom'
 
-import { createTeamValidationSchema } from '~/src/api/teams/helpers/create-team-validation-schema.js'
-import { MongoErrors } from '~/src/helpers/mongodb-errors.js'
-import { teamNameExists } from '~/src/api/teams/helpers/team-name-exists.js'
-import { gitHubTeamExists } from '~/src/api/teams/helpers/github/github-team-exists.js'
-import { createTeam } from '~/src/api/teams/helpers/create-team.js'
-import { addSharedRepoAccess } from '~/src/api/teams/helpers/github/github-shared-repo-access.js'
+import { createTeamValidationSchema } from '../helpers/create-team-validation-schema.js'
+import { MongoErrors } from '../../../helpers/mongodb-errors.js'
+import { teamNameExists } from '../helpers/team-name-exists.js'
+import { gitHubTeamExists } from '../helpers/github/github-team-exists.js'
+import { createTeam } from '../helpers/create-team.js'
+import { addSharedRepoAccess } from '../helpers/github/github-shared-repo-access.js'
 
 const createTeamController = {
   options: {

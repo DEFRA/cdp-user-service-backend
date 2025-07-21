@@ -1,4 +1,4 @@
-import { removeNil } from '~/src/helpers/remove-nil.js'
+import { removeNil } from './remove-nil.js'
 
 describe('#removeNil', () => {
   it('should provide object without nil properties', () => {

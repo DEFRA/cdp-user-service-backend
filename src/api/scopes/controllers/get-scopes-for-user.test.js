@@ -1,9 +1,12 @@
-import { createServer } from '~/src/api/server.js'
-import { deleteMany, replaceMany } from '~/test-helpers/mongo-helpers.js'
+import { createServer } from '../../server.js'
+import {
+  deleteMany,
+  replaceMany
+} from '../../../../test-helpers/mongo-helpers.js'
 import {
   platformTeamFixture,
   tenantTeamFixture
-} from '~/src/__fixtures__/teams.js'
+} from '../../../__fixtures__/teams.js'
 import {
   adminFixture,
   breakGlassFixture,
@@ -11,14 +14,14 @@ import {
   postgresScopeFixture,
   terminalScopeFixture,
   testAsTenantFixture
-} from '~/src/__fixtures__/scopes.js'
+} from '../../../__fixtures__/scopes.js'
 import {
   userAdminFixture,
   userAdminWithTestAsTenantFixture,
   userPostgresFixture,
   userTenantFixture
-} from '~/src/__fixtures__/users.js'
-import { mockWellKnown } from '~/test-helpers/mock-well-known.js'
+} from '../../../__fixtures__/users.js'
+import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
 
 describe('GET:/scopes', () => {
   let server

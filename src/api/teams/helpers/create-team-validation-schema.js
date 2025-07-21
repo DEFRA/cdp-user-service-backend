@@ -1,5 +1,5 @@
 import Joi from 'joi'
-import { environments } from '~/src/config/environments.js'
+import { environments } from '../../../config/environments.js'
 
 const createTeamValidationSchema = Joi.object({
   name: Joi.string()

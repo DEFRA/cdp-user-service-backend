@@ -1,4 +1,4 @@
-import { transactionOptions } from '~/src/constants/transaction-options.js'
+import { transactionOptions } from '../../../constants/transaction-options.js'
 
 async function withMongoTransaction(request, fn) {
   const { mongoClient, logger } = request

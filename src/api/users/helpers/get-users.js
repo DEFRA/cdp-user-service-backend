@@ -1,5 +1,5 @@
 import isNil from 'lodash/isNil.js'
-import { userAggregation } from '~/src/api/users/helpers/aggregations/user.js'
+import { userAggregation } from './aggregations/user.js'
 
 async function getUsers(db, query) {
   const stages = []

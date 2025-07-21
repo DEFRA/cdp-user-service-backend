@@ -1,5 +1,5 @@
 import isNil from 'lodash/isNil.js'
-import { teamAggregation } from '~/src/api/teams/helpers/aggregations/team.js'
+import { teamAggregation } from './aggregations/team.js'
 
 async function getTeams(db, queryParams) {
   const stages = []

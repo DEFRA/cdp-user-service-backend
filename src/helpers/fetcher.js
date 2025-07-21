@@ -1,5 +1,5 @@
-import { createLogger } from '~/src/helpers/logging/logger.js'
-import { config } from '~/src/config/config.js'
+import { createLogger } from './logging/logger.js'
+import { config } from '../config/config.js'
 import { getTraceId } from '@defra/hapi-tracing'
 import { HttpsProxyAgent } from 'https-proxy-agent'
 
