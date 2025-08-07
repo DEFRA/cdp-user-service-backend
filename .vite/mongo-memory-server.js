@@ -2,10 +2,10 @@ import { afterAll, beforeAll } from 'vitest'
 import { setup, teardown } from 'vitest-mongodb'
 
 beforeAll(async () => {
-  // Setup mongo mock
   await setup({
     binary: {
-      version: 'latest'
+      version: 'latest',
+      downloadDir: './.cache/mongodb-binaries'
     },
     serverOptions: {},
     autoStart: false
