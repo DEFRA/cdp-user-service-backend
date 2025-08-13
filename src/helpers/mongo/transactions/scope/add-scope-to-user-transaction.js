@@ -9,7 +9,9 @@ async function addScopeToUserTransaction(request, userId, scopeId) {
     await db.collection('users').findOneAndUpdate(
       { _id: userId },
       {
-        $addToSet: { scopes: new ObjectId(scopeId) },
+        $addToSet: {
+          scopes: { scopeId: new ObjectId(scopeId) }
+        },
         $set: { updatedAt: new Date() }
       },
       {

@@ -15,7 +15,7 @@ async function getUsers(db, query) {
     })
   }
 
-  stages.push(...userAggregation, {
+  stages.push(...userAggregation(), {
     $sort: { name: 1 }
   })
 

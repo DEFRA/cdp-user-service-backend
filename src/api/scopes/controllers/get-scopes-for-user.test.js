@@ -19,7 +19,8 @@ import {
   userAdminFixture,
   userAdminWithTestAsTenantFixture,
   userPostgresFixture,
-  userTenantFixture
+  userTenantFixture,
+  userWithGranularScopesFixture
 } from '../../../__fixtures__/users.js'
 import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
 
@@ -29,6 +30,8 @@ describe('GET:/scopes', () => {
   let deleteManyTestHelper
 
   beforeAll(async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2025-08-12T14:16:00.000Z'))
     mockWellKnown()
 
     server = await createServer()
@@ -43,7 +46,8 @@ describe('GET:/scopes', () => {
       userAdminFixture,
       userTenantFixture,
       userPostgresFixture,
-      userAdminWithTestAsTenantFixture
+      userAdminWithTestAsTenantFixture,
+      userWithGranularScopesFixture
     ])
     await replaceManyTestHelper('teams', [
       platformTeamFixture,
@@ -64,6 +68,7 @@ describe('GET:/scopes', () => {
   })
 
   afterAll(async () => {
+    vi.useRealTimers()
     await server.stop({ timeout: 0 })
   })
 
@@ -212,6 +217,38 @@ describe('GET:/scopes', () => {
         scopeFlags: {
           isAdmin: false,
           isTenant: true
+        }
+      })
+    })
+  })
+
+  describe('With time and team-specific scope', () => {
+    test('Should only return scopes where the current date time is within the start and end date of the scope', async () => {
+      const { result, statusCode, statusMessage } = await scopesEndpoint({
+        id: userWithGranularScopesFixture._id
+      })
+
+      expect(statusCode).toBe(200)
+      expect(statusMessage).toBe('OK')
+
+      expect(result).toMatchObject({
+        message: 'success',
+        scopes: [
+          userWithGranularScopesFixture._id,
+          '2a45e0cd-9f1b-4158-825d-40e561c55c55',
+          'admin',
+          'postgres'
+        ].sort(),
+        scopeFlags: {
+          isAdmin: true,
+          isTenant: false
+        },
+        teamScopes: {
+          '2a45e0cd-9f1b-4158-825d-40e561c55c55': [
+            'breakGlass',
+            'terminal',
+            'serviceOwner'
+          ]
         }
       })
     })

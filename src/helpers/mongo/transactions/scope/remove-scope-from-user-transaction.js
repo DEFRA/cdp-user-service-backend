@@ -16,7 +16,7 @@ function removeScopeFromUser(db, scopeId, userId) {
   return db.collection('users').findOneAndUpdate(
     { _id: userId },
     {
-      $pull: { scopes: new ObjectId(scopeId) },
+      $pull: { scopes: { scopeId: new ObjectId(scopeId) } },
       $set: { updatedAt: new Date() }
     },
     {
