@@ -1,35 +1,42 @@
 import { getUser } from '../../users/helpers/get-user.js'
-import { getTeams } from '../../teams/helpers/get-teams.js'
+
+function addScopeToTeamScopes(teamScopes, teamId, scopeName) {
+  if (teamScopes[teamId] === undefined) {
+    teamScopes[teamId] = [scopeName]
+  } else if (!teamScopes[teamId].includes(scopeName)) {
+    teamScopes[teamId].push(scopeName)
+  }
+}
 
 async function scopesForUser(credentials, db) {
   const adminScope = 'admin'
+  const serviceOwnerScope = 'serviceOwner'
   const tenantScope = 'tenant'
   const testAsTenantScope = 'testAsTenant'
 
   const scopes = new Set()
+  const teamScopes = {}
 
   const userId = credentials.id
   const user = await getUser(db, userId)
 
-  // user level scopes
+  // user assigned scopes
   if (user) {
     scopes.add(userId)
-    user.scopes.forEach((s) => scopes.add(s.value))
+    user.scopes.forEach((s) => {
+      if (s.teamId !== undefined) {
+        addScopeToTeamScopes(teamScopes, s.teamId, s.scopeName)
+      } else {
+        scopes.add(s.scopeName)
+      }
+    })
   }
 
-  // team level scopes
+  // team assigned scopes
   if (user?.teams) {
-    const allTeamsWithGithub = await getTeams(db)
-    const teamLookup = new Map(
-      allTeamsWithGithub.map((team) => [team.teamId, team])
-    )
-
     for (const team of user.teams) {
       scopes.add(team.teamId)
-      const userTeam = teamLookup.get(team.teamId)
-      if (userTeam) {
-        userTeam.scopes.forEach((s) => scopes.add(s.value))
-      }
+      addScopeToTeamScopes(teamScopes, team.teamId, serviceOwnerScope)
     }
   }
 
@@ -50,7 +57,8 @@ async function scopesForUser(credentials, db) {
     scopeFlags: {
       isAdmin,
       isTenant
-    }
+    },
+    teamScopes
   }
 }
 

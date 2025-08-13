@@ -5,6 +5,7 @@ import {
   replaceOne
 } from '../../../../test-helpers/mongo-helpers.js'
 import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
+import { ObjectId } from 'mongodb'
 
 describe('GET:/users/{userId}', () => {
   let server
@@ -55,7 +56,14 @@ describe('GET:/users/{userId}', () => {
           email: 'tetsuo.shima@defra.onmicrosoft.com',
           github: 'TetsuoShima',
           name: 'TetsuoShima',
-          scopes: [],
+          scopes: [
+            {
+              scopeId: new ObjectId('6751e606a171ebffac3cc9dd')
+            },
+            {
+              scopeId: new ObjectId('7751e606a171ebffac3cc9dd')
+            }
+          ],
           teams: [],
           userId: '62bb35d2-d4f2-4cf6-abd3-262d99727677'
         })

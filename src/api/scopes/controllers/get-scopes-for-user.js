@@ -10,13 +10,12 @@ const getScopesForUserController = {
   handler: async (request, h) => {
     const credentials = request.auth.credentials
 
-    const { scopes, scopeFlags } = await scopesForUser(credentials, request.db)
+    const scope = await scopesForUser(credentials, request.db)
 
     return h
       .response({
         message: 'success',
-        scopes,
-        scopeFlags
+        ...scope
       })
       .code(200)
   }
