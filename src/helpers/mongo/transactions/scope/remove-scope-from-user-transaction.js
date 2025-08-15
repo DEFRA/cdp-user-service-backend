@@ -2,22 +2,60 @@ import { ObjectId } from 'mongodb'
 
 import { withMongoTransaction } from '../with-mongo-transaction.js'
 
-async function removeScopeFromUserTransaction(request, userId, scopeId) {
+async function removeScopeFromUserTransaction(
+  request,
+  userId,
+  scopeId,
+  teamId,
+  endDate = new Date()
+) {
   const db = request.db
 
   return await withMongoTransaction(request, async () => {
-    await removeScopeFromUser(db, scopeId, userId)
+    await removeScopeFromUser(db, scopeId, userId, teamId, endDate)
 
     return await removeUserFromScope(db, userId, scopeId)
   })
 }
 
-function removeScopeFromUser(db, scopeId, userId) {
+function removeScopeFromUser(db, scopeId, userId, teamId, endDate) {
+  const now = new Date()
+  const elemMatch = {
+    scopeId: new ObjectId(scopeId),
+    $and: [
+      {
+        $or: [
+          { startDate: null },
+          { startDate: { $exists: false } },
+          { startDate: { $lt: now } }
+        ]
+      },
+      {
+        $or: [
+          { endDate: null },
+          { endDate: { $exists: false } },
+          { endDate: { $gt: now } }
+        ]
+      }
+    ]
+  }
+
+  if (teamId !== undefined && teamId !== null) {
+    elemMatch.teamId = teamId
+  }
+
+  const filter = {
+    _id: userId,
+    scopes: { $elemMatch: elemMatch }
+  }
+
   return db.collection('users').findOneAndUpdate(
-    { _id: userId },
+    filter,
     {
-      $pull: { scopes: { scopeId: new ObjectId(scopeId) } },
-      $set: { updatedAt: new Date() }
+      $set: {
+        'scopes.$.endDate': endDate,
+        updatedAt: now
+      }
     },
     {
       upsert: false,

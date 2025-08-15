@@ -1,42 +1,45 @@
 import Boom from '@hapi/boom'
 
-import Joi from '../../../../helpers/extended-joi.js'
+import Joi from '../../../helpers/extended-joi.js'
 import { teamIdValidation, userIdValidation } from '@defra/cdp-validation-kit'
-import { addScopeToUser } from '../../helpers/add-scope-to-user.js'
+import { addScopeToUser } from '../../scopes/helpers/add-scope-to-user.js'
+import { getScope } from '../../scopes/helpers/get-scope.js'
 
-const adminAddScopeToUserController = {
+const addProdAccessToUserController = {
   options: {
     tags: ['api', 'scopes'],
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: ['admin']
+        scope: ['admin', 'canGrantProdAccess'] // FIXME: look at interrogating teamScopes: https://hapi.dev/api/?v=21.4.3#route.options.auth.access.scope
       }
     },
     validate: {
       params: Joi.object({
-        userId: userIdValidation,
-        scopeId: Joi.objectId().required()
+        userId: userIdValidation
       }),
       payload: Joi.object({
-        teamId: teamIdValidation.optional(),
-        startDate: Joi.date().optional(),
-        endDate: Joi.date().optional()
+        teamId: teamIdValidation,
+        startDate: Joi.date().required(),
+        endDate: Joi.date().required()
       }).optional(),
       failAction: () => Boom.boomify(Boom.badRequest())
     }
   },
   handler: async (request, h) => {
     const userId = request.params.userId
-    const scopeId = request.params.scopeId
     const teamId = request.payload?.teamId
     const startDate = request.payload?.startDate
     const endDate = request.payload?.endDate
 
+    const prodAccessScope = await getScope(request.db, 'prodAccess')
+
+    // FIXME check that the request.user has permission to add prod access for this team
+
     const scope = await addScopeToUser({
       request,
       userId,
-      scopeId,
+      scopeId: prodAccessScope.id,
       teamId,
       startDate,
       endDate
@@ -46,4 +49,4 @@ const adminAddScopeToUserController = {
   }
 }
 
-export { adminAddScopeToUserController }
+export { addProdAccessToUserController }

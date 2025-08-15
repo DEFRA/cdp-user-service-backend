@@ -1,16 +1,16 @@
 import Boom from '@hapi/boom'
 
-import Joi from '../../../../helpers/extended-joi.js'
+import Joi from '../../../helpers/extended-joi.js'
 import { teamIdValidation, userIdValidation } from '@defra/cdp-validation-kit'
-import { addScopeToUser } from '../../helpers/add-scope-to-user.js'
+import { addScopeToUser } from '../../scopes/helpers/add-scope-to-user.js'
 
-const adminAddScopeToUserController = {
+const addScopeToUserController = {
   options: {
     tags: ['api', 'scopes'],
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: ['admin']
+        scope: ['admin'] // FIXME: look at interrogating teamScopes: https://hapi.dev/api/?v=21.4.3#route.options.auth.access.scope
       }
     },
     validate: {
@@ -46,4 +46,4 @@ const adminAddScopeToUserController = {
   }
 }
 
-export { adminAddScopeToUserController }
+export { addScopeToUserController }
