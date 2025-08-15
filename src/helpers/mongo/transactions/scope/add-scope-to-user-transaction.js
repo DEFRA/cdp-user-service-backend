@@ -2,7 +2,14 @@ import { ObjectId } from 'mongodb'
 
 import { withMongoTransaction } from '../with-mongo-transaction.js'
 
-async function addScopeToUserTransaction(request, userId, scopeId) {
+async function addScopeToUserTransaction({
+  request,
+  userId,
+  scopeId,
+  teamId,
+  startDate = new Date(),
+  endDate
+}) {
   const db = request.db
 
   return await withMongoTransaction(request, async () => {
@@ -10,7 +17,7 @@ async function addScopeToUserTransaction(request, userId, scopeId) {
       { _id: userId },
       {
         $addToSet: {
-          scopes: { scopeId: new ObjectId(scopeId) }
+          scopes: { scopeId: new ObjectId(scopeId), teamId, startDate, endDate }
         },
         $set: { updatedAt: new Date() }
       },

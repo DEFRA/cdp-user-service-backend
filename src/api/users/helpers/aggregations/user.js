@@ -227,7 +227,7 @@ export const userAggregation = (currentDateTime = new Date()) => [
             scopeId: '$$s.scopeId',
             scopeName: {
               $getField: {
-                field: 'value', // constant field name is required by $getField
+                field: 'value',
                 input: {
                   $arrayElemAt: [
                     {

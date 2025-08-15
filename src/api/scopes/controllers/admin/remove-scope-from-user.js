@@ -1,10 +1,10 @@
 import Boom from '@hapi/boom'
+import { userIdValidation } from '@defra/cdp-validation-kit'
+import { scopes } from '@defra/cdp-validation-kit'
+import { statusCodes } from '@defra/cdp-validation-kit'
 
 import Joi from '../../../../helpers/extended-joi.js'
 import { removeScopeFromUserTransaction } from '../../../../helpers/mongo/transactions/scope/remove-scope-from-user-transaction.js'
-import { userIdValidation } from '@defra/cdp-validation-kit'
-import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
-import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
 
 const adminRemoveScopeFromUserController = {
   options: {

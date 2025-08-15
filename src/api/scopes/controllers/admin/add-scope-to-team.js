@@ -1,12 +1,12 @@
 import Boom from '@hapi/boom'
+import { teamIdValidation } from '@defra/cdp-validation-kit'
+import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
+import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
 
 import Joi from '../../../../helpers/extended-joi.js'
 import { getTeam } from '../../../teams/helpers/get-team.js'
 import { getScope } from '../../helpers/get-scope.js'
 import { addScopeToTeamTransaction } from '../../../../helpers/mongo/transactions/scope/add-scope-to-team-transaction.js'
-import { teamIdValidation } from '@defra/cdp-validation-kit'
-import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
-import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
 
 const adminAddScopeToTeamController = {
   options: {
