@@ -8,12 +8,12 @@ import {
   tenantTeamFixture
 } from '../../../__fixtures__/teams.js'
 import {
-  adminFixture,
-  breakGlassFixture,
+  adminScopeFixture,
+  prodAccessScopeFixture,
   externalTestScopeFixture,
   postgresScopeFixture,
   terminalScopeFixture,
-  testAsTenantFixture
+  testAsTenantScopeFixture
 } from '../../../__fixtures__/scopes.js'
 import {
   userAdminFixture,
@@ -57,9 +57,9 @@ describe('GET:/scopes', () => {
       externalTestScopeFixture,
       postgresScopeFixture,
       terminalScopeFixture,
-      breakGlassFixture,
-      adminFixture,
-      testAsTenantFixture
+      prodAccessScopeFixture,
+      adminScopeFixture,
+      testAsTenantScopeFixture
     ])
   })
 
@@ -145,8 +145,8 @@ describe('GET:/scopes', () => {
           userAdminFixture._id,
           platformTeamFixture._id,
           'admin',
-          'breakGlass',
-          'externalTest'
+          'externalTest',
+          'prodAccess'
         ],
         scopeFlags: {
           isAdmin: true,
@@ -169,8 +169,8 @@ describe('GET:/scopes', () => {
         scopes: [
           userAdminWithTestAsTenantFixture._id,
           platformTeamFixture._id,
-          'breakGlass',
           'externalTest',
+          'prodAccess',
           'tenant',
           'testAsTenant'
         ],
@@ -245,7 +245,7 @@ describe('GET:/scopes', () => {
         },
         teamScopes: {
           '2a45e0cd-9f1b-4158-825d-40e561c55c55': [
-            'breakGlass',
+            'prodAccess',
             'terminal',
             'serviceOwner'
           ]

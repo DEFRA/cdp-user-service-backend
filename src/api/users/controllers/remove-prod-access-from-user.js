@@ -20,15 +20,17 @@ const removeProdAccessFromUserController = {
       }),
       payload: Joi.object({
         teamId: teamIdValidation,
-        endDate: Joi.date().optional()
-      }).optional(),
+        endAt: Joi.date().iso().optional()
+      }),
       failAction: () => Boom.boomify(Boom.badRequest())
     }
   },
   handler: async (request, h) => {
     const userId = request.params.userId
     const teamId = request.payload?.teamId
-    const endDate = request.payload?.endDate
+    const endDate = request.payload?.endAt
+      ? new Date(request.payload.endAt)
+      : new Date()
 
     const prodAccessScope = await getScope(request.db, 'prodAccess')
 

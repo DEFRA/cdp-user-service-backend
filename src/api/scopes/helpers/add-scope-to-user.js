@@ -1,7 +1,8 @@
-import { getUser } from '../../users/helpers/get-user.js'
-import { getScope } from './get-scope.js'
-import { getTeam } from '../../teams/helpers/get-team.js'
 import Boom from '@hapi/boom'
+
+import { getScope } from './get-scope.js'
+import { getUser } from '../../users/helpers/get-user.js'
+import { getTeam } from '../../teams/helpers/get-team.js'
 import { addScopeToUserTransaction } from '../../../helpers/mongo/transactions/scope/add-scope-to-user-transaction.js'
 
 export async function addScopeToUser({
@@ -24,12 +25,12 @@ export async function addScopeToUser({
     if (!team) {
       throw Boom.notFound('Team not found')
     }
-    if (dbUser.teams.filter((team) => team.id === teamId).length === 0) {
+    if (dbUser.teams.filter((team) => team.teamId === teamId).length === 0) {
       throw Boom.badRequest('User is not a member of the team')
     }
   }
 
-  if (startDate && endDate && new Date(startDate) >= new Date(endDate)) {
+  if (startDate && endDate && startDate.getTime() >= endDate.getTime()) {
     throw Boom.badRequest('Start date must be before End date')
   }
 
@@ -42,10 +43,19 @@ export async function addScopeToUser({
   }
 
   if (
-    dbUser.scopes.filter(
-      (scope) =>
-        scope.id === scopeId && (teamId === null || scope.teamId === teamId)
-    ).length === 0
+    dbUser.scopes.filter((userScope) => {
+      // scopeId from db is an ObjectId, so we check for its string against the ObjectId string passed to the endpoint
+      const userHasScopeWithTeamId =
+        userScope.scopeId.toHexString() === scopeId &&
+        teamId !== undefined &&
+        userScope.teamId === teamId
+      const userHasScopeWithoutTeamId =
+        userScope.scopeId.toHexString() === scopeId &&
+        teamId === undefined &&
+        userScope.teamId === undefined
+
+      return userHasScopeWithTeamId || userHasScopeWithoutTeamId
+    }).length > 0
   ) {
     throw Boom.badRequest('User already has this scope assigned')
   }

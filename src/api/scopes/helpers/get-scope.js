@@ -6,29 +6,33 @@ async function getScope(db, scopeId) {
     .aggregate([
       { $match: { _id: new ObjectId(scopeId) } },
       {
+        $set: {
+          _userIds: '$users.userId',
+          _teamIds: {
+            $setUnion: ['$teams', '$users.teamId']
+          }
+        }
+      },
+      {
         $lookup: {
           from: 'users',
-          localField: 'users',
-          foreignField: '_id',
+          let: { userIds: '$_userIds' },
           pipeline: [
-            {
-              $sort: { name: 1 }
-            }
+            { $match: { $expr: { $in: ['$_id', '$$userIds'] } } },
+            { $project: { _id: 1, name: 1 } }
           ],
-          as: 'users'
+          as: 'userDocs'
         }
       },
       {
         $lookup: {
           from: 'teams',
-          localField: 'teams',
-          foreignField: '_id',
+          let: { teamIds: '$_teamIds' },
           pipeline: [
-            {
-              $sort: { name: 1 }
-            }
+            { $match: { $expr: { $in: ['$_id', '$$teamIds'] } } },
+            { $project: { _id: 1, name: 1 } }
           ],
-          as: 'teams'
+          as: 'teamDocs'
         }
       },
       {
@@ -58,6 +62,28 @@ async function getScope(db, scopeId) {
         }
       },
       {
+        $set: {
+          _userNameMap: {
+            $arrayToObject: {
+              $map: {
+                input: '$userDocs',
+                as: 'userDoc',
+                in: { k: { $toString: '$$userDoc._id' }, v: '$$userDoc.name' }
+              }
+            }
+          },
+          _teamNameMap: {
+            $arrayToObject: {
+              $map: {
+                input: '$teamDocs',
+                as: 'teamDoc',
+                in: { k: { $toString: '$$teamDoc._id' }, v: '$$teamDoc.name' }
+              }
+            }
+          }
+        }
+      },
+      {
         $project: {
           _id: 0,
           scopeId: '$_id',
@@ -66,17 +92,55 @@ async function getScope(db, scopeId) {
           description: 1,
           users: {
             $map: {
-              input: '$users',
+              input: { $ifNull: ['$users', []] },
               as: 'user',
               in: {
-                userId: '$$user._id',
-                name: '$$user.name'
+                userId: '$$user.userId',
+                userName: {
+                  $let: {
+                    vars: {
+                      kv: {
+                        $first: {
+                          $filter: {
+                            input: { $objectToArray: '$_userNameMap' },
+                            as: 'kv',
+                            cond: {
+                              $eq: ['$$kv.k', { $toString: '$$user.userId' }]
+                            }
+                          }
+                        }
+                      }
+                    },
+                    in: '$$kv.v'
+                  }
+                },
+                teamId: '$$user.teamId',
+                teamName: {
+                  $let: {
+                    vars: {
+                      kv: {
+                        $first: {
+                          $filter: {
+                            input: { $objectToArray: '$_teamNameMap' },
+                            as: 'kv',
+                            cond: {
+                              $eq: ['$$kv.k', { $toString: '$$user.teamId' }]
+                            }
+                          }
+                        }
+                      }
+                    },
+                    in: '$$kv.v'
+                  }
+                },
+                startDate: '$$user.startDate',
+                endDate: '$$user.endDate'
               }
             }
           },
           teams: {
             $map: {
-              input: '$teams',
+              input: '$teamDocs',
               as: 'team',
               in: {
                 teamId: '$$team._id',

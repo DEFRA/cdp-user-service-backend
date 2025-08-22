@@ -4,6 +4,7 @@ import Joi from '../../../helpers/extended-joi.js'
 import { teamIdValidation, userIdValidation } from '@defra/cdp-validation-kit'
 import { addScopeToUser } from '../../scopes/helpers/add-scope-to-user.js'
 import { getScope } from '../../scopes/helpers/get-scope.js'
+import { addYears } from '../../../helpers/date/add-years.js'
 
 const addProdAccessToUserController = {
   options: {
@@ -20,17 +21,21 @@ const addProdAccessToUserController = {
       }),
       payload: Joi.object({
         teamId: teamIdValidation,
-        startDate: Joi.date().required(),
-        endDate: Joi.date().required()
-      }).optional(),
+        startAt: Joi.date().iso().required(),
+        endAt: Joi.date().iso().required()
+      }),
       failAction: () => Boom.boomify(Boom.badRequest())
     }
   },
   handler: async (request, h) => {
     const userId = request.params.userId
-    const teamId = request.payload?.teamId
-    const startDate = request.payload?.startDate
-    const endDate = request.payload?.endDate
+
+    const payload = request.payload
+    const teamId = payload.teamId
+
+    const now = new Date()
+    const startDate = payload.startAt ? new Date(payload.startAt) : now
+    const endDate = payload.endAt ? new Date(payload.endAt) : addYears(now, 100)
 
     const prodAccessScope = await getScope(request.db, 'prodAccess')
 

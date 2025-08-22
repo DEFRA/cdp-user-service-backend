@@ -2,7 +2,7 @@ import Boom from '@hapi/boom'
 
 import Joi from '../../../../helpers/extended-joi.js'
 import { removeScopeFromUserTransaction } from '../../../../helpers/mongo/transactions/scope/remove-scope-from-user-transaction.js'
-import { teamIdValidation } from '@defra/cdp-validation-kit'
+import { teamIdValidation, userIdValidation } from '@defra/cdp-validation-kit'
 
 const adminRemoveScopeFromUserController = {
   options: {
@@ -15,12 +15,12 @@ const adminRemoveScopeFromUserController = {
     },
     validate: {
       params: Joi.object({
-        userId: teamIdValidation,
+        userId: userIdValidation,
         scopeId: Joi.objectId().required()
       }),
       payload: Joi.object({
         teamId: teamIdValidation.optional()
-      }).optional(),
+      }),
       failAction: () => Boom.boomify(Boom.badRequest())
     }
   },

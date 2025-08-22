@@ -6,19 +6,19 @@ async function removeScopeFromUserTransaction(
   request,
   userId,
   scopeId,
-  teamId,
+  teamId = null,
   endDate = new Date()
 ) {
   const db = request.db
 
   return await withMongoTransaction(request, async () => {
-    await removeScopeFromUser(db, scopeId, userId, teamId, endDate)
+    await removeScopeFromUser({ db, scopeId, userId, teamId, endDate })
 
-    return await removeUserFromScope(db, userId, scopeId)
+    return await removeUserFromScope({ db, userId, scopeId, teamId })
   })
 }
 
-function removeScopeFromUser(db, scopeId, userId, teamId, endDate) {
+function removeScopeFromUser({ db, scopeId, userId, teamId, endDate }) {
   const now = new Date()
   const elemMatch = {
     scopeId: new ObjectId(scopeId),
@@ -64,12 +64,17 @@ function removeScopeFromUser(db, scopeId, userId, teamId, endDate) {
   )
 }
 
-function removeUserFromScope(db, userId, scopeId) {
+function removeUserFromScope({ db, userId, scopeId, teamId }) {
+  const pullConditional = { userId }
+  if (teamId !== undefined && teamId !== null) {
+    pullConditional.teamId = teamId
+  }
+
   return db
     .collection('scopes')
     .findOneAndUpdate(
       { _id: new ObjectId(scopeId) },
-      { $pull: { users: userId }, $set: { updatedAt: new Date() } }
+      { $pull: { users: pullConditional }, $set: { updatedAt: new Date() } }
     )
 }
 

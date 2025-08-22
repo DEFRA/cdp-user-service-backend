@@ -7,7 +7,7 @@ async function addScopeToUserTransaction({
   userId,
   scopeId,
   teamId,
-  startDate = new Date(),
+  startDate,
   endDate
 }) {
   const db = request.db
@@ -27,17 +27,22 @@ async function addScopeToUserTransaction({
       }
     )
 
-    return await addUserToScope(db, userId, scopeId)
+    return await addUserToScope(
+      db,
+      { userId, teamId, startDate, endDate },
+      scopeId
+    )
   })
 }
 
-function addUserToScope(db, userId, scopeId) {
-  return db
-    .collection('scopes')
-    .findOneAndUpdate(
-      { _id: new ObjectId(scopeId) },
-      { $addToSet: { users: userId }, $set: { updatedAt: new Date() } }
-    )
+function addUserToScope(db, { userId, teamId, startDate, endDate }, scopeId) {
+  return db.collection('scopes').findOneAndUpdate(
+    { _id: new ObjectId(scopeId) },
+    {
+      $addToSet: { users: { userId, teamId, startDate, endDate } },
+      $set: { updatedAt: new Date() }
+    }
+  )
 }
 
 export { addScopeToUserTransaction }

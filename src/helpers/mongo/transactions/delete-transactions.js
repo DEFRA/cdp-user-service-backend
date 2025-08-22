@@ -58,7 +58,7 @@ async function deleteUser(request, userId) {
 
     if (user.scopes?.length) {
       const removeFromScopes = user.scopes.map((scope) =>
-        removeUserFromScope(db, user.userId, scope.scopeId)
+        removeUserFromScope({ db, userId: user.userId, scopeId: scope.scopeId })
       )
       await Promise.all(removeFromScopes)
     }

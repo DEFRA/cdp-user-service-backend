@@ -9,7 +9,6 @@ const getScopesForUserController = {
   },
   handler: async (request, h) => {
     const credentials = request.auth.credentials
-
     const scope = await scopesForUser(credentials, request.db)
 
     return h

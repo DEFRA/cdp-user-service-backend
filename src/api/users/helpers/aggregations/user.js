@@ -60,6 +60,23 @@ export const userAggregation = (currentDateTime = new Date()) => [
               ]
             },
             teamId: '$$s.teamId',
+            teamName: {
+              $getField: {
+                field: 'name',
+                input: {
+                  $arrayElemAt: [
+                    {
+                      $filter: {
+                        input: '$teamDocs',
+                        as: 'td',
+                        cond: { $eq: ['$$td._id', '$$s.teamId'] }
+                      }
+                    },
+                    0
+                  ]
+                }
+              }
+            },
             startDate: '$$s.startDate',
             endDate: '$$s.endDate'
           }
@@ -243,6 +260,7 @@ export const userAggregation = (currentDateTime = new Date()) => [
               }
             },
             teamId: '$$s.teamId',
+            teamName: '$$s.teamName',
             startDate: '$$s.startDate',
             endDate: '$$s.endDate'
           }

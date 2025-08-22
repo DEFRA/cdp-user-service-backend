@@ -9,12 +9,12 @@ import {
 } from '../../../__fixtures__/users.js'
 import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
 import {
-  adminFixture,
-  breakGlassFixture,
+  adminScopeFixture,
+  prodAccessScopeFixture,
   externalTestScopeFixture,
   postgresScopeFixture,
   terminalScopeFixture,
-  testAsTenantFixture
+  testAsTenantScopeFixture
 } from '../../../__fixtures__/scopes.js'
 import { ObjectId } from 'mongodb'
 
@@ -54,9 +54,9 @@ describe('GET:/users', () => {
         externalTestScopeFixture,
         postgresScopeFixture,
         terminalScopeFixture,
-        breakGlassFixture,
-        adminFixture,
-        testAsTenantFixture
+        prodAccessScopeFixture,
+        adminScopeFixture,
+        testAsTenantScopeFixture
       ])
     })
 
@@ -93,7 +93,7 @@ describe('GET:/users', () => {
             scopes: [
               {
                 scopeId: new ObjectId('6751e606a171ebffac3cc9dd'),
-                scopeName: 'breakGlass'
+                scopeName: 'prodAccess'
               },
               {
                 scopeId: new ObjectId('7751e606a171ebffac3cc9dd'),
@@ -154,7 +154,7 @@ describe('GET:/users', () => {
               scopes: [
                 {
                   scopeId: new ObjectId('6751e606a171ebffac3cc9dd'),
-                  scopeName: 'breakGlass'
+                  scopeName: 'prodAccess'
                 },
                 {
                   scopeId: new ObjectId('7751e606a171ebffac3cc9dd'),
