@@ -9,9 +9,30 @@ const userAdminFixture = {
   github: 'TetsuoShima',
   teams: ['aabe63e7-87ef-4beb-a596-c810631fc474'], // platformTeamFixture
   scopes: [
-    { scopeId: new ObjectId('6751e606a171ebffac3cc9dd') }, // breakGlassFixture
+    { scopeId: new ObjectId('6751e606a171ebffac3cc9dd') }, // prodAccessScopeFixture
     { scopeId: new ObjectId('7751e606a171ebffac3cc9dd') } // adminScopeFixture
   ]
+}
+
+const userAdminWithTeamBreakGlassFixture = {
+  ...userAdminFixture,
+  scopes: [
+    {
+      scopeId: new ObjectId('6751e606a171ebffac3cc9dd'), // prodAccessScopeFixture
+      teamId: 'aabe63e7-87ef-4beb-a596-c810631fc474' // platformTeamFixture
+    }
+  ]
+}
+
+const userAdminOtherFixture = {
+  _id: '62bb35d2-d4f2-4cf6-abd3-262d997276zz',
+  name: 'Leland Palmer',
+  email: 'leland.palmer@defra.onmicrosoft.com',
+  createdAt: '2023-09-28T13:53:44.948Z',
+  updatedAt: '2024-12-03T12:26:28.965Z',
+  github: 'LelandPalmer',
+  teams: ['aabe63e7-87ef-4beb-a596-c810631fc474'], // platformTeamFixture
+  scopes: []
 }
 
 const userAdminWithTestAsTenantFixture = {
@@ -23,7 +44,7 @@ const userAdminWithTestAsTenantFixture = {
   github: 'AdminAsTenant',
   teams: ['aabe63e7-87ef-4beb-a596-c810631fc474'], // platformTeamFixture
   scopes: [
-    { scopeId: new ObjectId('6751e606a171ebffac3cc9dd') }, // breakGlassFixture
+    { scopeId: new ObjectId('6751e606a171ebffac3cc9dd') }, // prodAccessScopeFixture
     { scopeId: new ObjectId('7751e606a171ebffac3cc9dd') }, // adminScopeFixture
     { scopeId: new ObjectId('7751e606a171ebffac3cc9ff') } // testAsTenantScopeFixture
   ]
@@ -39,33 +60,33 @@ const userWithGranularScopesFixture = {
   teams: ['2a45e0cd-9f1b-4158-825d-40e561c55c55'], // tenantTeamFixture
   scopes: [
     {
-      scopeId: new ObjectId('6751e606a171ebffac3cc9dd'),
+      scopeId: new ObjectId('6751e606a171ebffac3cc9dd'), // prodAccessScopeFixture for tenant team for 2 hours
       startDate: '2025-08-12T13:16:00.000Z',
       endDate: '2025-08-12T15:16:00.000Z',
       teamId: '2a45e0cd-9f1b-4158-825d-40e561c55c55'
-    }, // breakGlassFixture for tenant team for 2 hours
+    },
     {
-      scopeId: new ObjectId('7751e606a171ebffac3cc9dd'),
+      scopeId: new ObjectId('7751e606a171ebffac3cc9dd'), // adminScopeFixture
       startDate: '2025-08-10T13:16:00.000Z',
       endDate: '2025-08-15T15:16:00.000Z'
-    }, // adminScopeFixture
+    },
     {
-      scopeId: new ObjectId('7751e606a171ebffac3cc9ff'),
+      scopeId: new ObjectId('7751e606a171ebffac3cc9ff'), // testAsTenantScopeFixture before 'today'
       startDate: '2025-08-10T13:16:00.000Z',
       endDate: '2025-08-10T11:16:00.000Z'
-    }, // testAsTenantScopeFixture before 'today'
+    },
     {
-      scopeId: new ObjectId('7751e606a171ebffac3cc9ff'),
+      scopeId: new ObjectId('7751e606a171ebffac3cc9ff'), // testAsTenantScopeFixture starts after 'today'
       startDate: '2025-10-10T13:16:00.000Z'
-    }, // testAsTenantScopeFixture starts after 'today'
+    },
     {
-      scopeId: new ObjectId('7751e606a171ebffac3cc9ff'),
+      scopeId: new ObjectId('7751e606a171ebffac3cc9ff'), // testAsTenantScopeFixture ends before 'today',
       endDate: '2025-08-10T13:16:00.000Z'
-    }, // testAsTenantScopeFixture ends before 'today',
+    },
     {
-      scopeId: new ObjectId('6751e5e9a171ebffac3cc9dc'),
+      scopeId: new ObjectId('6751e5e9a171ebffac3cc9dc'), // terminalScopeFixture for tenant team
       teamId: '2a45e0cd-9f1b-4158-825d-40e561c55c55'
-    } // terminalScopeFixture for tenant team
+    }
   ]
 }
 
@@ -91,6 +112,8 @@ const userPostgresFixture = {
 
 export {
   userAdminFixture,
+  userAdminWithTeamBreakGlassFixture,
+  userAdminOtherFixture,
   userAdminWithTestAsTenantFixture,
   userTenantFixture,
   userPostgresFixture,
