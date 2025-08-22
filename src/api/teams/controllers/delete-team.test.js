@@ -46,26 +46,10 @@ describe('DELETE:/teams/{teamId}', () => {
     })
   }
 
-  describe('When non UUID passed as teamId param', () => {
-    test('Should provide expected error response', async () => {
-      const { result, statusCode, statusMessage } =
-        await deleteTeamEndpoint('/teams/not-a-uuid')
-
-      expect(statusCode).toBe(400)
-      expect(statusMessage).toBe('Bad Request')
-
-      expect(result).toMatchObject({
-        statusCode: 400,
-        error: 'Bad Request',
-        message: '"teamId" must be a valid GUID'
-      })
-    })
-  })
-
-  describe('When team UUID does not exist in the db', () => {
+  describe('When team id does not exist in the db', () => {
     test('Should provide expected error response', async () => {
       const { result, statusCode, statusMessage } = await deleteTeamEndpoint(
-        '/team/b4c0d7f5-afc7-4dd2-aac5-5467f72a5cfe'
+        '/team/this-team-does-not-exist'
       )
 
       expect(statusCode).toBe(404)

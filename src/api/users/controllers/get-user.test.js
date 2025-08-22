@@ -71,26 +71,6 @@ describe('GET:/users/{userId}', () => {
     })
   })
 
-  describe('When non uuid passed as userId param', () => {
-    test('Should provide expected error response', async () => {
-      const { result, statusCode, statusMessage } =
-        await getUserEndpoint('/users/not-a-uuid')
-
-      expect(statusCode).toBe(400)
-      expect(statusMessage).toBe('Bad Request')
-
-      expect(result).toEqual({
-        statusCode: 400,
-        error: 'Bad Request',
-        message: '"userId" must be a valid GUID',
-        validation: {
-          source: 'params',
-          keys: ['userId']
-        }
-      })
-    })
-  })
-
   describe('When a user does not exist in the DB', () => {
     test('Should provide expected not found error response', async () => {
       const { result, statusCode, statusMessage } = await getUserEndpoint(

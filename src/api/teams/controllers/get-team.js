@@ -1,14 +1,16 @@
 import Boom from '@hapi/boom'
 
 import { getTeam } from '../helpers/get-team.js'
+
 import Joi from 'joi'
+import { teamIdValidation } from '@defra/cdp-validation-kit'
 
 const getTeamController = {
   options: {
     tags: ['api', 'teams'],
     validate: {
       params: Joi.object({
-        teamId: Joi.string().uuid().required()
+        teamId: teamIdValidation
       })
     }
   },

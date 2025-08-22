@@ -4,6 +4,7 @@ import Joi from '../../../../helpers/extended-joi.js'
 import { getTeam } from '../../../teams/helpers/get-team.js'
 import { getScope } from '../../helpers/get-scope.js'
 import { addScopeToTeamTransaction } from '../../../../helpers/mongo/transactions/scope/add-scope-to-team-transaction.js'
+import { teamIdValidation } from '@defra/cdp-validation-kit'
 
 const adminAddScopeToTeamController = {
   options: {
@@ -16,7 +17,7 @@ const adminAddScopeToTeamController = {
     },
     validate: {
       params: Joi.object({
-        teamId: Joi.string().guid().required(),
+        teamId: teamIdValidation,
         scopeId: Joi.objectId().required()
       }),
       failAction: () => Boom.boomify(Boom.badRequest())

@@ -1,13 +1,14 @@
 import Joi from 'joi'
 
 import { deleteTeam } from '../../../helpers/mongo/transactions/delete-transactions.js'
+import { teamIdValidation } from '@defra/cdp-validation-kit'
 
 const deleteTeamController = {
   options: {
     tags: ['api', 'teams'],
     validate: {
       params: Joi.object({
-        teamId: Joi.string().uuid().required()
+        teamId: teamIdValidation
       })
     },
     auth: {

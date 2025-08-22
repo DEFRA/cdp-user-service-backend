@@ -59,33 +59,17 @@ describe('GET:/teams/{teamId}', () => {
           name: 'Platform',
           scopes: [],
           serviceCodes: ['CDP'],
-          teamId: 'aabe63e7-87ef-4beb-a596-c810631fc474',
+          teamId: platformTeamFixture._id,
           users: []
         })
       })
     })
   })
 
-  describe('When non UUID passed as teamId param', () => {
-    test('Should provide expected error response', async () => {
-      const { result, statusCode, statusMessage } =
-        await getTeamEndpoint('/teams/not-a-uuid')
-
-      expect(statusCode).toBe(400)
-      expect(statusMessage).toBe('Bad Request')
-
-      expect(result).toMatchObject({
-        statusCode: 400,
-        error: 'Bad Request',
-        message: '"teamId" must be a valid GUID'
-      })
-    })
-  })
-
-  describe('When team UUID does not exist in the db', () => {
+  describe('When team ID does not exist in the db', () => {
     test('Should provide expected error response', async () => {
       const { result, statusCode, statusMessage } = await getTeamEndpoint(
-        '/team/b4c0d7f5-afc7-4dd2-aac5-5467f72a5cfe'
+        '/team/this-team-does-not-exist'
       )
 
       expect(statusCode).toBe(404)
