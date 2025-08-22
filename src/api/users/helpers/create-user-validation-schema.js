@@ -1,7 +1,8 @@
 import Joi from 'joi'
+import { userIdValidation } from '@defra/cdp-validation-kit'
 
 const createUserValidationSchema = Joi.object({
-  userId: Joi.string().uuid().required(),
+  userId: userIdValidation,
   email: Joi.string().email().required(),
   name: Joi.string().required(),
   github: Joi.string(),

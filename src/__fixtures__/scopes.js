@@ -5,7 +5,7 @@ const externalTestScopeFixture = {
   userId: '62bb35d2-d4f2-4cf6-abd3-262d99727677',
   value: 'externalTest',
   description: 'Allow teams to access external test environment',
-  teams: ['aabe63e7-87ef-4beb-a596-c810631fc474'],
+  teams: ['platform'],
   createdAt: '2024-12-04T08:11:00.441Z',
   updatedAt: '2024-12-04T08:17:06.797Z'
 }
@@ -15,7 +15,7 @@ const postgresScopeFixture = {
   userId: '62bb35d2-d4f2-4cf6-abd3-262d99727677',
   value: 'postgres',
   description: 'Allow teams to create services backend by a postgres database',
-  teams: ['2a45e0cd-9f1b-4158-825d-40e561c55c55'],
+  teams: ['animalsandplants'],
   createdAt: '2024-12-05T14:29:16.437Z',
   updatedAt: '2024-12-05T14:29:16.437Z'
 }
@@ -45,7 +45,7 @@ const adminFixture = {
   userId: '62bb35d2-d4f2-4cf6-abd3-262d99727677',
   value: 'admin',
   description: 'Allows team to administer the Portal',
-  teams: ['aabe63e7-87ef-4beb-a596-c810631fc474'], // platformTeamFixture
+  teams: ['platform'], // platformTeamFixture
   createdAt: '2024-12-05T17:42:30.508Z',
   updatedAt: '2024-12-05T17:42:30.508Z'
 }

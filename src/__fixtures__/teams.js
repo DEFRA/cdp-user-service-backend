@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb'
 
 const platformTeamFixture = {
-  _id: 'aabe63e7-87ef-4beb-a596-c810631fc474',
+  _id: 'platform',
   name: 'Platform',
   description: 'The team that runs the platform',
   github: 'cdp-platform',
@@ -18,7 +18,7 @@ const platformTeamFixture = {
 }
 
 const tenantTeamFixture = {
-  _id: '2a45e0cd-9f1b-4158-825d-40e561c55c55',
+  _id: 'animalsandplants',
   name: 'AnimalsAndPlants',
   description: 'A team for the animals and plants',
   github: 'cdp-animals-and-plants',

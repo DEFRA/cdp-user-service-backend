@@ -3,13 +3,14 @@ import Boom from '@hapi/boom'
 import isNull from 'lodash/isNull.js'
 
 import { getUser } from '../helpers/get-user.js'
+import { userIdValidation } from '@defra/cdp-validation-kit'
 
 const getUserController = {
   options: {
     tags: ['api', 'users'],
     validate: {
       params: Joi.object({
-        userId: Joi.string().uuid().required()
+        userId: userIdValidation
       })
     }
   },

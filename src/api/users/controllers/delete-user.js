@@ -2,13 +2,14 @@ import Joi from 'joi'
 import Boom from '@hapi/boom'
 
 import { deleteUser } from '../../../helpers/mongo/transactions/delete-transactions.js'
+import { userIdValidation } from '@defra/cdp-validation-kit'
 
 const deleteUserController = {
   options: {
     tags: ['api', 'users'],
     validate: {
       params: Joi.object({
-        userId: Joi.string().uuid().required()
+        userId: userIdValidation
       })
     },
     auth: {

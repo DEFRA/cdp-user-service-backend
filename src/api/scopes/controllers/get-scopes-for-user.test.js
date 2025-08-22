@@ -95,7 +95,7 @@ describe('GET:/scopes', () => {
       expect(result).toMatchObject({
         message: 'success',
         scopes: [
-          '2a45e0cd-9f1b-4158-825d-40e561c55c55',
+          tenantTeamFixture._id,
           'terminal',
           'postgres',
           userTenantFixture._id,
@@ -143,10 +143,10 @@ describe('GET:/scopes', () => {
         message: 'success',
         scopes: [
           userAdminFixture._id,
-          platformTeamFixture._id,
           'admin',
           'breakGlass',
-          'externalTest'
+          'externalTest',
+          platformTeamFixture._id
         ],
         scopeFlags: {
           isAdmin: true,
@@ -168,9 +168,9 @@ describe('GET:/scopes', () => {
         message: 'success',
         scopes: [
           userAdminWithTestAsTenantFixture._id,
-          platformTeamFixture._id,
           'breakGlass',
           'externalTest',
+          platformTeamFixture._id,
           'tenant',
           'testAsTenant'
         ],
@@ -209,7 +209,7 @@ describe('GET:/scopes', () => {
       expect(result).toMatchObject({
         message: 'success',
         scopes: [
-          '2a45e0cd-9f1b-4158-825d-40e561c55c55',
+          tenantTeamFixture._id,
           'postgres',
           'ad760f75-0930-434f-8a4e-174f74723c65',
           'tenant'
@@ -235,7 +235,7 @@ describe('GET:/scopes', () => {
         message: 'success',
         scopes: [
           userWithGranularScopesFixture._id,
-          '2a45e0cd-9f1b-4158-825d-40e561c55c55',
+          tenantTeamFixture._id,
           'admin',
           'postgres'
         ].sort(),
@@ -244,11 +244,7 @@ describe('GET:/scopes', () => {
           isTenant: false
         },
         teamScopes: {
-          '2a45e0cd-9f1b-4158-825d-40e561c55c55': [
-            'breakGlass',
-            'terminal',
-            'serviceOwner'
-          ]
+          [tenantTeamFixture._id]: ['breakGlass', 'terminal', 'serviceOwner']
         }
       })
     })

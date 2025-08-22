@@ -4,6 +4,7 @@ import Joi from '../../../../helpers/extended-joi.js'
 import { getScope } from '../../helpers/get-scope.js'
 import { getUser } from '../../../users/helpers/get-user.js'
 import { addScopeToUserTransaction } from '../../../../helpers/mongo/transactions/scope/add-scope-to-user-transaction.js'
+import { userIdValidation } from '@defra/cdp-validation-kit'
 
 const adminAddScopeToUserController = {
   options: {
@@ -16,7 +17,7 @@ const adminAddScopeToUserController = {
     },
     validate: {
       params: Joi.object({
-        userId: Joi.string().guid().required(),
+        userId: userIdValidation,
         scopeId: Joi.objectId().required()
       }),
       failAction: () => Boom.boomify(Boom.badRequest())

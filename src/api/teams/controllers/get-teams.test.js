@@ -63,7 +63,7 @@ describe('GET:/teams', () => {
             name: 'AnimalsAndPlants',
             scopes: [],
             serviceCodes: ['AAP'],
-            teamId: '2a45e0cd-9f1b-4158-825d-40e561c55c55',
+            teamId: 'animalsandplants',
             users: []
           }),
           expect.objectContaining({
@@ -73,7 +73,7 @@ describe('GET:/teams', () => {
             name: 'Platform',
             scopes: [],
             serviceCodes: ['CDP'],
-            teamId: 'aabe63e7-87ef-4beb-a596-c810631fc474',
+            teamId: 'platform',
             users: []
           })
         ]
@@ -99,7 +99,7 @@ describe('GET:/teams', () => {
               name: 'AnimalsAndPlants',
               scopes: [],
               serviceCodes: ['AAP'],
-              teamId: '2a45e0cd-9f1b-4158-825d-40e561c55c55',
+              teamId: 'animalsandplants',
               users: []
             })
           ]
@@ -126,7 +126,7 @@ describe('GET:/teams', () => {
               name: 'AnimalsAndPlants',
               scopes: [],
               serviceCodes: ['AAP'],
-              teamId: '2a45e0cd-9f1b-4158-825d-40e561c55c55',
+              teamId: 'animalsandplants',
               users: []
             }),
             expect.objectContaining({
@@ -136,7 +136,7 @@ describe('GET:/teams', () => {
               name: 'Platform',
               scopes: [],
               serviceCodes: ['CDP'],
-              teamId: 'aabe63e7-87ef-4beb-a596-c810631fc474',
+              teamId: 'platform',
               users: []
             })
           ]
@@ -163,7 +163,7 @@ describe('GET:/teams', () => {
               name: 'Platform',
               scopes: [],
               serviceCodes: ['CDP'],
-              teamId: 'aabe63e7-87ef-4beb-a596-c810631fc474',
+              teamId: 'platform',
               users: []
             })
           ]

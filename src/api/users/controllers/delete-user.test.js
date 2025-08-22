@@ -59,23 +59,7 @@ describe('DELETE:/users/{userId}', () => {
     })
   }
 
-  describe('When non UUID passed as userId param', () => {
-    test('Should provide expected error response', async () => {
-      const { result, statusCode, statusMessage } =
-        await deleteUserEndpoint('/users/not-a-uuid')
-
-      expect(statusCode).toBe(400)
-      expect(statusMessage).toBe('Bad Request')
-
-      expect(result).toMatchObject({
-        statusCode: 400,
-        error: 'Bad Request',
-        message: '"userId" must be a valid GUID'
-      })
-    })
-  })
-
-  describe('When user UUID does not exist in the db', () => {
+  describe('When user id does not exist in the db', () => {
     test('Should provide expected error response', async () => {
       const { result, statusCode, statusMessage } = await deleteUserEndpoint(
         '/users/8469dcf7-846d-43fd-899a-9850bc43298b'
