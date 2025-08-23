@@ -12,8 +12,14 @@ const platformTeamFixture = {
   updatedAt: '2024-12-04T08:17:06.795Z',
   users: ['62bb35d2-d4f2-4cf6-abd3-262d99727677'], // admin user
   scopes: [
-    new ObjectId('67500e94922c4fe819dd8832'), // externalTestScopeFixture
-    new ObjectId('7751e606a171ebffac3cc9dd') // adminScopeFixture
+    {
+      scopeId: new ObjectId('67500e94922c4fe819dd8832'),
+      scopeName: 'externalTest'
+    },
+    {
+      scopeId: new ObjectId('7751e606a171ebffac3cc9dd'),
+      scopeName: 'admin'
+    }
   ]
 }
 
@@ -27,7 +33,9 @@ const tenantTeamFixture = {
   createdAt: '2024-12-03T12:26:10.858Z',
   updatedAt: '2024-12-04T08:17:06.796Z',
   users: ['b7606810-f0c6-4db7-b067-ba730ef706e8'], // userTwoFixture
-  scopes: [new ObjectId('6751b8bcfd2ecb117d6277de')] // postgresScopeFixture
+  scopes: [
+    { scopeId: new ObjectId('6751b8bcfd2ecb117d6277de'), scopeName: 'postgres' }
+  ]
 }
 
 const teamWithoutUsers = {

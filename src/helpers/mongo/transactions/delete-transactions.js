@@ -92,7 +92,12 @@ async function deleteTeam(request, teamId) {
 
     if (team.scopes?.length) {
       const removeFromScopes = team.scopes.map((scope) =>
-        removeTeamFromScope(db, team.teamId, scope.scopeId)
+        removeTeamFromScope({
+          db,
+          teamId: team.teamId,
+          teamName: team.name,
+          scopeId: scope.scopeId
+        })
       )
       await Promise.all(removeFromScopes)
     }

@@ -6,6 +6,7 @@ import {
 } from '../../../../test-helpers/mongo-helpers.js'
 import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
 import { ObjectId } from 'mongodb'
+import { platformTeamFixture } from '../../../__fixtures__/teams.js'
 
 describe('GET:/users/{userId}', () => {
   let server
@@ -36,6 +37,7 @@ describe('GET:/users/{userId}', () => {
   describe('When a user is in the DB', () => {
     beforeEach(async () => {
       await replaceOneTestHelper('users', userAdminFixture)
+      await replaceOneTestHelper('teams', platformTeamFixture)
     })
 
     afterEach(async () => {
@@ -52,21 +54,30 @@ describe('GET:/users/{userId}', () => {
 
       expect(result).toEqual({
         message: 'success',
-        user: expect.objectContaining({
-          email: 'tetsuo.shima@defra.onmicrosoft.com',
-          github: 'TetsuoShima',
-          name: 'TetsuoShima',
+        user: {
+          name: 'Admin User',
+          email: 'admin.user@defra.onmicrosoft.com',
+          createdAt: '2023-09-28T13:53:44.948Z',
+          updatedAt: '2024-12-03T12:26:28.965Z',
+          github: 'AdminUser',
           scopes: [
             {
-              scopeId: new ObjectId('6751e606a171ebffac3cc9dd')
+              scopeId: new ObjectId('6751e606a171ebffac3cc9dd'),
+              scopeName: 'prodAccess'
             },
             {
-              scopeId: new ObjectId('7751e606a171ebffac3cc9dd')
+              scopeId: new ObjectId('7751e606a171ebffac3cc9dd'),
+              scopeName: 'admin'
             }
           ],
-          teams: [],
+          teams: [
+            {
+              teamId: 'aabe63e7-87ef-4beb-a596-c810631fc474',
+              name: 'Platform'
+            }
+          ],
           userId: '62bb35d2-d4f2-4cf6-abd3-262d99727677'
-        })
+        }
       })
     })
   })

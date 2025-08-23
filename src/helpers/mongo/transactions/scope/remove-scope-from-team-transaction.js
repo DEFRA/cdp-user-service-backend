@@ -2,20 +2,26 @@ import { ObjectId } from 'mongodb'
 
 import { withMongoTransaction } from '../with-mongo-transaction.js'
 
-async function removeScopeFromTeamTransaction(request, teamId, scopeId) {
+async function removeScopeFromTeamTransaction({
+  request,
+  teamId,
+  teamName,
+  scopeId,
+  scopeName
+}) {
   const db = request.db
 
   return await withMongoTransaction(request, async () => {
-    await removeScopeFromTeam(db, scopeId, teamId)
-    return await removeTeamFromScope(db, teamId, scopeId)
+    await removeScopeFromTeam({ db, teamId, scopeId, scopeName })
+    return await removeTeamFromScope({ db, teamId, teamName, scopeId })
   })
 }
 
-function removeScopeFromTeam(db, scopeId, teamId) {
+function removeScopeFromTeam({ db, teamId, scopeId, scopeName }) {
   return db.collection('teams').findOneAndUpdate(
     { _id: teamId },
     {
-      $pull: { scopes: new ObjectId(scopeId) },
+      $pull: { scopes: { scopeId: new ObjectId(scopeId), scopeName } },
       $set: { updatedAt: new Date() }
     },
     {
@@ -25,13 +31,14 @@ function removeScopeFromTeam(db, scopeId, teamId) {
   )
 }
 
-function removeTeamFromScope(db, teamId, scopeId) {
-  return db
-    .collection('scopes')
-    .findOneAndUpdate(
-      { _id: new ObjectId(scopeId) },
-      { $pull: { teams: teamId }, $set: { updatedAt: new Date() } }
-    )
+function removeTeamFromScope({ db, teamId, teamName, scopeId }) {
+  return db.collection('scopes').findOneAndUpdate(
+    { _id: new ObjectId(scopeId) },
+    {
+      $pull: { teams: { teamId, teamName } },
+      $set: { updatedAt: new Date() }
+    }
+  )
 }
 
 export {

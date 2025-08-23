@@ -28,9 +28,6 @@ const removeProdAccessFromUserController = {
   handler: async (request, h) => {
     const userId = request.params.userId
     const teamId = request.payload?.teamId
-    const endDate = request.payload?.endAt
-      ? new Date(request.payload.endAt)
-      : new Date()
 
     const prodAccessScope = await getScope(request.db, 'prodAccess')
 
@@ -40,8 +37,7 @@ const removeProdAccessFromUserController = {
       request,
       userId,
       prodAccessScope.id,
-      teamId,
-      endDate
+      teamId
     )
 
     return h.response({ message: 'success', scope }).code(200)

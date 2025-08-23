@@ -92,18 +92,20 @@ describe('GET:/scopes', () => {
       expect(statusCode).toBe(200)
       expect(statusMessage).toBe('OK')
 
-      expect(result).toMatchObject({
+      expect(result).toEqual({
         message: 'success',
         scopes: [
-          '2a45e0cd-9f1b-4158-825d-40e561c55c55',
-          'terminal',
-          'postgres',
+          tenantTeamFixture._id,
           userTenantFixture._id,
-          'tenant'
-        ].sort(),
+          'tenant',
+          'terminal'
+        ],
         scopeFlags: {
           isAdmin: false,
           isTenant: true
+        },
+        teamScopes: {
+          [tenantTeamFixture._id]: ['serviceOwner']
         }
       })
     })
@@ -139,18 +141,20 @@ describe('GET:/scopes', () => {
 
       expect(statusCode).toBe(200)
       expect(statusMessage).toBe('OK')
-      expect(result).toMatchObject({
+      expect(result).toEqual({
         message: 'success',
         scopes: [
-          userAdminFixture._id,
+          '62bb35d2-d4f2-4cf6-abd3-262d99727677',
           platformTeamFixture._id,
           'admin',
-          'externalTest',
           'prodAccess'
         ],
         scopeFlags: {
           isAdmin: true,
           isTenant: false
+        },
+        teamScopes: {
+          [platformTeamFixture._id]: ['serviceOwner']
         }
       })
     })
@@ -164,12 +168,11 @@ describe('GET:/scopes', () => {
 
       expect(statusCode).toBe(200)
       expect(statusMessage).toBe('OK')
-      expect(result).toMatchObject({
+      expect(result).toEqual({
         message: 'success',
         scopes: [
           userAdminWithTestAsTenantFixture._id,
           platformTeamFixture._id,
-          'externalTest',
           'prodAccess',
           'tenant',
           'testAsTenant'
@@ -177,6 +180,9 @@ describe('GET:/scopes', () => {
         scopeFlags: {
           isAdmin: false,
           isTenant: true
+        },
+        teamScopes: {
+          [platformTeamFixture._id]: ['serviceOwner']
         }
       })
     })
@@ -209,7 +215,7 @@ describe('GET:/scopes', () => {
       expect(result).toMatchObject({
         message: 'success',
         scopes: [
-          '2a45e0cd-9f1b-4158-825d-40e561c55c55',
+          tenantTeamFixture._id,
           'postgres',
           'ad760f75-0930-434f-8a4e-174f74723c65',
           'tenant'
@@ -231,24 +237,52 @@ describe('GET:/scopes', () => {
       expect(statusCode).toBe(200)
       expect(statusMessage).toBe('OK')
 
-      expect(result).toMatchObject({
+      expect(result).toEqual({
         message: 'success',
         scopes: [
-          userWithGranularScopesFixture._id,
           '2a45e0cd-9f1b-4158-825d-40e561c55c55',
+          '62bb35d2-d4f2-4cf6-abd3-262d997276ee',
+          'tenant',
+          'testAsTenant'
+        ],
+        scopeFlags: {
+          isAdmin: false,
+          isTenant: true
+        },
+        teamScopes: {
+          '2a45e0cd-9f1b-4158-825d-40e561c55c55': [
+            'testAsTenant',
+            'canGrantProdAccess',
+            'serviceOwner'
+          ]
+        }
+      })
+    })
+  })
+
+  describe('Without time and team-specific scope', () => {
+    test('Should only return scopes', async () => {
+      const { result, statusCode, statusMessage } = await scopesEndpoint({
+        id: userAdminFixture._id
+      })
+
+      expect(statusCode).toBe(200)
+      expect(statusMessage).toBe('OK')
+
+      expect(result).toEqual({
+        message: 'success',
+        scopes: [
+          '62bb35d2-d4f2-4cf6-abd3-262d99727677',
+          'aabe63e7-87ef-4beb-a596-c810631fc474',
           'admin',
-          'postgres'
-        ].sort(),
+          'prodAccess'
+        ],
         scopeFlags: {
           isAdmin: true,
           isTenant: false
         },
         teamScopes: {
-          '2a45e0cd-9f1b-4158-825d-40e561c55c55': [
-            'prodAccess',
-            'terminal',
-            'serviceOwner'
-          ]
+          'aabe63e7-87ef-4beb-a596-c810631fc474': ['serviceOwner']
         }
       })
     })

@@ -13,6 +13,11 @@ const addProdAccessToUserController = {
       strategy: 'azure-oidc',
       access: {
         scope: ['admin', 'canGrantProdAccess'] // FIXME: look at interrogating teamScopes: https://hapi.dev/api/?v=21.4.3#route.options.auth.access.scope
+        // scope: [
+        //   'permission:admin',
+        //   'team:{payload.teamId}',
+        //   'permission:canGrantProdAccess:team:{payload.teamId}'
+        // ]
       }
     },
     validate: {

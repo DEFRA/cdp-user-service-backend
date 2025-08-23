@@ -1,10 +1,12 @@
+import { ObjectId } from 'mongodb'
+
 import { createServer } from '../../server.js'
 import { platformTeamFixture } from '../../../__fixtures__/teams.js'
+import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
 import {
   deleteMany,
   replaceOne
 } from '../../../../test-helpers/mongo-helpers.js'
-import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
 
 describe('GET:/teams/{teamId}', () => {
   let server
@@ -51,17 +53,28 @@ describe('GET:/teams/{teamId}', () => {
 
       expect(result).toEqual({
         message: 'success',
-        team: expect.objectContaining({
-          alertEmailAddresses: ['mary@mary.com'],
-          alertEnvironments: ['infra-dev', 'management'],
+        team: {
+          name: 'Platform',
           description: 'The team that runs the platform',
           github: 'cdp-platform',
-          name: 'Platform',
-          scopes: [],
           serviceCodes: ['CDP'],
+          alertEmailAddresses: ['mary@mary.com'],
+          alertEnvironments: ['infra-dev', 'management'],
+          createdAt: '2023-09-28T13:52:01.906Z',
+          updatedAt: '2024-12-04T08:17:06.795Z',
+          scopes: [
+            {
+              scopeId: new ObjectId('67500e94922c4fe819dd8832'),
+              scopeName: 'externalTest'
+            },
+            {
+              scopeId: new ObjectId('7751e606a171ebffac3cc9dd'),
+              scopeName: 'admin'
+            }
+          ],
           teamId: 'aabe63e7-87ef-4beb-a596-c810631fc474',
           users: []
-        })
+        }
       })
     })
   })

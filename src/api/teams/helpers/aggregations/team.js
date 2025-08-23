@@ -13,19 +13,6 @@ export const teamAggregation = [
     }
   },
   {
-    $lookup: {
-      from: 'scopes',
-      localField: 'scopes',
-      foreignField: '_id',
-      pipeline: [
-        {
-          $sort: { name: 1 }
-        }
-      ],
-      as: 'scopes'
-    }
-  },
-  {
     $project: {
       _id: 0,
       teamId: '$_id',
@@ -45,16 +32,7 @@ export const teamAggregation = [
           }
         }
       },
-      scopes: {
-        $map: {
-          input: '$scopes',
-          as: 'scope',
-          in: {
-            scopeId: '$$scope._id',
-            value: '$$scope.value'
-          }
-        }
-      },
+      scopes: 1,
       createdAt: 1,
       updatedAt: 1
     }

@@ -2,6 +2,8 @@ import Boom from '@hapi/boom'
 
 import Joi from '../../../../helpers/extended-joi.js'
 import { removeScopeFromTeamTransaction } from '../../../../helpers/mongo/transactions/scope/remove-scope-from-team-transaction.js'
+import { getTeam } from '../../../teams/helpers/get-team.js'
+import { getScope } from '../../helpers/get-scope.js'
 
 const adminRemoveScopeFromTeamController = {
   options: {
@@ -24,7 +26,16 @@ const adminRemoveScopeFromTeamController = {
     const teamId = request.params.teamId
     const scopeId = request.params.scopeId
 
-    const scope = await removeScopeFromTeamTransaction(request, teamId, scopeId)
+    const dbTeam = await getTeam(request.db, teamId)
+    const dbScope = await getScope(request.db, scopeId)
+
+    const scope = await removeScopeFromTeamTransaction({
+      request,
+      teamId,
+      teamName: dbTeam.name,
+      scopeId,
+      scopeName: dbScope.value
+    })
     return h.response({ message: 'success', scope }).code(200)
   }
 }

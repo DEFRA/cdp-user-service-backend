@@ -42,7 +42,13 @@ const adminAddScopeToTeamController = {
       throw Boom.badRequest('Scope cannot be applied to a team')
     }
 
-    const scope = await addScopeToTeamTransaction(request, teamId, scopeId)
+    const scope = await addScopeToTeamTransaction({
+      request,
+      teamId,
+      teamName: dbTeam.name,
+      scopeId,
+      scopeName: dbScope.value
+    })
 
     return h.response({ message: 'success', scope }).code(200)
   }

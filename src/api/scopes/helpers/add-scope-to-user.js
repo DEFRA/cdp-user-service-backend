@@ -15,6 +15,7 @@ export async function addScopeToUser({
 }) {
   const dbUser = await getUser(request.db, userId)
   const dbScope = await getScope(request.db, scopeId)
+  const teamDetails = {}
 
   if (!dbUser) {
     throw Boom.notFound('User not found')
@@ -28,6 +29,8 @@ export async function addScopeToUser({
     if (dbUser.teams.filter((team) => team.teamId === teamId).length === 0) {
       throw Boom.badRequest('User is not a member of the team')
     }
+
+    teamDetails.name = team.name
   }
 
   if (startDate && endDate && startDate.getTime() >= endDate.getTime()) {
@@ -44,11 +47,15 @@ export async function addScopeToUser({
 
   if (
     dbUser.scopes.filter((userScope) => {
+      const now = new Date()
+
       // scopeId from db is an ObjectId, so we check for its string against the ObjectId string passed to the endpoint
       const userHasScopeWithTeamId =
         userScope.scopeId.toHexString() === scopeId &&
         teamId !== undefined &&
-        userScope.teamId === teamId
+        userScope.teamId === teamId &&
+        new Date(userScope.startDate) <= now &&
+        new Date(userScope.endDate) >= now // active scope
       const userHasScopeWithoutTeamId =
         userScope.scopeId.toHexString() === scopeId &&
         teamId === undefined &&
@@ -63,8 +70,11 @@ export async function addScopeToUser({
   return await addScopeToUserTransaction({
     request,
     userId,
+    userName: dbUser.name,
     scopeId,
+    scopeName: dbScope.value,
     teamId,
+    teamName: teamDetails.name,
     startDate,
     endDate
   })

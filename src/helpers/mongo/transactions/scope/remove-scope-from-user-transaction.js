@@ -6,19 +6,18 @@ async function removeScopeFromUserTransaction(
   request,
   userId,
   scopeId,
-  teamId = null,
-  endDate = new Date()
+  teamId = null
 ) {
   const db = request.db
 
   return await withMongoTransaction(request, async () => {
-    await removeScopeFromUser({ db, scopeId, userId, teamId, endDate })
+    await removeScopeFromUser({ db, scopeId, userId, teamId })
 
     return await removeUserFromScope({ db, userId, scopeId, teamId })
   })
 }
 
-function removeScopeFromUser({ db, scopeId, userId, teamId, endDate }) {
+function removeScopeFromUser({ db, scopeId, userId, teamId }) {
   const now = new Date()
   const elemMatch = {
     scopeId: new ObjectId(scopeId),
@@ -52,10 +51,8 @@ function removeScopeFromUser({ db, scopeId, userId, teamId, endDate }) {
   return db.collection('users').findOneAndUpdate(
     filter,
     {
-      $set: {
-        'scopes.$.endDate': endDate,
-        updatedAt: now
-      }
+      $pull: { scopes: elemMatch },
+      $set: { updatedAt: now }
     },
     {
       upsert: false,
