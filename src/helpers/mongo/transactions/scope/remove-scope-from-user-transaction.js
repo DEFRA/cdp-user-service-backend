@@ -6,7 +6,7 @@ async function removeScopeFromUserTransaction(
   request,
   userId,
   scopeId,
-  teamId = null
+  teamId
 ) {
   const db = request.db
 
@@ -35,7 +35,8 @@ function removeScopeFromUser({ db, scopeId, userId, teamId }) {
           { endDate: { $exists: false } },
           { endDate: { $gt: now } }
         ]
-      }
+      },
+      ...(teamId === undefined ? [{ teamId: { $exists: false } }] : [])
     ]
   }
 
@@ -62,17 +63,24 @@ function removeScopeFromUser({ db, scopeId, userId, teamId }) {
 }
 
 function removeUserFromScope({ db, userId, scopeId, teamId }) {
-  const pullConditional = { userId }
-  if (teamId !== undefined && teamId !== null) {
-    pullConditional.teamId = teamId
+  const elemMatch = {
+    userId,
+    ...(teamId === undefined && { $and: [{ teamId: { $exists: false } }] })
   }
 
-  return db
-    .collection('scopes')
-    .findOneAndUpdate(
-      { _id: new ObjectId(scopeId) },
-      { $pull: { users: pullConditional }, $set: { updatedAt: new Date() } }
-    )
+  if (teamId !== undefined) {
+    elemMatch.teamId = teamId
+  }
+
+  const filter = {
+    _id: new ObjectId(scopeId),
+    users: { $elemMatch: elemMatch }
+  }
+
+  return db.collection('scopes').findOneAndUpdate(filter, {
+    $pull: { users: elemMatch },
+    $set: { updatedAt: new Date() }
+  })
 }
 
 export {
