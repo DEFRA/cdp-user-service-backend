@@ -25,7 +25,7 @@ const createTeamController = {
     const dbTeam = {
       name: payload.name,
       description: payload?.description,
-      github: payload.github,
+      github: payload?.github,
       serviceCodes: payload?.serviceCodes,
       alertEmailAddresses: payload?.alertEmailAddresses,
       alertEnvironments: payload?.alertEnvironments
