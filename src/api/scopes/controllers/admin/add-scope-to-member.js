@@ -1,11 +1,11 @@
 import Boom from '@hapi/boom'
 
 import Joi from '../../../../helpers/extended-joi.js'
-import { userIdValidation } from '@defra/cdp-validation-kit'
-import { addScopeToUser } from '../../helpers/add-scope-to-user.js'
+import { teamIdValidation, userIdValidation } from '@defra/cdp-validation-kit'
 import { addYears } from '../../../../helpers/date/add-years.js'
+import { addScopeToMember } from '../../helpers/add-scope-to-member.js'
 
-const adminAddScopeToUserController = {
+const adminAddScopeToMemberController = {
   options: {
     tags: ['api', 'scopes'],
     auth: {
@@ -17,7 +17,8 @@ const adminAddScopeToUserController = {
     validate: {
       params: Joi.object({
         userId: userIdValidation,
-        scopeId: Joi.objectId().required()
+        scopeId: Joi.objectId().required(),
+        teamId: teamIdValidation
       }),
       payload: Joi.object({
         startAt: Joi.date().iso().optional(),
@@ -30,16 +31,19 @@ const adminAddScopeToUserController = {
     const params = request.params
     const userId = params.userId
     const scopeId = params.scopeId
+    const teamId = params.teamId
+
     const payload = request.payload
 
     const now = new Date()
     const startDate = payload.startAt ? new Date(payload.startAt) : now
     const endDate = payload.endAt ? new Date(payload.endAt) : addYears(now, 100)
 
-    const scope = await addScopeToUser({
+    const scope = await addScopeToMember({
       request,
       userId,
       scopeId,
+      teamId,
       startDate,
       endDate
     })
@@ -48,4 +52,4 @@ const adminAddScopeToUserController = {
   }
 }
 
-export { adminAddScopeToUserController }
+export { adminAddScopeToMemberController }

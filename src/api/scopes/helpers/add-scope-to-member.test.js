@@ -1,9 +1,7 @@
 import Boom from '@hapi/boom'
 
-import { addScopeToUser } from './add-scope-to-user.js'
 import { addYears } from '../../../helpers/date/add-years.js'
 import { connectToTestMongoDB } from '../../../../test-helpers/connect-to-test-mongodb.js'
-import { addScopeToUserTransaction } from '../../../helpers/mongo/transactions/scope/add-scope-to-user-transaction.js'
 import {
   replaceOne,
   deleteMany
@@ -11,25 +9,32 @@ import {
 import {
   userAdminFixture,
   userAdminOtherFixture,
-  userAdminWithTeamProdAccessFixture,
   userTenantFixture,
   memberWithGranularScopesFixture
 } from '../../../__fixtures__/users.js'
 import {
+  platformTeamFixture,
+  tenantTeamFixture
+} from '../../../__fixtures__/teams.js'
+import {
   adminScopeFixture,
+  canGrantProdAccessScopeFixture,
   prodAccessScopeFixture,
   terminalScopeFixture
 } from '../../../__fixtures__/scopes.js'
+import { addScopeToMember } from './add-scope-to-member.js'
+import { addScopeToMemberTransaction } from '../../../helpers/mongo/transactions/scope/add-scope-to-member-transaction.js'
 
 vi.mock('@azure/identity')
 
 const userCollection = 'users'
 const scopeCollection = 'scopes'
+const teamCollection = 'teams'
 const request = {}
 let replaceOneTestHelper
 
 vi.mock(
-  '../../../helpers/mongo/transactions/scope/add-scope-to-user-transaction.js'
+  '../../../helpers/mongo/transactions/scope/add-scope-to-member-transaction.js'
 )
 
 const generateDates = () => {
@@ -52,30 +57,38 @@ beforeAll(async () => {
 })
 
 beforeEach(async () => {
-  await deleteMany(request.db)([userCollection, scopeCollection])
+  await deleteMany(request.db)([
+    userCollection,
+    scopeCollection,
+    teamCollection
+  ])
 })
 
-describe('#addScopeToUser', () => {
-  test('Successfully adds scope to user when all conditions are met', async () => {
+describe('#addScopeToMember', () => {
+  test('Successfully adds scope with teamId to members when all conditions are met', async () => {
     const { startDate, endDate } = generateDates()
 
     await replaceOneTestHelper(userCollection, userAdminOtherFixture)
-    await replaceOneTestHelper(scopeCollection, prodAccessScopeFixture)
+    await replaceOneTestHelper(scopeCollection, canGrantProdAccessScopeFixture)
+    await replaceOneTestHelper(teamCollection, platformTeamFixture)
 
-    await addScopeToUser({
+    await addScopeToMember({
       request,
       userId: userAdminOtherFixture._id,
-      scopeId: prodAccessScopeFixture._id.toHexString(), // mimic string being passed via api endpoint
+      scopeId: canGrantProdAccessScopeFixture._id.toHexString(), // mimic string being passed via api endpoint
+      teamId: platformTeamFixture._id,
       startDate,
       endDate
     })
 
-    expect(addScopeToUserTransaction).toHaveBeenCalledWith({
+    expect(addScopeToMemberTransaction).toHaveBeenCalledWith({
       request,
       userId: userAdminOtherFixture._id,
       userName: userAdminOtherFixture.name,
-      scopeId: prodAccessScopeFixture._id.toHexString(),
-      scopeName: prodAccessScopeFixture.value,
+      scopeId: canGrantProdAccessScopeFixture._id.toHexString(),
+      scopeName: canGrantProdAccessScopeFixture.value,
+      teamId: platformTeamFixture._id,
+      teamName: platformTeamFixture.name,
       startDate,
       endDate
     })
@@ -86,12 +99,14 @@ describe('#addScopeToUser', () => {
 
     await replaceOneTestHelper(userCollection, userTenantFixture)
     await replaceOneTestHelper(scopeCollection, prodAccessScopeFixture)
+    await replaceOneTestHelper(teamCollection, tenantTeamFixture)
 
     await expect(
-      addScopeToUser({
+      addScopeToMember({
         request,
         userId: userAdminFixture._id,
         scopeId: prodAccessScopeFixture._id.toHexString(), // mimic string being passed via api endpoint
+        teamId: userTenantFixture._id,
         startDate,
         endDate
       })
@@ -103,27 +118,69 @@ describe('#addScopeToUser', () => {
 
     await replaceOneTestHelper(userCollection, userTenantFixture)
     await replaceOneTestHelper(scopeCollection, prodAccessScopeFixture)
+    await replaceOneTestHelper(teamCollection, tenantTeamFixture)
 
     await expect(
-      addScopeToUser({
+      addScopeToMember({
         request,
         userId: userTenantFixture._id,
         scopeId: adminScopeFixture._id.toHexString(), // mimic string being passed via api endpoint
+        teamId: tenantTeamFixture._id,
         startDate,
         endDate
       })
     ).rejects.toThrow(Boom.notFound('Scope not found'))
   })
 
-  test('Throws bad request error when start date is after or equal to end date', async () => {
+  test('Throws not found error when team does not exist', async () => {
+    const { startDate, endDate } = generateDates()
+
     await replaceOneTestHelper(userCollection, userAdminFixture)
     await replaceOneTestHelper(scopeCollection, adminScopeFixture)
+    await replaceOneTestHelper(teamCollection, tenantTeamFixture)
 
     await expect(
-      addScopeToUser({
+      addScopeToMember({
         request,
         userId: userAdminFixture._id,
         scopeId: adminScopeFixture._id.toHexString(), // mimic string being passed via api endpoint
+        teamId: platformTeamFixture._id,
+        startDate,
+        endDate
+      })
+    ).rejects.toThrow(Boom.notFound('Team not found'))
+  })
+
+  test('Throws bad request error when user is not a member of the team', async () => {
+    const { startDate, endDate } = generateDates()
+
+    await replaceOneTestHelper(userCollection, userAdminFixture)
+    await replaceOneTestHelper(scopeCollection, adminScopeFixture)
+    await replaceOneTestHelper(teamCollection, tenantTeamFixture)
+
+    await expect(
+      addScopeToMember({
+        request,
+        userId: userAdminFixture._id,
+        scopeId: adminScopeFixture._id.toHexString(), // mimic string being passed via api endpoint
+        teamId: tenantTeamFixture._id,
+        startDate,
+        endDate
+      })
+    ).rejects.toThrow(Boom.badRequest('User is not a member of the team'))
+  })
+
+  test('Throws bad request error when start date is after or equal to end date', async () => {
+    await replaceOneTestHelper(userCollection, userAdminFixture)
+    await replaceOneTestHelper(scopeCollection, adminScopeFixture)
+    await replaceOneTestHelper(teamCollection, platformTeamFixture)
+
+    await expect(
+      addScopeToMember({
+        request,
+        userId: userAdminFixture._id,
+        scopeId: adminScopeFixture._id.toHexString(), // mimic string being passed via api endpoint
+        teamId: platformTeamFixture._id,
         startDate: new Date('2025-01-02'),
         endDate: new Date('2025-01-01')
       })
@@ -135,48 +192,40 @@ describe('#addScopeToUser', () => {
 
     await replaceOneTestHelper(userCollection, userAdminFixture)
     await replaceOneTestHelper(scopeCollection, terminalScopeFixture)
+    await replaceOneTestHelper(teamCollection, platformTeamFixture)
 
     await expect(
-      addScopeToUser({
+      addScopeToMember({
         request,
         userId: userAdminFixture._id,
         scopeId: terminalScopeFixture._id.toHexString(), // mimic string being passed via api endpoint
+        teamId: platformTeamFixture._id,
         startDate,
         endDate
       })
-    ).rejects.toThrow(Boom.badRequest('Scope cannot be applied to a user'))
-  })
-
-  test('Throws bad request error when user already has this scope assigned', async () => {
-    await replaceOneTestHelper(
-      userCollection,
-      userAdminWithTeamProdAccessFixture
+    ).rejects.toThrow(
+      Boom.badRequest('Scope cannot be applied to a team member')
     )
-    await replaceOneTestHelper(scopeCollection, prodAccessScopeFixture)
-
-    await expect(
-      addScopeToUser({
-        request,
-        userId: userAdminWithTeamProdAccessFixture._id,
-        scopeId: prodAccessScopeFixture._id.toHexString() // mimic string being passed via api endpoint
-      })
-    ).rejects.toThrow(Boom.badRequest('User already has this scope assigned'))
   })
 
-  test('Throws bad request error when user already has this scope assigned and its active', async () => {
+  test('Throws bad request error when user already has this scope assigned with team id and its active', async () => {
     const { startDate, endDate } = generateDates()
 
     await replaceOneTestHelper(userCollection, memberWithGranularScopesFixture)
-    await replaceOneTestHelper(scopeCollection, adminScopeFixture)
+    await replaceOneTestHelper(scopeCollection, canGrantProdAccessScopeFixture)
+    await replaceOneTestHelper(teamCollection, tenantTeamFixture)
 
     await expect(
-      addScopeToUser({
+      addScopeToMember({
         request,
         userId: memberWithGranularScopesFixture._id,
-        scopeId: adminScopeFixture._id.toHexString(), // mimic string being passed via api endpoint
+        scopeId: canGrantProdAccessScopeFixture._id.toHexString(), // mimic string being passed via api endpoint
+        teamId: tenantTeamFixture._id,
         startDate,
         endDate
       })
-    ).rejects.toThrow(Boom.badRequest('User already has this scope assigned'))
+    ).rejects.toThrow(
+      Boom.badRequest('Team member already has this scope assigned')
+    )
   })
 })

@@ -5,6 +5,7 @@ import { getUser } from '../../../api/users/helpers/get-user.js'
 import { withMongoTransaction } from './with-mongo-transaction.js'
 import { removeTeamFromScope } from './scope/remove-scope-from-team-transaction.js'
 import { removeUserFromScope } from './scope/remove-scope-from-user-transaction.js'
+import { removeMemberFromScope } from './scope/remove-scope-from-member-transaction.js'
 
 async function removeTeamFromUserDb(db, userId, teamId) {
   return await db.collection('users').findOneAndUpdate(
@@ -57,9 +58,22 @@ async function deleteUser(request, userId) {
     }
 
     if (user.scopes?.length) {
-      const removeFromScopes = user.scopes.map((scope) =>
-        removeUserFromScope({ db, userId: user.userId, scopeId: scope.scopeId })
-      )
+      const removeFromScopes = user.scopes.map((scope) => {
+        if (scope.teamId) {
+          return removeMemberFromScope({
+            db,
+            userId,
+            scopeId: scope.scopeId,
+            teamId: scope.teamId
+          })
+        }
+
+        return removeUserFromScope({
+          db,
+          userId: user.userId,
+          scopeId: scope.scopeId
+        })
+      })
       await Promise.all(removeFromScopes)
     }
 

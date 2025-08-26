@@ -20,7 +20,7 @@ import {
   userAdminWithTestAsTenantFixture,
   userPostgresFixture,
   userTenantFixture,
-  userWithGranularScopesFixture
+  memberWithGranularScopesFixture
 } from '../../../__fixtures__/users.js'
 import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
 
@@ -47,7 +47,7 @@ describe('GET:/scopes', () => {
       userTenantFixture,
       userPostgresFixture,
       userAdminWithTestAsTenantFixture,
-      userWithGranularScopesFixture
+      memberWithGranularScopesFixture
     ])
     await replaceManyTestHelper('teams', [
       platformTeamFixture,
@@ -231,7 +231,7 @@ describe('GET:/scopes', () => {
   describe('With time and team-specific scope', () => {
     test('Should only return scopes where the current date time is within the start and end date of the scope', async () => {
       const { result, statusCode, statusMessage } = await scopesEndpoint({
-        id: userWithGranularScopesFixture._id
+        id: memberWithGranularScopesFixture._id
       })
 
       expect(statusCode).toBe(200)

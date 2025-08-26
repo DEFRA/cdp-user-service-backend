@@ -2,17 +2,22 @@ import { ObjectId } from 'mongodb'
 
 import { withMongoTransaction } from '../with-mongo-transaction.js'
 
-async function removeScopeFromUserTransaction(request, userId, scopeId) {
+async function removeScopeFromMemberTransaction(
+  request,
+  userId,
+  scopeId,
+  teamId
+) {
   const db = request.db
 
   return await withMongoTransaction(request, async () => {
-    await removeScopeFromUser({ db, scopeId, userId })
+    await removeMemberScopeFromUser({ db, scopeId, userId, teamId })
 
-    return await removeUserFromScope({ db, userId, scopeId })
+    return await removeMemberFromScope({ db, userId, scopeId, teamId })
   })
 }
 
-function removeScopeFromUser({ db, scopeId, userId }) {
+function removeMemberScopeFromUser({ db, scopeId, userId, teamId }) {
   const now = new Date()
   const elemMatch = {
     scopeId: new ObjectId(scopeId),
@@ -30,8 +35,13 @@ function removeScopeFromUser({ db, scopeId, userId }) {
           { endDate: { $exists: false } },
           { endDate: { $gt: now } }
         ]
-      }
+      },
+      ...(teamId === undefined ? [{ teamId: { $exists: false } }] : [])
     ]
+  }
+
+  if (teamId !== undefined && teamId !== null) {
+    elemMatch.teamId = teamId
   }
 
   const filter = {
@@ -52,17 +62,18 @@ function removeScopeFromUser({ db, scopeId, userId }) {
   )
 }
 
-function removeUserFromScope({ db, userId, scopeId }) {
-  return db
-    .collection('scopes')
-    .findOneAndUpdate(
-      { _id: new ObjectId(scopeId) },
-      { $pull: { users: { userId } }, $set: { updatedAt: new Date() } }
-    )
+function removeMemberFromScope({ db, userId, scopeId, teamId }) {
+  return db.collection('scopes').findOneAndUpdate(
+    { _id: new ObjectId(scopeId) },
+    {
+      $pull: { members: { userId, teamId } },
+      $set: { updatedAt: new Date() }
+    }
+  )
 }
 
 export {
-  removeScopeFromUserTransaction,
-  removeUserFromScope,
-  removeScopeFromUser
+  removeScopeFromMemberTransaction,
+  removeMemberFromScope,
+  removeMemberScopeFromUser
 }

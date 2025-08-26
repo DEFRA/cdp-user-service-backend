@@ -14,7 +14,7 @@ const adminUpdateScopeController = {
       payload: Joi.object({
         kind: Joi.array()
           .items(Joi.string())
-          .has(Joi.string().valid('user', 'team'))
+          .has(Joi.string().valid('user', 'team', 'member'))
           .required(),
         description: Joi.string().optional().max(256)
       })

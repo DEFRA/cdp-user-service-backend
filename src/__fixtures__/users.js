@@ -20,7 +20,7 @@ const userAdminFixture = {
   ]
 }
 
-const userAdminWithTeamBreakGlassFixture = {
+const userAdminWithTeamProdAccessFixture = {
   ...userAdminFixture,
   scopes: [
     {
@@ -65,7 +65,7 @@ const userAdminWithTestAsTenantFixture = {
   ]
 }
 
-const userWithGranularScopesFixture = {
+const memberWithGranularScopesFixture = {
   _id: '62bb35d2-d4f2-4cf6-abd3-262d997276ee',
   name: 'Tenant WithGranularScopes',
   email: 'tenant.withgranularscopes@defra.onmicrosoft.com',
@@ -155,10 +155,10 @@ const userPostgresFixture = {
 
 export {
   userAdminFixture,
-  userAdminWithTeamBreakGlassFixture,
+  userAdminWithTeamProdAccessFixture,
   userAdminOtherFixture,
   userAdminWithTestAsTenantFixture,
   userTenantFixture,
   userPostgresFixture,
-  userWithGranularScopesFixture
+  memberWithGranularScopesFixture
 }

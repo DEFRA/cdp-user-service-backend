@@ -6,6 +6,7 @@ async function createScope(db, scope) {
     ...removeNil(scope),
     teams: [],
     users: [],
+    members: [],
     createdAt: new Date(),
     updatedAt: new Date()
   }

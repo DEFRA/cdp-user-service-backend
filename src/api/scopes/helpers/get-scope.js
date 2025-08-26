@@ -22,6 +22,7 @@ async function getScope(db, scopeId) {
           kind: 1,
           description: 1,
           users: 1,
+          members: 1,
           createdAt: 1,
           updatedAt: 1,
           teams: 1,

@@ -72,7 +72,7 @@ const canGrantProdAccessScopeFixture = {
   _id: new ObjectId('689f152d37490a37b1bbf51f'),
   userId: '62bb35d2-d4f2-4cf6-abd3-262d99727677',
   value: 'canGrantProdAccess',
-  kind: ['user'],
+  kind: ['member'],
   description:
     "Tenant user is allowed to provide team members with the 'prodAccess' permission",
   teams: [
