@@ -46,7 +46,7 @@
     "@octokit/auth-app": "8.0.2",
     "@octokit/core": "7.0.3",
     "@octokit/plugin-paginate-graphql": "6.0.0",
-    "aws4": "1.13.0",
+    "aws4": "1.13.2",
     "babel-plugin-module-resolver": "5.0.2",
     "convict": "6.2.4",
     "global-agent": "3.0.0",
