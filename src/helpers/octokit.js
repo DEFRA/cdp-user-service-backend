@@ -1,6 +1,6 @@
 import { Octokit } from '@octokit/core'
 import { createAppAuth } from '@octokit/auth-app'
-import { paginateGraphql } from '@octokit/plugin-paginate-graphql'
+import { paginateGraphQL } from '@octokit/plugin-paginate-graphql'
 
 import { config } from '../config/config.js'
 import { proxyFetch } from './proxy.js'
@@ -32,7 +32,7 @@ const octokitPlugin = {
             baseUrl: config.get('gitHubBaseUrl')
           }
 
-      const OctokitExtra = Octokit.plugin(paginateGraphql)
+      const OctokitExtra = Octokit.plugin(paginateGraphQL)
       const octokit = new OctokitExtra(cfg)
       server.decorate('request', 'octokit', octokit)
     }
