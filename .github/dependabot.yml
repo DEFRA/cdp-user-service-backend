@@ -1,0 +1,101 @@
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directory: /
+    open-pull-requests-limit: 10
+
+    groups:
+      build:
+        patterns:
+          - '@babel/*'
+          - 'babel-*'
+          - 'tsx'
+          - 'webpack'
+          - 'webpack-*'
+          - 'terser-webpack-plugin'
+
+      lint:
+        patterns:
+          - 'prettier'
+          - 'eslint'
+          - 'eslint-*'
+          - 'stylelint'
+          - 'stylelint-*'
+
+      logging:
+        patterns:
+          - 'pino'
+          - 'pino-*'
+          - '@elastic/*'
+          - 'hapi-pino'
+
+      hapi:
+        patterns:
+          - '@hapi/*'
+          - 'hapi-*'
+
+      aws-azure:
+        patterns:
+          - '@aws-sdk/*'
+          - '@azure/*'
+
+      octokit:
+        patterns:
+          - '@octokit/*'
+
+      defra:
+        patterns:
+          - '@defra/*'
+
+      types:
+        patterns:
+          - '@types/*'
+
+      test:
+        patterns:
+          - 'vitest'
+          - 'vitest-*'
+          - 'vitest-fetch-mock'
+          - 'vitest-mongodb'
+          - 'mongodb-memory-server-core'
+
+      db:
+        patterns:
+          - 'mongodb'
+          - 'mongo-locks'
+
+      joi:
+        patterns:
+          - 'joi'
+          - 'joi-objectid'
+
+      tools:
+        patterns:
+          - 'husky'
+          - 'nodemon'
+          - 'npm-run-all'
+          - 'lodash'
+
+    cooldown:
+      default-days: 5
+      semver-major-days: 20
+      semver-minor-days: 7
+      semver-patch-days: 3
+
+    schedule:
+      interval: weekly
+      time: '11:00'
+      timezone: 'Europe/London'
+
+    versioning-strategy: increase
+
+    allow:
+      - dependency-type: direct
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      time: '11:30'
+      timezone: 'Europe/London'
