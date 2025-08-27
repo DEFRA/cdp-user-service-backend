@@ -4,6 +4,7 @@ import { getTeam } from '../helpers/get-team.js'
 
 import Joi from 'joi'
 import { teamIdValidation } from '@defra/cdp-validation-kit'
+import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
 
 const getTeamController = {
   options: {
@@ -19,7 +20,7 @@ const getTeamController = {
     if (!team) {
       throw Boom.notFound('Team not found')
     }
-    return h.response({ message: 'success', team }).code(200)
+    return h.response({ message: 'success', team }).code(statusCodes.ok)
   }
 }
 

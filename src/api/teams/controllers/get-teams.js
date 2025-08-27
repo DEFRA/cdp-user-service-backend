@@ -1,6 +1,7 @@
 import Joi from 'joi'
 
 import { getTeams } from '../helpers/get-teams.js'
+import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
 
 const getTeamsController = {
   options: {
@@ -15,7 +16,7 @@ const getTeamsController = {
   },
   handler: async (request, h) => {
     const teams = await getTeams(request.db, request.query)
-    return h.response({ message: 'success', teams }).code(200)
+    return h.response({ message: 'success', teams }).code(statusCodes.ok)
   }
 }
 

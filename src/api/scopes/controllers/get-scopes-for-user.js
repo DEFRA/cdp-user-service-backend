@@ -1,4 +1,5 @@
 import { scopesForUser } from '../helpers/scopes-for-user.js'
+import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
 
 const getScopesForUserController = {
   options: {
@@ -17,7 +18,7 @@ const getScopesForUserController = {
         message: 'success',
         ...scope
       })
-      .code(200)
+      .code(statusCodes.ok)
   }
 }
 

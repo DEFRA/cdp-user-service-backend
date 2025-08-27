@@ -13,6 +13,7 @@ import {
   replaceOne
 } from '../../../../test-helpers/mongo-helpers.js'
 import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
+import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
 
 describe('DELETE:/teams/{teamId}', () => {
   let server
@@ -40,7 +41,7 @@ describe('DELETE:/teams/{teamId}', () => {
       auth: {
         strategy: 'azure-oidc',
         credentials: {
-          scope: ['admin']
+          scope: [scopes.admin]
         }
       }
     })

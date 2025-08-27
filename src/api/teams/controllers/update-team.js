@@ -11,6 +11,8 @@ import {
   addSharedRepoAccess,
   deleteSharedRepoAccess
 } from '../helpers/github/github-shared-repo-access.js'
+import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
+import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
 
 const updateTeamController = {
   options: {
@@ -21,7 +23,7 @@ const updateTeamController = {
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: ['admin', '{params.teamId}']
+        scope: [scopes.admin, 'team:{params.teamId}']
       }
     }
   },
@@ -47,7 +49,9 @@ const updateTeamController = {
       request
     )
     const updatedTeam = await updateTeam(request.db, teamId, updateFields)
-    return h.response({ message: 'success', team: updatedTeam }).code(200)
+    return h
+      .response({ message: 'success', team: updatedTeam })
+      .code(statusCodes.ok)
   }
 }
 

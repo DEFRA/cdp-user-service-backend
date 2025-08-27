@@ -5,6 +5,8 @@ import { getTeam } from '../../../teams/helpers/get-team.js'
 import { getScope } from '../../helpers/get-scope.js'
 import { addScopeToTeamTransaction } from '../../../../helpers/mongo/transactions/scope/add-scope-to-team-transaction.js'
 import { teamIdValidation } from '@defra/cdp-validation-kit'
+import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
+import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
 
 const adminAddScopeToTeamController = {
   options: {
@@ -12,7 +14,7 @@ const adminAddScopeToTeamController = {
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: ['admin']
+        scope: [scopes.admin]
       }
     },
     validate: {
@@ -44,7 +46,7 @@ const adminAddScopeToTeamController = {
 
     const scope = await addScopeToTeamTransaction(request, teamId, scopeId)
 
-    return h.response({ message: 'success', scope }).code(200)
+    return h.response({ message: 'success', scope }).code(statusCodes.ok)
   }
 }
 

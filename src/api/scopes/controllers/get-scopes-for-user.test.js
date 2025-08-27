@@ -23,6 +23,7 @@ import {
   userWithGranularScopesFixture
 } from '../../../__fixtures__/users.js'
 import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
+import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
 
 describe('GET:/scopes', () => {
   let server
@@ -92,14 +93,15 @@ describe('GET:/scopes', () => {
       expect(statusCode).toBe(200)
       expect(statusMessage).toBe('OK')
 
-      expect(result).toMatchObject({
+      expect(result).toEqual({
         message: 'success',
         scopes: [
-          tenantTeamFixture._id,
-          'terminal',
-          'postgres',
-          userTenantFixture._id,
-          'tenant'
+          `team:${tenantTeamFixture._id}`,
+          `user:${userTenantFixture._id}`,
+          'permission:postgres',
+          'permission:tenant',
+          'permission:serviceOwner:team:animalsandplants',
+          'permission:terminal'
         ].sort(),
         scopeFlags: {
           isAdmin: false,
@@ -139,15 +141,16 @@ describe('GET:/scopes', () => {
 
       expect(statusCode).toBe(200)
       expect(statusMessage).toBe('OK')
-      expect(result).toMatchObject({
+      expect(result).toEqual({
         message: 'success',
         scopes: [
-          userAdminFixture._id,
-          'admin',
-          'breakGlass',
-          'externalTest',
-          platformTeamFixture._id
-        ],
+          'user:62bb35d2-d4f2-4cf6-abd3-262d99727677',
+          'permission:serviceOwner:team:platform',
+          `team:${platformTeamFixture._id}`,
+          scopes.admin,
+          scopes.externalTest,
+          scopes.breakGlass
+        ].sort(),
         scopeFlags: {
           isAdmin: true,
           isTenant: false
@@ -164,16 +167,17 @@ describe('GET:/scopes', () => {
 
       expect(statusCode).toBe(200)
       expect(statusMessage).toBe('OK')
-      expect(result).toMatchObject({
+      expect(result).toEqual({
         message: 'success',
         scopes: [
-          userAdminWithTestAsTenantFixture._id,
-          'breakGlass',
-          'externalTest',
-          platformTeamFixture._id,
-          'tenant',
-          'testAsTenant'
-        ],
+          `user:${userAdminWithTestAsTenantFixture._id}`,
+          'permission:serviceOwner:team:platform',
+          `team:${platformTeamFixture._id}`,
+          'permission:breakGlass',
+          'permission:externalTest',
+          'permission:tenant',
+          'permission:testAsTenant'
+        ].sort(),
         scopeFlags: {
           isAdmin: false,
           isTenant: true
@@ -209,10 +213,11 @@ describe('GET:/scopes', () => {
       expect(result).toMatchObject({
         message: 'success',
         scopes: [
-          tenantTeamFixture._id,
-          'postgres',
-          'ad760f75-0930-434f-8a4e-174f74723c65',
-          'tenant'
+          `team:${tenantTeamFixture._id}`,
+          'permission:serviceOwner:team:animalsandplants',
+          'permission:postgres',
+          `user:${userPostgresFixture._id}`,
+          'permission:tenant'
         ].sort(),
         scopeFlags: {
           isAdmin: false,
@@ -231,20 +236,47 @@ describe('GET:/scopes', () => {
       expect(statusCode).toBe(200)
       expect(statusMessage).toBe('OK')
 
-      expect(result).toMatchObject({
+      expect(result).toEqual({
         message: 'success',
         scopes: [
-          userWithGranularScopesFixture._id,
-          tenantTeamFixture._id,
-          'admin',
-          'postgres'
+          scopes.admin,
+          'permission:breakGlass:team:animalsandplants',
+          'permission:postgres',
+          'permission:serviceOwner:team:animalsandplants',
+          'permission:terminal:team:animalsandplants',
+          'team:animalsandplants',
+          `user:${userWithGranularScopesFixture._id}`
+        ],
+        scopeFlags: {
+          isAdmin: true,
+          isTenant: false
+        }
+      })
+    })
+  })
+
+  describe('Without time and team-specific scope', () => {
+    test('Should only return scopes', async () => {
+      const { result, statusCode, statusMessage } = await scopesEndpoint({
+        id: userAdminFixture._id
+      })
+
+      expect(statusCode).toBe(200)
+      expect(statusMessage).toBe('OK')
+
+      expect(result).toEqual({
+        message: 'success',
+        scopes: [
+          `user:${userAdminFixture._id}`,
+          'team:platform',
+          'permission:serviceOwner:team:platform',
+          'permission:admin',
+          'permission:breakGlass',
+          'permission:externalTest'
         ].sort(),
         scopeFlags: {
           isAdmin: true,
           isTenant: false
-        },
-        teamScopes: {
-          [tenantTeamFixture._id]: ['breakGlass', 'terminal', 'serviceOwner']
         }
       })
     })

@@ -3,6 +3,8 @@ import Boom from '@hapi/boom'
 
 import { updateScope } from '../../helpers/update-scope.js'
 import { scopeExists } from '../../helpers/scope-exists.js'
+import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
+import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
 
 const adminUpdateScopeController = {
   options: {
@@ -22,7 +24,7 @@ const adminUpdateScopeController = {
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: ['admin']
+        scope: [scopes.admin]
       }
     }
   },
@@ -41,7 +43,7 @@ const adminUpdateScopeController = {
       description: payload.description
     })
 
-    return h.response({ message: 'success', scope }).code(200)
+    return h.response({ message: 'success', scope }).code(statusCodes.ok)
   }
 }
 

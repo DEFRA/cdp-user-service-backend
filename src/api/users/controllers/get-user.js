@@ -4,6 +4,7 @@ import isNull from 'lodash/isNull.js'
 
 import { getUser } from '../helpers/get-user.js'
 import { userIdValidation } from '@defra/cdp-validation-kit'
+import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
 
 const getUserController = {
   options: {
@@ -19,7 +20,7 @@ const getUserController = {
     if (isNull(user)) {
       throw Boom.notFound('User not found')
     }
-    return h.response({ message: 'success', user }).code(200)
+    return h.response({ message: 'success', user }).code(statusCodes.ok)
   }
 }
 

@@ -14,6 +14,7 @@ import {
   tenantTeamFixture
 } from '../../../__fixtures__/teams.js'
 import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
+import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
 
 vi.mock('@microsoft/microsoft-graph-client')
 vi.mock('@azure/identity')
@@ -53,7 +54,7 @@ describe('DELETE:/users/{userId}', () => {
       auth: {
         strategy: 'azure-oidc',
         credentials: {
-          scope: ['admin']
+          scope: [scopes.admin]
         }
       }
     })
