@@ -19,6 +19,7 @@
     "lint:js": "eslint .",
     "postversion": "git add package.json package-lock.json && git commit -m $npm_package_version",
     "pretest": " node test-helpers/download-mongo.js",
+    "security-audit": "npm audit --audit-level=high",
     "test": "TZ=UTC vitest run --coverage",
     "test:watch": "TZ=UTC vitest",
     "server:watch": "nodemon --exec tsx --enable-source-maps ./src",
