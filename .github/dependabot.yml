@@ -5,9 +5,6 @@ updates:
     directory: /
     open-pull-requests-limit: 10
 
-    automerge: true
-    automerge-type: pr
-
     groups:
       build:
         patterns:
