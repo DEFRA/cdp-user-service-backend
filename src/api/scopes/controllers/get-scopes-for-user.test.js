@@ -251,7 +251,7 @@ describe('GET:/scopes', () => {
         },
         teamScopes: {
           '2a45e0cd-9f1b-4158-825d-40e561c55c55': [
-            'testAsTenant',
+            'prodAccess',
             'canGrantProdAccess',
             'serviceOwner'
           ]

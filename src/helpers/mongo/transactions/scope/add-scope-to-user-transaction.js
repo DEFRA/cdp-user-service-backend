@@ -1,16 +1,13 @@
 import { ObjectId } from 'mongodb'
 
 import { withMongoTransaction } from '../with-mongo-transaction.js'
-import { removeNil } from '../../../remove-nil.js'
 
 async function addScopeToUserTransaction({
   request,
   userId,
   userName,
   scopeId,
-  scopeName,
-  startDate,
-  endDate
+  scopeName
 }) {
   const db = request.db
 
@@ -19,12 +16,10 @@ async function addScopeToUserTransaction({
       { _id: userId },
       {
         $addToSet: {
-          scopes: removeNil({
+          scopes: {
             scopeId: new ObjectId(scopeId),
-            scopeName,
-            startDate,
-            endDate
-          })
+            scopeName
+          }
         },
         $set: { updatedAt: new Date() }
       },
@@ -34,11 +29,7 @@ async function addScopeToUserTransaction({
       }
     )
 
-    return await addUserToScope(
-      db,
-      { userId, userName, startDate, endDate },
-      scopeId
-    )
+    return await addUserToScope(db, { userId, userName }, scopeId)
   })
 }
 
@@ -46,7 +37,7 @@ function addUserToScope(db, values, scopeId) {
   return db.collection('scopes').findOneAndUpdate(
     { _id: new ObjectId(scopeId) },
     {
-      $addToSet: { users: removeNil(values) },
+      $addToSet: { users: values },
       $set: { updatedAt: new Date() }
     }
   )

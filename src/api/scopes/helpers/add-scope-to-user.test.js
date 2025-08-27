@@ -1,7 +1,6 @@
 import Boom from '@hapi/boom'
 
 import { addScopeToUser } from './add-scope-to-user.js'
-import { addYears } from '../../../helpers/date/add-years.js'
 import { connectToTestMongoDB } from '../../../../test-helpers/connect-to-test-mongodb.js'
 import { addScopeToUserTransaction } from '../../../helpers/mongo/transactions/scope/add-scope-to-user-transaction.js'
 import {
@@ -12,8 +11,7 @@ import {
   userAdminFixture,
   userAdminOtherFixture,
   userAdminWithTeamProdAccessFixture,
-  userTenantFixture,
-  memberWithGranularScopesFixture
+  userTenantFixture
 } from '../../../__fixtures__/users.js'
 import {
   adminScopeFixture,
@@ -32,18 +30,7 @@ vi.mock(
   '../../../helpers/mongo/transactions/scope/add-scope-to-user-transaction.js'
 )
 
-const generateDates = () => {
-  const now = new Date()
-  const startDate = now
-  const endDate = addYears(now, 100)
-
-  return { startDate, endDate }
-}
-
 beforeAll(async () => {
-  vi.useFakeTimers()
-  vi.setSystemTime(new Date('2025-08-12T14:16:00.000Z'))
-
   const { db, client } = await connectToTestMongoDB()
   request.db = db
   request.client = client
@@ -57,17 +44,13 @@ beforeEach(async () => {
 
 describe('#addScopeToUser', () => {
   test('Successfully adds scope to user when all conditions are met', async () => {
-    const { startDate, endDate } = generateDates()
-
     await replaceOneTestHelper(userCollection, userAdminOtherFixture)
     await replaceOneTestHelper(scopeCollection, prodAccessScopeFixture)
 
     await addScopeToUser({
       request,
       userId: userAdminOtherFixture._id,
-      scopeId: prodAccessScopeFixture._id.toHexString(), // mimic string being passed via api endpoint
-      startDate,
-      endDate
+      scopeId: prodAccessScopeFixture._id.toHexString() // mimic string being passed via api endpoint
     })
 
     expect(addScopeToUserTransaction).toHaveBeenCalledWith({
@@ -75,15 +58,11 @@ describe('#addScopeToUser', () => {
       userId: userAdminOtherFixture._id,
       userName: userAdminOtherFixture.name,
       scopeId: prodAccessScopeFixture._id.toHexString(),
-      scopeName: prodAccessScopeFixture.value,
-      startDate,
-      endDate
+      scopeName: prodAccessScopeFixture.value
     })
   })
 
   test('Should throw not found error when user does not exist', async () => {
-    const { startDate, endDate } = generateDates()
-
     await replaceOneTestHelper(userCollection, userTenantFixture)
     await replaceOneTestHelper(scopeCollection, prodAccessScopeFixture)
 
@@ -91,16 +70,12 @@ describe('#addScopeToUser', () => {
       addScopeToUser({
         request,
         userId: userAdminFixture._id,
-        scopeId: prodAccessScopeFixture._id.toHexString(), // mimic string being passed via api endpoint
-        startDate,
-        endDate
+        scopeId: prodAccessScopeFixture._id.toHexString() // mimic string being passed via api endpoint
       })
     ).rejects.toThrow(Boom.notFound('User not found'))
   })
 
   test('Should throw not found error when scope does not exist', async () => {
-    const { startDate, endDate } = generateDates()
-
     await replaceOneTestHelper(userCollection, userTenantFixture)
     await replaceOneTestHelper(scopeCollection, prodAccessScopeFixture)
 
@@ -108,31 +83,12 @@ describe('#addScopeToUser', () => {
       addScopeToUser({
         request,
         userId: userTenantFixture._id,
-        scopeId: adminScopeFixture._id.toHexString(), // mimic string being passed via api endpoint
-        startDate,
-        endDate
+        scopeId: adminScopeFixture._id.toHexString() // mimic string being passed via api endpoint
       })
     ).rejects.toThrow(Boom.notFound('Scope not found'))
   })
 
-  test('Throws bad request error when start date is after or equal to end date', async () => {
-    await replaceOneTestHelper(userCollection, userAdminFixture)
-    await replaceOneTestHelper(scopeCollection, adminScopeFixture)
-
-    await expect(
-      addScopeToUser({
-        request,
-        userId: userAdminFixture._id,
-        scopeId: adminScopeFixture._id.toHexString(), // mimic string being passed via api endpoint
-        startDate: new Date('2025-01-02'),
-        endDate: new Date('2025-01-01')
-      })
-    ).rejects.toThrow(Boom.badRequest('Start date must be before End date'))
-  })
-
   test('Throws bad request error when scope cannot be applied to a user', async () => {
-    const { startDate, endDate } = generateDates()
-
     await replaceOneTestHelper(userCollection, userAdminFixture)
     await replaceOneTestHelper(scopeCollection, terminalScopeFixture)
 
@@ -140,9 +96,7 @@ describe('#addScopeToUser', () => {
       addScopeToUser({
         request,
         userId: userAdminFixture._id,
-        scopeId: terminalScopeFixture._id.toHexString(), // mimic string being passed via api endpoint
-        startDate,
-        endDate
+        scopeId: terminalScopeFixture._id.toHexString() // mimic string being passed via api endpoint
       })
     ).rejects.toThrow(Boom.badRequest('Scope cannot be applied to a user'))
   })
@@ -159,23 +113,6 @@ describe('#addScopeToUser', () => {
         request,
         userId: userAdminWithTeamProdAccessFixture._id,
         scopeId: prodAccessScopeFixture._id.toHexString() // mimic string being passed via api endpoint
-      })
-    ).rejects.toThrow(Boom.badRequest('User already has this scope assigned'))
-  })
-
-  test('Throws bad request error when user already has this scope assigned and its active', async () => {
-    const { startDate, endDate } = generateDates()
-
-    await replaceOneTestHelper(userCollection, memberWithGranularScopesFixture)
-    await replaceOneTestHelper(scopeCollection, adminScopeFixture)
-
-    await expect(
-      addScopeToUser({
-        request,
-        userId: memberWithGranularScopesFixture._id,
-        scopeId: adminScopeFixture._id.toHexString(), // mimic string being passed via api endpoint
-        startDate,
-        endDate
       })
     ).rejects.toThrow(Boom.badRequest('User already has this scope assigned'))
   })

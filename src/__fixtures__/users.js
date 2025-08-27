@@ -75,15 +75,15 @@ const memberWithGranularScopesFixture = {
   teams: ['2a45e0cd-9f1b-4158-825d-40e561c55c55'], // tenantTeamFixture
   scopes: [
     {
-      scopeId: new ObjectId('6751e606a171ebffac3cc9dd'), // prodAccessScopeFixture for tenant team for 2 hours
-      scopeName: 'testAsTenant',
+      scopeId: new ObjectId('6751e606a171ebffac3cc9dd'), // prodAccess for tenant team for 2 hours
+      scopeName: 'prodAccess',
       teamId: '2a45e0cd-9f1b-4158-825d-40e561c55c55',
       teamName: 'AnimalsAndPlants',
       startDate: new Date('2025-08-12T13:16:00.000Z'),
       endDate: new Date('2025-08-12T15:16:00.000Z')
     },
     {
-      scopeId: new ObjectId('689f152d37490a37b1bbf51f'), // prodAccessScopeFixture for tenant team for 2 hours
+      scopeId: new ObjectId('689f152d37490a37b1bbf51f'), // canGrantProdAccess for tenant team for 2 hours
       scopeName: 'canGrantProdAccess',
       teamId: '2a45e0cd-9f1b-4158-825d-40e561c55c55',
       teamName: 'AnimalsAndPlants',
@@ -91,34 +91,12 @@ const memberWithGranularScopesFixture = {
       endDate: new Date('2025-08-12T15:16:00.000Z')
     },
     {
-      scopeId: new ObjectId('7751e606a171ebffac3cc9dd'), // adminScopeFixture
-      scopeName: 'admin',
-      startDate: new Date('2025-08-10T13:16:00.000Z'),
-      endDate: new Date('2025-08-15T15:16:00.000Z')
+      scopeId: new ObjectId('7751e606a171ebffac3cc9dd'),
+      scopeName: 'admin'
     },
     {
-      scopeId: new ObjectId('7751e606a171ebffac3cc9ff'), // testAsTenantScopeFixture before 'today'
-      scopeName: 'testAsTenant',
-      startDate: new Date('2025-08-10T13:16:00.000Z'),
-      endDate: new Date('2025-08-10T11:16:00.000Z')
-    },
-    {
-      scopeId: new ObjectId('7751e606a171ebffac3cc9ff'), // testAsTenantScopeFixture starts after 'today'
-      scopeName: 'testAsTenant',
-      startDate: new Date('2025-10-10T13:16:00.000Z'),
-      endDate: new Date('2025-10-11T13:16:00.000Z')
-    },
-    {
-      scopeId: new ObjectId('7751e606a171ebffac3cc9ff'), // testAsTenantScopeFixture ends before 'today',
-      scopeName: 'testAsTenant',
-      startDate: new Date('2025-08-09T13:16:00.000Z'),
-      endDate: new Date('2025-08-10T13:16:00.000Z')
-    },
-    {
-      scopeId: new ObjectId('6751e5e9a171ebffac3cc9dc'), // terminalScopeFixture for tenant team
-      scopeName: 'testAsTenant',
-      teamId: '2a45e0cd-9f1b-4158-825d-40e561c55c55',
-      teamName: 'AnimalsAndPlants'
+      scopeId: new ObjectId('7751e606a171ebffac3cc9ff'),
+      scopeName: 'testAsTenant'
     }
   ]
 }

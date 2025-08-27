@@ -4,22 +4,12 @@ import { getScope } from './get-scope.js'
 import { getUser } from '../../users/helpers/get-user.js'
 import { addScopeToUserTransaction } from '../../../helpers/mongo/transactions/scope/add-scope-to-user-transaction.js'
 
-export async function addScopeToUser({
-  request,
-  userId,
-  scopeId,
-  startDate,
-  endDate
-}) {
+export async function addScopeToUser({ request, userId, scopeId }) {
   const dbUser = await getUser(request.db, userId)
   const dbScope = await getScope(request.db, scopeId)
 
   if (!dbUser) {
     throw Boom.notFound('User not found')
-  }
-
-  if (startDate && endDate && startDate.getTime() >= endDate.getTime()) {
-    throw Boom.badRequest('Start date must be before End date')
   }
 
   if (!dbScope) {
@@ -32,16 +22,9 @@ export async function addScopeToUser({
 
   if (
     dbUser.scopes.filter((userScope) => {
-      const now = new Date()
-
-      // scopeId from db is an ObjectId, so we check for its string against the ObjectId string passed to the endpoint
-      const userHasActiveScope =
-        userScope.scopeId.toHexString() === scopeId &&
-        new Date(userScope.startDate) <= now &&
-        new Date(userScope.endDate) >= now // active scope
       const userHasScope = userScope.scopeId.toHexString() === scopeId
 
-      return userHasActiveScope || userHasScope
+      return userHasScope
     }).length > 0
   ) {
     throw Boom.badRequest('User already has this scope assigned')
@@ -52,8 +35,6 @@ export async function addScopeToUser({
     userId,
     userName: dbUser.name,
     scopeId,
-    scopeName: dbScope.value,
-    startDate,
-    endDate
+    scopeName: dbScope.value
   })
 }
