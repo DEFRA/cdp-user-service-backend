@@ -1,6 +1,7 @@
 import Joi from 'joi'
 
 import { searchGitHubUsers } from '../helpers/search-github-users.js'
+import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
 
 const getGitHubUsersController = {
   options: {
@@ -13,7 +14,7 @@ const getGitHubUsersController = {
   handler: async (request, h) => {
     const query = request.query.query
     const users = await searchGitHubUsers(request.octokit, query)
-    return h.response({ message: 'success', users }).code(200)
+    return h.response({ message: 'success', users }).code(statusCodes.ok)
   }
 }
 

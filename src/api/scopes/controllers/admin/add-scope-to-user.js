@@ -5,6 +5,8 @@ import { getScope } from '../../helpers/get-scope.js'
 import { getUser } from '../../../users/helpers/get-user.js'
 import { addScopeToUserTransaction } from '../../../../helpers/mongo/transactions/scope/add-scope-to-user-transaction.js'
 import { userIdValidation } from '@defra/cdp-validation-kit'
+import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
+import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
 
 const adminAddScopeToUserController = {
   options: {
@@ -12,7 +14,7 @@ const adminAddScopeToUserController = {
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: ['admin']
+        scope: [scopes.admin]
       }
     },
     validate: {
@@ -44,7 +46,7 @@ const adminAddScopeToUserController = {
 
     const scope = await addScopeToUserTransaction(request, userId, scopeId)
 
-    return h.response({ message: 'success', scope }).code(200)
+    return h.response({ message: 'success', scope }).code(statusCodes.ok)
   }
 }
 

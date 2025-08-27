@@ -3,6 +3,7 @@ import Boom from '@hapi/boom'
 
 import { createScope } from '../../helpers/create-scope.js'
 import { scopeNameExists } from '../../helpers/scope-name-exists.js'
+import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
 
 const adminCreateScopeController = {
   options: {
@@ -24,7 +25,7 @@ const adminCreateScopeController = {
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: ['admin']
+        scope: [scopes.admin]
       }
     }
   },

@@ -1,6 +1,7 @@
 import Joi from 'joi'
 
 import { searchGitHubTeams } from '../helpers/github/search-github-teams.js'
+import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
 
 const getGitHubTeamsController = {
   options: {
@@ -14,7 +15,7 @@ const getGitHubTeamsController = {
   handler: async (request, h) => {
     const query = request.query.query
     const teams = await searchGitHubTeams(request.octokit, query)
-    return h.response({ message: 'success', teams }).code(200)
+    return h.response({ message: 'success', teams }).code(statusCodes.ok)
   }
 }
 

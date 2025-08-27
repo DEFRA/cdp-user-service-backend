@@ -1,5 +1,7 @@
 import Joi from '../../../../helpers/extended-joi.js'
 import { getScope } from '../../helpers/get-scope.js'
+import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
+import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
 
 const adminGetScopeController = {
   options: {
@@ -12,7 +14,7 @@ const adminGetScopeController = {
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: ['admin']
+        scope: [scopes.admin]
       }
     }
   },
@@ -23,13 +25,13 @@ const adminGetScopeController = {
       return h
         .response({
           message: 'Scope not found',
-          statusCode: 404,
+          statusCode: statusCodes.notFound,
           error: 'Not Found'
         })
-        .code(404)
+        .code(statusCodes.notFound)
     }
 
-    return h.response({ message: 'success', scope }).code(200)
+    return h.response({ message: 'success', scope }).code(statusCodes.ok)
   }
 }
 

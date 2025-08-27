@@ -3,6 +3,8 @@ import Joi from '../../../../helpers/extended-joi.js'
 
 import { scopeExists } from '../../helpers/scope-exists.js'
 import { deleteScopeTransaction } from '../../../../helpers/mongo/transactions/scope/delete-scope-transaction.js'
+import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
+import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
 
 const adminDeleteScopeController = {
   options: {
@@ -15,7 +17,7 @@ const adminDeleteScopeController = {
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: ['admin']
+        scope: [scopes.admin]
       }
     }
   },
@@ -29,7 +31,7 @@ const adminDeleteScopeController = {
     }
     const scope = await deleteScopeTransaction(request, params.scopeId)
 
-    return h.response({ message: 'success', scope }).code(200)
+    return h.response({ message: 'success', scope }).code(statusCodes.ok)
   }
 }
 

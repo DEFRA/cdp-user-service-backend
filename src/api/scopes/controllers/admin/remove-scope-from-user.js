@@ -3,6 +3,8 @@ import Boom from '@hapi/boom'
 import Joi from '../../../../helpers/extended-joi.js'
 import { removeScopeFromUserTransaction } from '../../../../helpers/mongo/transactions/scope/remove-scope-from-user-transaction.js'
 import { userIdValidation } from '@defra/cdp-validation-kit'
+import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
+import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
 
 const adminRemoveScopeFromUserController = {
   options: {
@@ -10,7 +12,7 @@ const adminRemoveScopeFromUserController = {
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: ['admin', 'testAsTenant']
+        scope: [scopes.admin, scopes.testAsTenant]
       }
     },
     validate: {
@@ -26,7 +28,7 @@ const adminRemoveScopeFromUserController = {
     const scopeId = request.params.scopeId
 
     const scope = await removeScopeFromUserTransaction(request, userId, scopeId)
-    return h.response({ message: 'success', scope }).code(200)
+    return h.response({ message: 'success', scope }).code(statusCodes.ok)
   }
 }
 

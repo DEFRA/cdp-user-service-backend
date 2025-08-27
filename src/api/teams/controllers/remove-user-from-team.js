@@ -1,4 +1,6 @@
 import { removeUserFromTeam } from '../../../helpers/mongo/transactions/delete-transactions.js'
+import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
+import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
 
 const removeUserFromTeamController = {
   options: {
@@ -6,7 +8,7 @@ const removeUserFromTeamController = {
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: ['admin', '{params.teamId}']
+        scope: [scopes.admin, 'team:{params.teamId}']
       }
     }
   },
@@ -15,7 +17,7 @@ const removeUserFromTeamController = {
     const userId = request.params.userId
 
     const team = await removeUserFromTeam(request, userId, teamId)
-    return h.response({ message: 'success', team }).code(200)
+    return h.response({ message: 'success', team }).code(statusCodes.ok)
   }
 }
 

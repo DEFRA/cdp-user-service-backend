@@ -1,6 +1,7 @@
 import Joi from 'joi'
 
 import { getUsers } from '../helpers/get-users.js'
+import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
 
 const getUsersController = {
   options: {
@@ -14,7 +15,7 @@ const getUsersController = {
   handler: async (request, h) => {
     const query = request.query.query
     const users = await getUsers(request.db, query)
-    return h.response({ message: 'success', users }).code(200)
+    return h.response({ message: 'success', users }).code(statusCodes.ok)
   }
 }
 

@@ -2,6 +2,8 @@ import Joi from 'joi'
 
 import { deleteTeam } from '../../../helpers/mongo/transactions/delete-transactions.js'
 import { teamIdValidation } from '@defra/cdp-validation-kit'
+import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
+import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
 
 const deleteTeamController = {
   options: {
@@ -14,13 +16,13 @@ const deleteTeamController = {
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: ['admin']
+        scope: [scopes.admin]
       }
     }
   },
   handler: async (request, h) => {
     await deleteTeam(request, request.params.teamId)
-    return h.response({ message: 'success' }).code(200)
+    return h.response({ message: 'success' }).code(statusCodes.ok)
   }
 }
 

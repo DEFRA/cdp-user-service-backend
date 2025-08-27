@@ -3,6 +3,8 @@ import Boom from '@hapi/boom'
 
 import { deleteUser } from '../../../helpers/mongo/transactions/delete-transactions.js'
 import { userIdValidation } from '@defra/cdp-validation-kit'
+import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
+import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
 
 const deleteUserController = {
   options: {
@@ -15,7 +17,7 @@ const deleteUserController = {
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: ['admin']
+        scope: [scopes.admin]
       }
     }
   },
@@ -23,7 +25,7 @@ const deleteUserController = {
     try {
       const userId = request.params?.userId
       await deleteUser(request, userId)
-      return h.response({ message: 'success' }).code(200)
+      return h.response({ message: 'success' }).code(statusCodes.ok)
     } catch (error) {
       if (error.isBoom) {
         return error

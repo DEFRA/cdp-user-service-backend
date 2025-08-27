@@ -1,33 +1,20 @@
 import { getUser } from '../../users/helpers/get-user.js'
-
-function addScopeToTeamScopes(teamScopes, teamId, scopeName) {
-  if (teamScopes[teamId] === undefined) {
-    teamScopes[teamId] = [scopeName]
-  } else if (!teamScopes[teamId].includes(scopeName)) {
-    teamScopes[teamId].push(scopeName)
-  }
-}
+import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
 
 async function scopesForUser(credentials, db) {
-  const adminScope = 'admin'
-  const serviceOwnerScope = 'serviceOwner'
-  const tenantScope = 'tenant'
-  const testAsTenantScope = 'testAsTenant'
-
-  const scopes = new Set()
-  const teamScopes = {}
+  const scopeList = new Set()
 
   const userId = credentials.id
   const user = await getUser(db, userId)
 
   // user assigned scopes
   if (user) {
-    scopes.add(userId)
+    scopeList.add(`user:${userId}`)
     user.scopes.forEach((s) => {
       if (s.teamId !== undefined) {
-        addScopeToTeamScopes(teamScopes, s.teamId, s.scopeName)
+        scopeList.add(`permission:${s.scopeName}:team:${s.teamId}`)
       } else {
-        scopes.add(s.scopeName)
+        scopeList.add(`permission:${s.scopeName}`)
       }
     })
   }
@@ -35,30 +22,29 @@ async function scopesForUser(credentials, db) {
   // team assigned scopes
   if (user?.teams) {
     for (const team of user.teams) {
-      scopes.add(team.teamId)
-      addScopeToTeamScopes(teamScopes, team.teamId, serviceOwnerScope)
+      scopeList.add(`team:${team.teamId}`)
+      scopeList.add(`${scopes.serviceOwner}:team:${team.teamId}`)
     }
   }
 
-  if (scopes.has(testAsTenantScope)) {
-    scopes.delete(adminScope)
+  if (scopeList.has(scopes.testAsTenant)) {
+    scopeList.delete(scopes.admin)
   }
 
-  const isAdmin = scopes.has(adminScope)
+  const isAdmin = scopeList.has(scopes.admin)
   const teamCount = user?.teams?.length ?? 0
 
   const isTenant = !isAdmin && teamCount > 0
   if (isTenant) {
-    scopes.add(tenantScope)
+    scopeList.add(scopes.tenant)
   }
 
   return {
-    scopes: Array.from(scopes).sort(),
+    scopes: Array.from(scopeList).sort((a, b) => a.localeCompare(b)),
     scopeFlags: {
       isAdmin,
       isTenant
-    },
-    teamScopes
+    }
   }
 }
 
