@@ -1,4 +1,5 @@
 import Boom from '@hapi/boom'
+import { UTCDate } from '@date-fns/utc'
 
 import { getScope } from './get-scope.js'
 import { getUser } from '../../users/helpers/get-user.js'
@@ -42,15 +43,22 @@ export async function addScopeToMember({
 
   if (
     dbUser.scopes.filter((teamMemberScope) => {
-      const now = new Date()
-      const hasScope =
-        teamMemberScope.scopeId.toHexString() === scopeId && // scopeId from db is an ObjectId, so we check for its string against the ObjectId string passed to the endpoint
+      const utcDateNow = new UTCDate()
+      const hasActiveDateBasedScope =
+        teamMemberScope.scopeId.toHexString() === scopeId &&
         teamId !== undefined &&
         teamMemberScope.teamId === teamId &&
-        new Date(teamMemberScope.startDate) <= now &&
-        new Date(teamMemberScope.endDate) >= now // active scope
+        teamMemberScope.startDate <= utcDateNow &&
+        teamMemberScope.endDate >= utcDateNow
 
-      return hasScope
+      const hasScope =
+        teamMemberScope.scopeId.toHexString() === scopeId &&
+        teamId !== undefined &&
+        teamMemberScope.teamId === teamId &&
+        startDate === undefined &&
+        endDate === undefined
+
+      return hasScope || hasActiveDateBasedScope
     }).length > 0
   ) {
     throw Boom.badRequest('Team member already has this scope assigned')

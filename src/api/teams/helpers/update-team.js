@@ -1,4 +1,5 @@
 import isNull from 'lodash/isNull.js'
+import { UTCDate } from '@date-fns/utc'
 
 import { mailNicknameFromGroupName } from './mail-nickname-from-group-name.js'
 import { groupNameFromTeamName } from './group-name-from-team-name.js'
@@ -24,7 +25,7 @@ async function updateTeam(db, teamId, updateFields) {
         ...updateFields,
         $set: {
           ...updateFields?.$set,
-          updatedAt: new Date()
+          updatedAt: new UTCDate()
         }
       }
     )

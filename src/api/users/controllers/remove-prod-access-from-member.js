@@ -1,11 +1,12 @@
 import Boom from '@hapi/boom'
+import { teamIdValidation, userIdValidation } from '@defra/cdp-validation-kit'
 
 import Joi from '../../../helpers/extended-joi.js'
-import { teamIdValidation, userIdValidation } from '@defra/cdp-validation-kit'
 import { getScope } from '../../scopes/helpers/get-scope.js'
-import { removeScopeFromUserTransaction } from '../../../helpers/mongo/transactions/scope/remove-scope-from-user-transaction.js'
+import { removeScopeFromMemberTransaction } from '../../../helpers/mongo/transactions/scope/remove-scope-from-member-transaction.js'
+import { getScopeByName } from '../../scopes/helpers/get-scope-by-name.js'
 
-const removeProdAccessFromUserController = {
+const removeProdAccessFromMemberController = {
   options: {
     tags: ['api', 'scopes'],
     auth: {
@@ -16,27 +17,26 @@ const removeProdAccessFromUserController = {
     },
     validate: {
       params: Joi.object({
-        userId: userIdValidation
-      }),
-      payload: Joi.object({
-        teamId: teamIdValidation,
-        endAt: Joi.date().iso().optional()
+        userId: userIdValidation,
+        teamId: teamIdValidation
       }),
       failAction: () => Boom.boomify(Boom.badRequest())
     }
   },
   handler: async (request, h) => {
-    const userId = request.params.userId
-    const teamId = request.payload?.teamId
+    const params = request.params
+    const userId = params.userId
+    const teamId = params.teamId
 
-    const prodAccessScope = await getScope(request.db, 'prodAccess')
+    // FIXME - reference scope from package
+    const prodAccessScope = await getScopeByName(request.db, 'prodAccess')
 
     // FIXME check that the request.user has permission to add prod access for this team
 
-    const scope = await removeScopeFromUserTransaction(
+    const scope = await removeScopeFromMemberTransaction(
       request,
       userId,
-      prodAccessScope.id,
+      prodAccessScope?.scopeId?.toHexString(),
       teamId
     )
 
@@ -44,4 +44,4 @@ const removeProdAccessFromUserController = {
   }
 }
 
-export { removeProdAccessFromUserController }
+export { removeProdAccessFromMemberController }

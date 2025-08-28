@@ -24,11 +24,40 @@ export const teamAggregation = [
       alertEnvironments: 1,
       users: {
         $map: {
-          input: '$users',
+          input: { $ifNull: ['$users', []] },
           as: 'user',
           in: {
             userId: '$$user._id',
-            name: '$$user.name'
+            name: '$$user.name',
+            hasProdAccess: {
+              $anyElementTrue: {
+                $map: {
+                  input: { $ifNull: ['$$user.scopes', []] },
+                  as: 'scope',
+                  in: {
+                    $and: [
+                      { $eq: ['$$scope.scopeName', 'prodAccess'] },
+                      {
+                        $or: [
+                          {
+                            $and: [
+                              { $not: ['$$scope.startDate'] },
+                              { $not: ['$$scope.endDate'] }
+                            ]
+                          },
+                          {
+                            $and: [
+                              { $lte: ['$$scope.startDate', '$$NOW'] },
+                              { $gte: ['$$scope.endDate', '$$NOW'] }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
           }
         }
       },

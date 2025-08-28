@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb'
+import { UTCDate } from '@date-fns/utc'
 
 import { withMongoTransaction } from '../with-mongo-transaction.js'
 
@@ -18,30 +19,27 @@ async function removeScopeFromMemberTransaction(
 }
 
 function removeMemberScopeFromUser({ db, scopeId, userId, teamId }) {
-  const now = new Date()
+  const utcDateNow = new UTCDate()
   const elemMatch = {
     scopeId: new ObjectId(scopeId),
+    teamId,
     $and: [
       {
         $or: [
           { startDate: null },
           { startDate: { $exists: false } },
-          { startDate: { $lt: now } }
+          { startDate: { $lt: utcDateNow } }
         ]
       },
       {
         $or: [
           { endDate: null },
           { endDate: { $exists: false } },
-          { endDate: { $gt: now } }
+          { endDate: { $gt: utcDateNow } }
         ]
       },
       ...(teamId === undefined ? [{ teamId: { $exists: false } }] : [])
     ]
-  }
-
-  if (teamId !== undefined && teamId !== null) {
-    elemMatch.teamId = teamId
   }
 
   const filter = {
@@ -53,7 +51,7 @@ function removeMemberScopeFromUser({ db, scopeId, userId, teamId }) {
     filter,
     {
       $pull: { scopes: elemMatch },
-      $set: { updatedAt: now }
+      $set: { updatedAt: utcDateNow }
     },
     {
       upsert: false,
@@ -62,12 +60,12 @@ function removeMemberScopeFromUser({ db, scopeId, userId, teamId }) {
   )
 }
 
-function removeMemberFromScope({ db, userId, scopeId, teamId }) {
+function removeMemberFromScope({ db, userId, scopeId, teamId, utcDateNow }) {
   return db.collection('scopes').findOneAndUpdate(
     { _id: new ObjectId(scopeId) },
     {
       $pull: { members: { userId, teamId } },
-      $set: { updatedAt: new Date() }
+      $set: { updatedAt: utcDateNow }
     }
   )
 }

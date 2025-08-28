@@ -7,8 +7,8 @@ import { getUsersController } from './controllers/get-users.js'
 import { updateUserController } from './controllers/update-user.js'
 import { getUsersWithScopeForTeamController } from './controllers/get-users-with-scope-for-team.js'
 import { addScopeToUserController } from './controllers/add-scope-to-user.js'
-import { addProdAccessToUserController } from './controllers/add-prod-access-to-user.js'
-import { removeProdAccessFromUserController } from './controllers/remove-prod-access-from-user.js'
+import { addProdAccessToMemberController } from './controllers/add-prod-access-to-member.js'
+import { removeProdAccessFromMemberController } from './controllers/remove-prod-access-from-member.js'
 import { getUsersForTeamController } from './controllers/get-users-for-team.js'
 
 const users = {
@@ -68,13 +68,13 @@ const users = {
         },
         {
           method: 'PATCH',
-          path: '/users/{userId}/add-prod-access',
-          ...addProdAccessToUserController
+          path: '/users/{userId}/add-prod-access/{teamId}',
+          ...addProdAccessToMemberController
         },
         {
           method: 'PATCH',
-          path: '/users/{userId}/remove-prod-access',
-          ...removeProdAccessFromUserController
+          path: '/users/{userId}/remove-prod-access/{teamId}',
+          ...removeProdAccessFromMemberController
         }
       ])
     }

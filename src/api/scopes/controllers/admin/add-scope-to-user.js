@@ -3,7 +3,6 @@ import Boom from '@hapi/boom'
 import Joi from '../../../../helpers/extended-joi.js'
 import { userIdValidation } from '@defra/cdp-validation-kit'
 import { addScopeToUser } from '../../helpers/add-scope-to-user.js'
-import { addYears } from '../../../../helpers/date/add-years.js'
 
 const adminAddScopeToUserController = {
   options: {
@@ -19,10 +18,6 @@ const adminAddScopeToUserController = {
         userId: userIdValidation,
         scopeId: Joi.objectId().required()
       }),
-      payload: Joi.object({
-        startAt: Joi.date().iso().optional(),
-        endAt: Joi.date().iso().optional()
-      }),
       failAction: () => Boom.boomify(Boom.badRequest())
     }
   },
@@ -30,18 +25,11 @@ const adminAddScopeToUserController = {
     const params = request.params
     const userId = params.userId
     const scopeId = params.scopeId
-    const payload = request.payload
-
-    const now = new Date()
-    const startDate = payload.startAt ? new Date(payload.startAt) : now
-    const endDate = payload.endAt ? new Date(payload.endAt) : addYears(now, 100)
 
     const scope = await addScopeToUser({
       request,
       userId,
-      scopeId,
-      startDate,
-      endDate
+      scopeId
     })
 
     return h.response({ message: 'success', scope }).code(200)

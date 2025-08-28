@@ -2,7 +2,6 @@ import Boom from '@hapi/boom'
 
 import Joi from '../../../../helpers/extended-joi.js'
 import { teamIdValidation, userIdValidation } from '@defra/cdp-validation-kit'
-import { addYears } from '../../../../helpers/date/add-years.js'
 import { addScopeToMember } from '../../helpers/add-scope-to-member.js'
 
 const adminAddScopeToMemberController = {
@@ -34,10 +33,8 @@ const adminAddScopeToMemberController = {
     const teamId = params.teamId
 
     const payload = request.payload
-
-    const now = new Date()
-    const startDate = payload.startAt ? new Date(payload.startAt) : now
-    const endDate = payload.endAt ? new Date(payload.endAt) : addYears(now, 100)
+    const startDate = payload?.startAt ? new Date(payload.startAt) : undefined
+    const endDate = payload?.endAt ? new Date(payload.endAt) : undefined
 
     const scope = await addScopeToMember({
       request,

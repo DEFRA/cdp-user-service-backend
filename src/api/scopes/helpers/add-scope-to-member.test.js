@@ -1,6 +1,6 @@
 import Boom from '@hapi/boom'
+import { addYears } from 'date-fns'
 
-import { addYears } from '../../../helpers/date/add-years.js'
 import { connectToTestMongoDB } from '../../../../test-helpers/connect-to-test-mongodb.js'
 import {
   replaceOne,
@@ -65,7 +65,7 @@ beforeEach(async () => {
 })
 
 describe('#addScopeToMember', () => {
-  test('Successfully adds scope with teamId to members when all conditions are met', async () => {
+  test('Successfully adds scope with teamId to member when all conditions are met', async () => {
     const { startDate, endDate } = generateDates()
 
     await replaceOneTestHelper(userCollection, userAdminOtherFixture)
@@ -91,6 +91,29 @@ describe('#addScopeToMember', () => {
       teamName: platformTeamFixture.name,
       startDate,
       endDate
+    })
+  })
+
+  test('Successfully adds scope to member without dates', async () => {
+    await replaceOneTestHelper(userCollection, userAdminOtherFixture)
+    await replaceOneTestHelper(scopeCollection, canGrantProdAccessScopeFixture)
+    await replaceOneTestHelper(teamCollection, platformTeamFixture)
+
+    await addScopeToMember({
+      request,
+      userId: userAdminOtherFixture._id,
+      scopeId: canGrantProdAccessScopeFixture._id.toHexString(), // mimic string being passed via api endpoint
+      teamId: platformTeamFixture._id
+    })
+
+    expect(addScopeToMemberTransaction).toHaveBeenCalledWith({
+      request,
+      userId: userAdminOtherFixture._id,
+      userName: userAdminOtherFixture.name,
+      scopeId: canGrantProdAccessScopeFixture._id.toHexString(),
+      scopeName: canGrantProdAccessScopeFixture.value,
+      teamId: platformTeamFixture._id,
+      teamName: platformTeamFixture.name
     })
   })
 
