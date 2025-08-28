@@ -7,7 +7,6 @@ import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
 
 const adminCreateScopeController = {
   options: {
-    tags: ['api', 'scopes'],
     validate: {
       payload: Joi.object({
         value: Joi.string()

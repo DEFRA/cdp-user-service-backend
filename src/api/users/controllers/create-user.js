@@ -9,7 +9,6 @@ import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
 
 const createUserController = {
   options: {
-    tags: ['api', 'users'],
     validate: {
       payload: createUserValidationSchema
     },
