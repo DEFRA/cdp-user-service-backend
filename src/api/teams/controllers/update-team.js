@@ -16,7 +16,6 @@ import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-code
 
 const updateTeamController = {
   options: {
-    tags: ['api', 'teams'],
     validate: {
       payload: updateTeamValidationSchema
     },

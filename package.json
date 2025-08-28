@@ -33,7 +33,7 @@
   "dependencies": {
     "@aws-sdk/client-cognito-identity": "3.864.0",
     "@azure/identity": "4.11.1",
-    "@defra/cdp-validation-kit": "0.49.0",
+    "@defra/cdp-validation-kit": "0.50.0",
     "@defra/hapi-tracing": "1.26.0",
     "@elastic/ecs-pino-format": "1.5.0",
     "@hapi/boom": "10.0.1",
@@ -52,7 +52,6 @@
     "global-agent": "3.0.0",
     "hapi-pino": "12.1.0",
     "hapi-pulse": "3.0.1",
-    "hapi-swagger": "17.3.2",
     "https-proxy-agent": "7.0.6",
     "joi": "18.0.0",
     "joi-objectid": "4.0.2",

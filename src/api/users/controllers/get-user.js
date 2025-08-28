@@ -8,7 +8,6 @@ import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-code
 
 const getUserController = {
   options: {
-    tags: ['api', 'users'],
     validate: {
       params: Joi.object({
         userId: userIdValidation

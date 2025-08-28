@@ -8,7 +8,6 @@ import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-code
 
 const getTeamController = {
   options: {
-    tags: ['api', 'teams'],
     validate: {
       params: Joi.object({
         teamId: teamIdValidation

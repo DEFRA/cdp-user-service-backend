@@ -14,7 +14,6 @@ Core delivery platform User Service Backend.
     - [Updating dependencies](#updating-dependencies)
   - [Production](#production)
   - [Npm scripts](#npm-scripts)
-- [Swagger API documentation](#swagger-api-documentation)
 - [Versioning](#versioning)
   - [Auto minor versioning](#auto-minor-versioning)
   - [Major or Patch versioning](#major-or-patch-versioning)
@@ -82,11 +81,6 @@ To view them in your command line run:
 ```bash
 $ npm run
 ```
-
-## Swagger API documentation
-
-Swagger API docs are available locally only. You can view them
-at [http://localhost:3001/docs](http://localhost:3001/docs)
 
 ## Versioning
 

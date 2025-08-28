@@ -2,7 +2,6 @@ import path from 'path'
 import hapi from '@hapi/hapi'
 import Inert from '@hapi/inert'
 import Vision from '@hapi/vision'
-import HapiSwagger from 'hapi-swagger'
 
 import { azureOidc } from '../helpers/azure-oidc.js'
 import { config } from '../config/config.js'
@@ -15,7 +14,6 @@ import { pulse } from '../helpers/pulse.js'
 import { requestLogger } from '../helpers/logging/request-logger.js'
 import { router } from './router.js'
 import { secureContext } from '../helpers/secure-context/index.js'
-import { swaggerOptions } from '../helpers/docs/swagger-options.js'
 import { requestTracing } from '../helpers/request-tracing.js'
 
 async function createServer(configOverrides = {}) {
@@ -76,14 +74,7 @@ async function createServer(configOverrides = {}) {
   ])
 
   if (enableDocumentation) {
-    await server.register([
-      Inert,
-      Vision,
-      {
-        plugin: HapiSwagger,
-        options: swaggerOptions
-      }
-    ])
+    await server.register([Inert, Vision])
   }
 
   return server

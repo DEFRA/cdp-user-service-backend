@@ -10,7 +10,6 @@ import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
 
 const createTeamController = {
   options: {
-    tags: ['api', 'teams'],
     validate: {
       payload: createTeamValidationSchema
     },

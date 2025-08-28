@@ -6,7 +6,6 @@ import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-code
 
 const addTeamToSharedReposController = {
   options: {
-    tags: ['api', 'teams'],
     validate: {
       query: Joi.object({
         team: Joi.string().required()

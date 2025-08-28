@@ -5,7 +5,6 @@ import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-code
 
 const adminGetScopeByNameController = {
   options: {
-    tags: ['api', 'scopes'],
     validate: {
       params: Joi.object({
         scopeName: Joi.string().required()

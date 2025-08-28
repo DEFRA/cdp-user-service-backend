@@ -8,7 +8,6 @@ import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-code
 
 const adminUpdateScopeController = {
   options: {
-    tags: ['api', 'scopes'],
     validate: {
       params: Joi.object({
         scopeId: Joi.objectId().required()

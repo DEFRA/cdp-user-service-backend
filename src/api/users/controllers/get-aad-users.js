@@ -5,7 +5,6 @@ import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-code
 
 const getAadUsersController = {
   options: {
-    tags: ['api', 'users'],
     validate: {
       query: Joi.object({
         query: Joi.string().required()

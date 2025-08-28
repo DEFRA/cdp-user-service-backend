@@ -13,7 +13,6 @@ import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-code
 
 const updateUserController = {
   options: {
-    tags: ['api', 'users'],
     validate: {
       payload: updateUserValidationSchema(config.get('isProduction'))
     },

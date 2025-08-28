@@ -9,7 +9,6 @@ import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-code
 
 const addUserToTeamController = {
   options: {
-    tags: ['api', 'teams'],
     auth: {
       strategy: 'azure-oidc',
       access: {
