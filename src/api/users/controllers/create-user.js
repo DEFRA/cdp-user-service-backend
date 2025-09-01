@@ -25,9 +25,7 @@ const createUserController = {
       _id: payload.userId,
       name: payload.name,
       email: payload.email,
-      github: payload?.github,
-      defraVpnId: payload?.defraVpnId,
-      defraAwsId: payload?.defraAwsId
+      github: payload?.github
     }
 
     const aadExists = await aadUserIdExists(request.msGraph, payload.userId)

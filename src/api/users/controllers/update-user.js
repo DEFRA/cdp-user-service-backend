@@ -34,9 +34,7 @@ const updateUserController = {
     const updateFields = buildUpdateFields(existingUser, payload, [
       'name',
       'email',
-      'github',
-      'defraVpnId',
-      'defraAwsId'
+      'github'
     ])
 
     if (updateFields?.$set?.github) {
