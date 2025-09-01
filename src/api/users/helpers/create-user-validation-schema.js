@@ -5,9 +5,7 @@ const createUserValidationSchema = Joi.object({
   userId: userIdValidation,
   email: Joi.string().email().required(),
   name: Joi.string().required(),
-  github: Joi.string(),
-  defraVpnId: Joi.string(),
-  defraAwsId: Joi.string()
+  github: Joi.string()
 })
 
 export { createUserValidationSchema }
