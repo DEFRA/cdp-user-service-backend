@@ -24,7 +24,7 @@ const deleteUserController = {
     try {
       const userId = request.params?.userId
       await deleteUser(request, userId)
-      return h.response({ message: 'success' }).code(statusCodes.ok)
+      return h.response().code(statusCodes.ok)
     } catch (error) {
       if (error.isBoom) {
         return error

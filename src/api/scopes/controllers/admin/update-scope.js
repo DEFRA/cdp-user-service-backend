@@ -42,7 +42,7 @@ const adminUpdateScopeController = {
       description: payload.description
     })
 
-    return h.response({ message: 'success', scope }).code(statusCodes.ok)
+    return h.response(scope).code(statusCodes.ok)
   }
 }
 

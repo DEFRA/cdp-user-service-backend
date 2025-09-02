@@ -22,7 +22,7 @@ const addTeamToSharedReposController = {
     }
 
     await addSharedRepoAccess(request.octokit, team)
-    return h.response({ message: 'success' }).code(statusCodes.ok)
+    return h.response().code(statusCodes.ok)
   }
 }
 

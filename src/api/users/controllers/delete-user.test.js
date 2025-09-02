@@ -111,14 +111,10 @@ describe('DELETE:/users/{userId}', () => {
     })
 
     test('Should provide expected delete success response', () => {
-      const { result, statusCode, statusMessage } = deleteUserResponse
+      const { statusCode, statusMessage } = deleteUserResponse
 
       expect(statusCode).toBe(200)
       expect(statusMessage).toBe('OK')
-
-      expect(result).toEqual({
-        message: 'success'
-      })
     })
   })
 
@@ -170,23 +166,18 @@ describe('DELETE:/users/{userId}', () => {
       expect(teamStatusCode).toBe(200)
       expect(teamStatusMessage).toBe('OK')
 
-      expect(teamResult).toMatchObject({
-        message: 'success',
-        team: expect.objectContaining({
+      expect(teamResult).toMatchObject(
+        expect.objectContaining({
           users: []
         })
-      })
+      )
     })
 
     test('Delete user response should be as expected', () => {
-      const { result, statusCode, statusMessage } = deleteUserResponse
+      const { statusCode, statusMessage } = deleteUserResponse
 
       expect(statusCode).toBe(200)
       expect(statusMessage).toBe('OK')
-
-      expect(result).toEqual({
-        message: 'success'
-      })
     })
   })
 
@@ -239,23 +230,18 @@ describe('DELETE:/users/{userId}', () => {
       expect(teamStatusCode).toBe(200)
       expect(teamStatusMessage).toBe('OK')
 
-      expect(teamResult).toMatchObject({
-        message: 'success',
-        team: expect.objectContaining({
+      expect(teamResult).toMatchObject(
+        expect.objectContaining({
           users: []
         })
-      })
+      )
     })
 
     test('Delete user response should be as expected', () => {
-      const { result, statusCode, statusMessage } = deleteUserResponse
+      const { statusCode, statusMessage } = deleteUserResponse
 
       expect(statusCode).toBe(200)
       expect(statusMessage).toBe('OK')
-
-      expect(result).toEqual({
-        message: 'success'
-      })
     })
   })
 

@@ -94,7 +94,6 @@ describe('GET:/scopes', () => {
       expect(statusMessage).toBe('OK')
 
       expect(result).toEqual({
-        message: 'success',
         scopes: [
           `team:${tenantTeamFixture._id}`,
           `user:${userTenantFixture._id}`,
@@ -121,7 +120,6 @@ describe('GET:/scopes', () => {
       expect(statusMessage).toBe('OK')
 
       expect(result).toMatchObject({
-        message: 'success',
         scopes: [],
         scopeFlags: {
           isAdmin: false,
@@ -142,7 +140,6 @@ describe('GET:/scopes', () => {
       expect(statusCode).toBe(200)
       expect(statusMessage).toBe('OK')
       expect(result).toEqual({
-        message: 'success',
         scopes: [
           'user:62bb35d2-d4f2-4cf6-abd3-262d99727677',
           'permission:serviceOwner:team:platform',
@@ -168,7 +165,6 @@ describe('GET:/scopes', () => {
       expect(statusCode).toBe(200)
       expect(statusMessage).toBe('OK')
       expect(result).toEqual({
-        message: 'success',
         scopes: [
           `user:${userAdminWithTestAsTenantFixture._id}`,
           'permission:serviceOwner:team:platform',
@@ -211,7 +207,6 @@ describe('GET:/scopes', () => {
       expect(statusMessage).toBe('OK')
 
       expect(result).toMatchObject({
-        message: 'success',
         scopes: [
           `team:${tenantTeamFixture._id}`,
           'permission:serviceOwner:team:animalsandplants',
@@ -237,7 +232,6 @@ describe('GET:/scopes', () => {
       expect(statusMessage).toBe('OK')
 
       expect(result).toEqual({
-        message: 'success',
         scopes: [
           scopes.admin,
           'permission:breakGlass:team:animalsandplants',
@@ -265,7 +259,6 @@ describe('GET:/scopes', () => {
       expect(statusMessage).toBe('OK')
 
       expect(result).toEqual({
-        message: 'success',
         scopes: [
           `user:${userAdminFixture._id}`,
           'team:platform',

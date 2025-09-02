@@ -21,7 +21,7 @@ const deleteTeamController = {
   },
   handler: async (request, h) => {
     await deleteTeam(request, request.params.teamId)
-    return h.response({ message: 'success' }).code(statusCodes.ok)
+    return h.response().code(statusCodes.ok)
   }
 }
 

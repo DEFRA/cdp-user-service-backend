@@ -30,12 +30,12 @@ const addUserToTeamController = {
     }
 
     if (teamHasUser(dbTeam, dbUser)) {
-      return h.response({ message: 'success', dbTeam }).code(statusCodes.ok)
+      return h.response(dbTeam).code(statusCodes.ok)
     }
 
     const team = await addUserToTeam(request, userId, teamId)
 
-    return h.response({ message: 'success', team }).code(statusCodes.ok)
+    return h.response(team).code(statusCodes.ok)
   }
 }
 

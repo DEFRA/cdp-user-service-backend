@@ -54,9 +54,7 @@ const updateUserController = {
     } finally {
       lock.free()
     }
-    return h
-      .response({ message: 'success', user: updatedUser })
-      .code(statusCodes.ok)
+    return h.response(updatedUser).code(statusCodes.ok)
   }
 }
 

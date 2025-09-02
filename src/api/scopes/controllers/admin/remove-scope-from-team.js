@@ -27,7 +27,7 @@ const adminRemoveScopeFromTeamController = {
     const scopeId = request.params.scopeId
 
     const scope = await removeScopeFromTeamTransaction(request, teamId, scopeId)
-    return h.response({ message: 'success', scope }).code(statusCodes.ok)
+    return h.response(scope).code(statusCodes.ok)
   }
 }
 
