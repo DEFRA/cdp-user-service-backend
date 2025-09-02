@@ -40,7 +40,7 @@ const createTeamController = {
     try {
       const team = await createTeam(request.db, dbTeam)
 
-      return h.response({ message: 'success', team }).code(201)
+      return h.response(team).code(201)
     } catch (error) {
       if (error.code === MongoErrors.DuplicateKey) {
         throw Boom.conflict('Team already exists')

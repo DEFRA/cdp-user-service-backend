@@ -14,7 +14,7 @@ const getGitHubUsersController = {
   handler: async (request, h) => {
     const query = request.query.query
     const users = await searchGitHubUsers(request.octokit, query)
-    return h.response({ message: 'success', users }).code(statusCodes.ok)
+    return h.response(users).code(statusCodes.ok)
   }
 }
 

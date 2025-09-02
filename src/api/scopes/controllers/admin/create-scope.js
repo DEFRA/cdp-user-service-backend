@@ -44,7 +44,7 @@ const adminCreateScopeController = {
       description: payload.description
     })
 
-    return h.response({ message: 'success', scope }).code(201)
+    return h.response(scope).code(201)
   }
 }
 

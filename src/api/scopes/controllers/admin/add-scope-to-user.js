@@ -45,7 +45,7 @@ const adminAddScopeToUserController = {
 
     const scope = await addScopeToUserTransaction(request, userId, scopeId)
 
-    return h.response({ message: 'success', scope }).code(statusCodes.ok)
+    return h.response(scope).code(statusCodes.ok)
   }
 }
 

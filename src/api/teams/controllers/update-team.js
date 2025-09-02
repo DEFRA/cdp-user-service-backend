@@ -48,9 +48,7 @@ const updateTeamController = {
       request
     )
     const updatedTeam = await updateTeam(request.db, teamId, updateFields)
-    return h
-      .response({ message: 'success', team: updatedTeam })
-      .code(statusCodes.ok)
+    return h.response(updatedTeam).code(statusCodes.ok)
   }
 }
 

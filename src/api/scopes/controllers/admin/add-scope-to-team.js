@@ -45,7 +45,7 @@ const adminAddScopeToTeamController = {
 
     const scope = await addScopeToTeamTransaction(request, teamId, scopeId)
 
-    return h.response({ message: 'success', scope }).code(statusCodes.ok)
+    return h.response(scope).code(statusCodes.ok)
   }
 }
 

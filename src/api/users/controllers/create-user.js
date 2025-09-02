@@ -45,7 +45,7 @@ const createUserController = {
 
     try {
       const user = await createUser(request.db, dbUser)
-      return h.response({ message: 'success', user }).code(201)
+      return h.response(user).code(201)
     } catch (error) {
       if (error?.code === MongoErrors.DuplicateKey) {
         return Boom.conflict('User already exists')

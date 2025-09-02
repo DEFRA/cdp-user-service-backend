@@ -12,12 +12,7 @@ const getScopesForUserController = {
 
     const scope = await scopesForUser(credentials, request.db)
 
-    return h
-      .response({
-        message: 'success',
-        ...scope
-      })
-      .code(statusCodes.ok)
+    return h.response(scope).code(statusCodes.ok)
   }
 }
 

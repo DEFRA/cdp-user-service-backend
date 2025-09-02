@@ -50,9 +50,8 @@ describe('GET:/users/{userId}', () => {
       expect(statusCode).toBe(200)
       expect(statusMessage).toBe('OK')
 
-      expect(result).toEqual({
-        message: 'success',
-        user: expect.objectContaining({
+      expect(result).toEqual(
+        expect.objectContaining({
           email: 'tetsuo.shima@defra.onmicrosoft.com',
           github: 'TetsuoShima',
           name: 'TetsuoShima',
@@ -67,7 +66,7 @@ describe('GET:/users/{userId}', () => {
           teams: [],
           userId: '62bb35d2-d4f2-4cf6-abd3-262d99727677'
         })
-      })
+      )
     })
   })
 

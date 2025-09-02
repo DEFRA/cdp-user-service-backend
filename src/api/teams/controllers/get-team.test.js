@@ -49,9 +49,8 @@ describe('GET:/teams/{teamId}', () => {
       expect(statusCode).toBe(200)
       expect(statusMessage).toBe('OK')
 
-      expect(result).toEqual({
-        message: 'success',
-        team: expect.objectContaining({
+      expect(result).toEqual(
+        expect.objectContaining({
           alertEmailAddresses: ['mary@mary.com'],
           alertEnvironments: ['infra-dev', 'management'],
           description: 'The team that runs the platform',
@@ -62,7 +61,7 @@ describe('GET:/teams/{teamId}', () => {
           teamId: platformTeamFixture._id,
           users: []
         })
-      })
+      )
     })
   })
 

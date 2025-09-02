@@ -15,7 +15,7 @@ const getTeamsController = {
   },
   handler: async (request, h) => {
     const teams = await getTeams(request.db, request.query)
-    return h.response({ message: 'success', teams }).code(statusCodes.ok)
+    return h.response(teams).code(statusCodes.ok)
   }
 }
 

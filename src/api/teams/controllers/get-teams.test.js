@@ -53,9 +53,64 @@ describe('GET:/teams', () => {
       expect(statusCode).toBe(200)
       expect(statusMessage).toBe('OK')
 
-      expect(result).toEqual({
-        message: 'success',
-        teams: [
+      expect(result).toEqual([
+        expect.objectContaining({
+          alertEmailAddresses: [],
+          description: 'A team for the animals and plants',
+          github: 'cdp-animals-and-plants',
+          name: 'AnimalsAndPlants',
+          scopes: [],
+          serviceCodes: ['AAP'],
+          teamId: 'animalsandplants',
+          users: []
+        }),
+        expect.objectContaining({
+          alertEmailAddresses: ['mary@mary.com'],
+          description: 'The team that runs the platform',
+          github: 'cdp-platform',
+          name: 'Platform',
+          scopes: [],
+          serviceCodes: ['CDP'],
+          teamId: 'platform',
+          users: []
+        })
+      ])
+    })
+
+    describe('With "query" param', () => {
+      test('Should provide expected response with a name value', async () => {
+        const { result, statusCode, statusMessage } = await getTeamsEndpoint(
+          '/teams?query=animals'
+        )
+
+        expect(statusCode).toBe(200)
+        expect(statusMessage).toBe('OK')
+
+        expect(result).toEqual([
+          expect.objectContaining({
+            alertEmailAddresses: [],
+            description: 'A team for the animals and plants',
+            github: 'cdp-animals-and-plants',
+            name: 'AnimalsAndPlants',
+            scopes: [],
+            serviceCodes: ['AAP'],
+            teamId: 'animalsandplants',
+            users: []
+          })
+        ])
+      })
+    })
+
+    describe('With "hasGithub" param', () => {
+      test('Should provide expected response', async () => {
+        const { result, statusCode, statusMessage } = await getTeamsEndpoint(
+          '/teams?hasGithub=true'
+        )
+
+        expect(statusCode).toBe(200)
+        expect(statusMessage).toBe('OK')
+
+        expect(result).toEqual([
           expect.objectContaining({
             alertEmailAddresses: [],
             description: 'A team for the animals and plants',
@@ -76,71 +131,7 @@ describe('GET:/teams', () => {
             teamId: 'platform',
             users: []
           })
-        ]
-      })
-    })
-
-    describe('With "query" param', () => {
-      test('Should provide expected response with a name value', async () => {
-        const { result, statusCode, statusMessage } = await getTeamsEndpoint(
-          '/teams?query=animals'
-        )
-
-        expect(statusCode).toBe(200)
-        expect(statusMessage).toBe('OK')
-
-        expect(result).toEqual({
-          message: 'success',
-          teams: [
-            expect.objectContaining({
-              alertEmailAddresses: [],
-              description: 'A team for the animals and plants',
-              github: 'cdp-animals-and-plants',
-              name: 'AnimalsAndPlants',
-              scopes: [],
-              serviceCodes: ['AAP'],
-              teamId: 'animalsandplants',
-              users: []
-            })
-          ]
-        })
-      })
-    })
-
-    describe('With "hasGithub" param', () => {
-      test('Should provide expected response', async () => {
-        const { result, statusCode, statusMessage } = await getTeamsEndpoint(
-          '/teams?hasGithub=true'
-        )
-
-        expect(statusCode).toBe(200)
-        expect(statusMessage).toBe('OK')
-
-        expect(result).toEqual({
-          message: 'success',
-          teams: [
-            expect.objectContaining({
-              alertEmailAddresses: [],
-              description: 'A team for the animals and plants',
-              github: 'cdp-animals-and-plants',
-              name: 'AnimalsAndPlants',
-              scopes: [],
-              serviceCodes: ['AAP'],
-              teamId: 'animalsandplants',
-              users: []
-            }),
-            expect.objectContaining({
-              alertEmailAddresses: ['mary@mary.com'],
-              description: 'The team that runs the platform',
-              github: 'cdp-platform',
-              name: 'Platform',
-              scopes: [],
-              serviceCodes: ['CDP'],
-              teamId: 'platform',
-              users: []
-            })
-          ]
-        })
+        ])
       })
     })
 
@@ -153,39 +144,33 @@ describe('GET:/teams', () => {
         expect(statusCode).toBe(200)
         expect(statusMessage).toBe('OK')
 
-        expect(result).toEqual({
-          message: 'success',
-          teams: [
-            expect.objectContaining({
-              alertEmailAddresses: ['mary@mary.com'],
-              description: 'The team that runs the platform',
-              github: 'cdp-platform',
-              name: 'Platform',
-              scopes: [],
-              serviceCodes: ['CDP'],
-              teamId: 'platform',
-              users: []
-            })
-          ]
-        })
+        expect(result).toEqual([
+          expect.objectContaining({
+            alertEmailAddresses: ['mary@mary.com'],
+            description: 'The team that runs the platform',
+            github: 'cdp-platform',
+            name: 'Platform',
+            scopes: [],
+            serviceCodes: ['CDP'],
+            teamId: 'platform',
+            users: []
+          })
+        ])
       })
     })
-  })
 
-  describe('When NO teams are in the DB', () => {
-    beforeEach(async () => {
-      await deleteManyTestHelper('teams')
-    })
+    describe('When NO teams are in the DB', () => {
+      beforeEach(async () => {
+        await deleteManyTestHelper('teams')
+      })
 
-    test('Should provide expected response', async () => {
-      const { result, statusCode, statusMessage } = await getTeamsEndpoint()
+      test('Should provide expected response', async () => {
+        const { result, statusCode, statusMessage } = await getTeamsEndpoint()
 
-      expect(statusCode).toBe(200)
-      expect(statusMessage).toBe('OK')
+        expect(statusCode).toBe(200)
+        expect(statusMessage).toBe('OK')
 
-      expect(result).toEqual({
-        message: 'success',
-        teams: []
+        expect(result).toEqual([])
       })
     })
   })

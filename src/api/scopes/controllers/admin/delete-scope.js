@@ -30,7 +30,7 @@ const adminDeleteScopeController = {
     }
     const scope = await deleteScopeTransaction(request, params.scopeId)
 
-    return h.response({ message: 'success', scope }).code(statusCodes.ok)
+    return h.response(scope).code(statusCodes.ok)
   }
 }
 

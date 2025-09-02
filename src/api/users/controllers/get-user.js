@@ -19,7 +19,7 @@ const getUserController = {
     if (isNull(user)) {
       throw Boom.notFound('User not found')
     }
-    return h.response({ message: 'success', user }).code(statusCodes.ok)
+    return h.response(user).code(statusCodes.ok)
   }
 }
 

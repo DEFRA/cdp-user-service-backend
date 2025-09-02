@@ -13,9 +13,7 @@ const adminGetScopesController = {
   },
   handler: async (request, h) => {
     const userScopes = await getScopes(request.db)
-    return h
-      .response({ message: 'success', scopes: userScopes })
-      .code(statusCodes.ok)
+    return h.response(userScopes).code(statusCodes.ok)
   }
 }
 

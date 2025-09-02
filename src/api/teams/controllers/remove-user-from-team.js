@@ -16,7 +16,7 @@ const removeUserFromTeamController = {
     const userId = request.params.userId
 
     const team = await removeUserFromTeam(request, userId, teamId)
-    return h.response({ message: 'success', team }).code(statusCodes.ok)
+    return h.response(team).code(statusCodes.ok)
   }
 }
 
