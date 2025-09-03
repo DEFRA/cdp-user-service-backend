@@ -13,19 +13,6 @@ export const teamAggregation = [
     }
   },
   {
-    $lookup: {
-      from: 'scopes',
-      localField: 'scopes',
-      foreignField: '_id',
-      pipeline: [
-        {
-          $sort: { name: 1 }
-        }
-      ],
-      as: 'scopes'
-    }
-  },
-  {
     $project: {
       _id: 0,
       teamId: '$_id',
@@ -37,24 +24,51 @@ export const teamAggregation = [
       alertEnvironments: 1,
       users: {
         $map: {
-          input: '$users',
+          input: { $ifNull: ['$users', []] },
           as: 'user',
           in: {
             userId: '$$user._id',
-            name: '$$user.name'
+            name: '$$user.name',
+            hasBreakGlass: {
+              $anyElementTrue: {
+                $map: {
+                  input: { $ifNull: ['$$user.scopes', []] },
+                  as: 'scope',
+                  in: {
+                    $and: [
+                      { $eq: ['$$scope.scopeName', 'breakGlass'] },
+                      {
+                        $or: [
+                          // open-ended (no dates set)
+                          {
+                            $and: [
+                              { $not: ['$$scope.startDate'] },
+                              { $not: ['$$scope.endDate'] }
+                            ]
+                          },
+                          // active now
+                          {
+                            $and: [
+                              { $lte: ['$$scope.startDate', '$$NOW'] },
+                              {
+                                $or: [
+                                  { $gte: ['$$scope.endDate', '$$NOW'] },
+                                  { $not: ['$$scope.endDate'] }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
           }
         }
       },
-      scopes: {
-        $map: {
-          input: '$scopes',
-          as: 'scope',
-          in: {
-            scopeId: '$$scope._id',
-            value: '$$scope.value'
-          }
-        }
-      },
+      scopes: 1,
       createdAt: 1,
       updatedAt: 1
     }

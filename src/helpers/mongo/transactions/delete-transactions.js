@@ -1,10 +1,12 @@
 import Boom from '@hapi/boom'
+import { UTCDate } from '@date-fns/utc'
 
 import { getTeam } from '../../../api/teams/helpers/get-team.js'
 import { getUser } from '../../../api/users/helpers/get-user.js'
 import { withMongoTransaction } from './with-mongo-transaction.js'
 import { removeTeamFromScope } from './scope/remove-scope-from-team-transaction.js'
 import { removeUserFromScope } from './scope/remove-scope-from-user-transaction.js'
+import { removeMemberFromScope } from './scope/remove-scope-from-member-transaction.js'
 
 async function removeTeamFromUserDb(db, userId, teamId) {
   return await db.collection('users').findOneAndUpdate(
@@ -15,6 +17,35 @@ async function removeTeamFromUserDb(db, userId, teamId) {
       returnDocument: 'after'
     }
   )
+}
+
+async function removeTeamScopesFromUserDb(db, userId, teamId) {
+  const utcDateNow = new UTCDate()
+  const team = await db
+    .collection('teams')
+    .findOne({ _id: teamId }, { projection: { scopes: 1 } })
+
+  const teamScopeIds = (team?.scopes || []).map((s) => s.scopeId)
+
+  if (teamScopeIds.length > 0) {
+    return db.collection('users').findOneAndUpdate(
+      { _id: userId },
+      {
+        $pull: {
+          scopes: {
+            scopeId: { $in: teamScopeIds },
+            startDate: { $exists: false },
+            endDate: { $exists: false }
+          }
+        },
+        $set: { updatedAt: utcDateNow }
+      },
+      {
+        upsert: false,
+        returnDocument: 'after'
+      }
+    )
+  }
 }
 
 async function removeUserFromTeamDb(db, userId, teamId) {
@@ -36,6 +67,7 @@ async function removeUserFromTeam(request, userId, teamId) {
 
   await withMongoTransaction(request, async () => {
     await removeTeamFromUserDb(db, userId, teamId)
+    await removeTeamScopesFromUserDb(db, userId, teamId)
     await removeUserFromTeamDb(db, userId, teamId)
   })
 }
@@ -57,9 +89,22 @@ async function deleteUser(request, userId) {
     }
 
     if (user.scopes?.length) {
-      const removeFromScopes = user.scopes.map((scope) =>
-        removeUserFromScope(db, user.userId, scope.scopeId)
-      )
+      const removeFromScopes = user.scopes.map((scope) => {
+        if (scope.teamId) {
+          return removeMemberFromScope({
+            db,
+            userId,
+            scopeId: scope.scopeId,
+            teamId: scope.teamId
+          })
+        }
+
+        return removeUserFromScope({
+          db,
+          userId: user.userId,
+          scopeId: scope.scopeId
+        })
+      })
       await Promise.all(removeFromScopes)
     }
 
@@ -92,7 +137,12 @@ async function deleteTeam(request, teamId) {
 
     if (team.scopes?.length) {
       const removeFromScopes = team.scopes.map((scope) =>
-        removeTeamFromScope(db, team.teamId, scope.scopeId)
+        removeTeamFromScope({
+          db,
+          teamId: team.teamId,
+          teamName: team.name,
+          scopeId: scope.scopeId
+        })
       )
       await Promise.all(removeFromScopes)
     }

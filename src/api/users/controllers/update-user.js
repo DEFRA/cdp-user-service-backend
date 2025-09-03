@@ -8,8 +8,7 @@ import { buildUpdateFields } from '../../../helpers/build-update-fields.js'
 import { gitHubUserExists } from '../helpers/github-user-exists.js'
 import { updateUser } from '../helpers/update-user.js'
 import { requireLock } from '../../../helpers/mongo-lock.js'
-import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
-import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
+import { scopes, statusCodes } from '@defra/cdp-validation-kit'
 
 const updateUserController = {
   options: {

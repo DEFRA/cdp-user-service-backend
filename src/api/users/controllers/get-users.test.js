@@ -9,14 +9,18 @@ import {
 } from '../../../__fixtures__/users.js'
 import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
 import {
-  adminFixture,
-  breakGlassFixture,
+  adminScopeFixture,
+  breakGlassScopeFixture,
   externalTestScopeFixture,
   postgresScopeFixture,
   terminalScopeFixture,
-  testAsTenantFixture
+  testAsTenantScopeFixture
 } from '../../../__fixtures__/scopes.js'
 import { ObjectId } from 'mongodb'
+import {
+  platformTeamFixture,
+  tenantTeamFixture
+} from '../../../__fixtures__/teams.js'
 
 describe('GET:/users', () => {
   let server
@@ -33,10 +37,6 @@ describe('GET:/users', () => {
     deleteManyTestHelper = deleteMany(server.db)
   })
 
-  afterAll(async () => {
-    await server.stop({ timeout: 0 })
-  })
-
   async function getUsersEndpoint(url = '/users') {
     return await server.inject({
       method: 'GET',
@@ -50,13 +50,17 @@ describe('GET:/users', () => {
         userAdminFixture,
         userTenantFixture
       ])
+      await replaceManyTestHelper('teams', [
+        platformTeamFixture,
+        tenantTeamFixture
+      ])
       await replaceManyTestHelper('scopes', [
         externalTestScopeFixture,
         postgresScopeFixture,
         terminalScopeFixture,
-        breakGlassFixture,
-        adminFixture,
-        testAsTenantFixture
+        breakGlassScopeFixture,
+        adminScopeFixture,
+        testAsTenantScopeFixture
       ])
     })
 
@@ -72,22 +76,12 @@ describe('GET:/users', () => {
       expect(statusMessage).toBe('OK')
 
       expect(result).toEqual([
-        expect.objectContaining({
-          email: 'akira@defra.onmicrosoft.com',
-          name: 'Akira',
-          scopes: [
-            {
-              scopeId: new ObjectId('6751e5e9a171ebffac3cc9dc'),
-              scopeName: 'terminal'
-            }
-          ],
-          teams: [],
-          userId: 'b7606810-f0c6-4db7-b067-ba730ef706e8'
-        }),
-        expect.objectContaining({
-          email: 'tetsuo.shima@defra.onmicrosoft.com',
-          github: 'TetsuoShima',
-          name: 'TetsuoShima',
+        {
+          name: 'Admin User',
+          email: 'admin.user@defra.onmicrosoft.com',
+          createdAt: '2023-09-28T13:53:44.948Z',
+          updatedAt: '2024-12-03T12:26:28.965Z',
+          github: 'AdminUser',
           scopes: [
             {
               scopeId: new ObjectId('6751e606a171ebffac3cc9dd'),
@@ -98,51 +92,86 @@ describe('GET:/users', () => {
               scopeName: 'admin'
             }
           ],
-          teams: [],
-          userId: '62bb35d2-d4f2-4cf6-abd3-262d99727677'
-        })
+          teams: [
+            {
+              teamId: 'platform',
+              name: 'Platform'
+            }
+          ],
+          userId: '62bb35d2-d4f2-4cf6-abd3-262d99727677',
+          hasBreakGlass: true
+        },
+        {
+          name: 'Tenant User',
+          email: 'tenant.user@defra.onmicrosoft.com',
+          createdAt: '2023-09-28T13:55:42.049Z',
+          updatedAt: '2024-07-15T09:56:32.809Z',
+          scopes: [
+            {
+              scopeId: new ObjectId('6751e5e9a171ebffac3cc9dc'),
+              scopeName: 'terminal'
+            }
+          ],
+          teams: [
+            {
+              teamId: 'animalsandplants',
+              name: 'AnimalsAndPlants'
+            }
+          ],
+          userId: 'b7606810-f0c6-4db7-b067-ba730ef706e8',
+          hasBreakGlass: false
+        }
       ])
     })
 
     describe('When query param is used', () => {
       test('With a name value, Should provide expected response', async () => {
-        const { result, statusCode, statusMessage } =
-          await getUsersEndpoint('/users?query=akira')
-
-        expect(statusCode).toBe(200)
-        expect(statusMessage).toBe('OK')
-
-        expect(result).toEqual(
-          expect.objectContaining([
-            expect.objectContaining({
-              email: 'akira@defra.onmicrosoft.com',
-              name: 'Akira',
-              scopes: [
-                {
-                  scopeId: new ObjectId('6751e5e9a171ebffac3cc9dc'),
-                  scopeName: 'terminal'
-                }
-              ],
-              teams: [],
-              userId: 'b7606810-f0c6-4db7-b067-ba730ef706e8'
-            })
-          ])
-        )
-      })
-
-      test('With an email value, Should provide expected response', async () => {
         const { result, statusCode, statusMessage } = await getUsersEndpoint(
-          '/users?query=tetsuo.shima@'
+          '/users?query=tenant'
         )
 
         expect(statusCode).toBe(200)
         expect(statusMessage).toBe('OK')
 
         expect(result).toEqual([
-          expect.objectContaining({
-            email: 'tetsuo.shima@defra.onmicrosoft.com',
-            github: 'TetsuoShima',
-            name: 'TetsuoShima',
+          {
+            name: 'Tenant User',
+            email: 'tenant.user@defra.onmicrosoft.com',
+            createdAt: '2023-09-28T13:55:42.049Z',
+            updatedAt: '2024-07-15T09:56:32.809Z',
+            scopes: [
+              {
+                scopeId: new ObjectId('6751e5e9a171ebffac3cc9dc'),
+                scopeName: 'terminal'
+              }
+            ],
+            teams: [
+              {
+                teamId: 'animalsandplants',
+                name: 'AnimalsAndPlants'
+              }
+            ],
+            userId: 'b7606810-f0c6-4db7-b067-ba730ef706e8',
+            hasBreakGlass: false
+          }
+        ])
+      })
+
+      test('With an email value, Should provide expected response', async () => {
+        const { result, statusCode, statusMessage } = await getUsersEndpoint(
+          '/users?query=admin.user@'
+        )
+
+        expect(statusCode).toBe(200)
+        expect(statusMessage).toBe('OK')
+
+        expect(result).toEqual([
+          {
+            name: 'Admin User',
+            email: 'admin.user@defra.onmicrosoft.com',
+            createdAt: '2023-09-28T13:53:44.948Z',
+            updatedAt: '2024-12-03T12:26:28.965Z',
+            github: 'AdminUser',
             scopes: [
               {
                 scopeId: new ObjectId('6751e606a171ebffac3cc9dd'),
@@ -153,9 +182,15 @@ describe('GET:/users', () => {
                 scopeName: 'admin'
               }
             ],
-            teams: [],
-            userId: '62bb35d2-d4f2-4cf6-abd3-262d99727677'
-          })
+            teams: [
+              {
+                teamId: 'platform',
+                name: 'Platform'
+              }
+            ],
+            userId: '62bb35d2-d4f2-4cf6-abd3-262d99727677',
+            hasBreakGlass: true
+          }
         ])
       })
     })

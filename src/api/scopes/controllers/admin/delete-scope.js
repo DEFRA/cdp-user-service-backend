@@ -3,8 +3,7 @@ import Joi from '../../../../helpers/extended-joi.js'
 
 import { scopeExists } from '../../helpers/scope-exists.js'
 import { deleteScopeTransaction } from '../../../../helpers/mongo/transactions/scope/delete-scope-transaction.js'
-import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
-import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
+import { scopes, statusCodes } from '@defra/cdp-validation-kit'
 
 const adminDeleteScopeController = {
   options: {

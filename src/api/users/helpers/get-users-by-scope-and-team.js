@@ -1,9 +1,9 @@
 import { userAggregation } from './aggregations/user.js'
 import { ObjectId } from 'mongodb'
 
-async function getUsersByScopeAndTeam(db, scopeId, teamId) {
+function getUsersByScopeAndTeam(db, scopeId, teamId) {
   const pipeline = [
-    ...userAggregation(),
+    ...userAggregation,
     {
       $match: {
         scopes: {
@@ -16,7 +16,7 @@ async function getUsersByScopeAndTeam(db, scopeId, teamId) {
     }
   ]
 
-  return await db.collection('users').aggregate(pipeline).toArray()
+  return db.collection('users').aggregate(pipeline).toArray()
 }
 
 export { getUsersByScopeAndTeam }

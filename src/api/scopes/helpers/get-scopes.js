@@ -10,6 +10,7 @@ async function getScopes(db) {
           scopeId: '$_id',
           value: 1,
           description: 1,
+          kind: 1,
           teams: 1,
           createdAt: 1,
           updatedAt: 1

@@ -2,7 +2,7 @@ import Joi from 'joi'
 
 import { addSharedRepoAccess } from '../helpers/github/github-shared-repo-access.js'
 import { gitHubTeamExists } from '../helpers/github/github-team-exists.js'
-import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
+import { statusCodes } from '@defra/cdp-validation-kit'
 
 const addTeamToSharedReposController = {
   options: {

@@ -3,7 +3,7 @@ import Boom from '@hapi/boom'
 
 import { createScope } from '../../helpers/create-scope.js'
 import { scopeNameExists } from '../../helpers/scope-name-exists.js'
-import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
+import { scopes } from '@defra/cdp-validation-kit'
 
 const adminCreateScopeController = {
   options: {
@@ -16,7 +16,7 @@ const adminCreateScopeController = {
           .required(),
         kind: Joi.array()
           .items(Joi.string())
-          .has(Joi.string().valid('user', 'team'))
+          .has(Joi.string().valid('user', 'team', 'member')) // TODO add to validations
           .required(),
         description: Joi.string().optional().max(256)
       })

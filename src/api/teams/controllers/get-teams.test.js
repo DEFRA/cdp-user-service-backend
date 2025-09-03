@@ -1,4 +1,7 @@
+import { ObjectId } from 'mongodb'
+
 import { createServer } from '../../server.js'
+import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
 import {
   deleteMany,
   replaceMany
@@ -7,7 +10,6 @@ import {
   platformTeamFixture,
   tenantTeamFixture
 } from '../../../__fixtures__/teams.js'
-import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
 
 describe('GET:/teams', () => {
   let server
@@ -22,10 +24,6 @@ describe('GET:/teams', () => {
 
     replaceManyTestHelper = replaceMany(server.db)
     deleteManyTestHelper = deleteMany(server.db)
-  })
-
-  afterAll(async () => {
-    await server.stop({ timeout: 0 })
   })
 
   async function getTeamsEndpoint(url = '/teams') {
@@ -54,26 +52,45 @@ describe('GET:/teams', () => {
       expect(statusMessage).toBe('OK')
 
       expect(result).toEqual([
-        expect.objectContaining({
-          alertEmailAddresses: [],
+        {
+          name: 'AnimalsAndPlants',
           description: 'A team for the animals and plants',
           github: 'cdp-animals-and-plants',
-          name: 'AnimalsAndPlants',
-          scopes: [],
           serviceCodes: ['AAP'],
+          alertEmailAddresses: [],
+          createdAt: '2024-12-03T12:26:10.858Z',
+          updatedAt: '2024-12-04T08:17:06.796Z',
+          scopes: [
+            {
+              scopeId: new ObjectId('6751b8bcfd2ecb117d6277de'),
+              scopeName: 'postgres'
+            }
+          ],
           teamId: 'animalsandplants',
           users: []
-        }),
-        expect.objectContaining({
-          alertEmailAddresses: ['mary@mary.com'],
+        },
+        {
+          name: 'Platform',
           description: 'The team that runs the platform',
           github: 'cdp-platform',
-          name: 'Platform',
-          scopes: [],
           serviceCodes: ['CDP'],
+          alertEmailAddresses: ['mary@mary.com'],
+          alertEnvironments: ['infra-dev', 'management'],
+          createdAt: '2023-09-28T13:52:01.906Z',
+          updatedAt: '2024-12-04T08:17:06.795Z',
+          scopes: [
+            {
+              scopeId: new ObjectId('67500e94922c4fe819dd8832'),
+              scopeName: 'externalTest'
+            },
+            {
+              scopeId: new ObjectId('7751e606a171ebffac3cc9dd'),
+              scopeName: 'admin'
+            }
+          ],
           teamId: 'platform',
           users: []
-        })
+        }
       ])
     })
 
@@ -87,16 +104,23 @@ describe('GET:/teams', () => {
         expect(statusMessage).toBe('OK')
 
         expect(result).toEqual([
-          expect.objectContaining({
-            alertEmailAddresses: [],
+          {
+            name: 'AnimalsAndPlants',
             description: 'A team for the animals and plants',
             github: 'cdp-animals-and-plants',
-            name: 'AnimalsAndPlants',
-            scopes: [],
             serviceCodes: ['AAP'],
+            alertEmailAddresses: [],
+            createdAt: '2024-12-03T12:26:10.858Z',
+            updatedAt: '2024-12-04T08:17:06.796Z',
+            scopes: [
+              {
+                scopeId: new ObjectId('6751b8bcfd2ecb117d6277de'),
+                scopeName: 'postgres'
+              }
+            ],
             teamId: 'animalsandplants',
             users: []
-          })
+          }
         ])
       })
     })
@@ -111,26 +135,45 @@ describe('GET:/teams', () => {
         expect(statusMessage).toBe('OK')
 
         expect(result).toEqual([
-          expect.objectContaining({
-            alertEmailAddresses: [],
+          {
+            name: 'AnimalsAndPlants',
             description: 'A team for the animals and plants',
             github: 'cdp-animals-and-plants',
-            name: 'AnimalsAndPlants',
-            scopes: [],
             serviceCodes: ['AAP'],
+            alertEmailAddresses: [],
+            createdAt: '2024-12-03T12:26:10.858Z',
+            updatedAt: '2024-12-04T08:17:06.796Z',
+            scopes: [
+              {
+                scopeId: new ObjectId('6751b8bcfd2ecb117d6277de'),
+                scopeName: 'postgres'
+              }
+            ],
             teamId: 'animalsandplants',
             users: []
-          }),
-          expect.objectContaining({
-            alertEmailAddresses: ['mary@mary.com'],
+          },
+          {
+            name: 'Platform',
             description: 'The team that runs the platform',
             github: 'cdp-platform',
-            name: 'Platform',
-            scopes: [],
             serviceCodes: ['CDP'],
+            alertEmailAddresses: ['mary@mary.com'],
+            alertEnvironments: ['infra-dev', 'management'],
+            createdAt: '2023-09-28T13:52:01.906Z',
+            updatedAt: '2024-12-04T08:17:06.795Z',
+            scopes: [
+              {
+                scopeId: new ObjectId('67500e94922c4fe819dd8832'),
+                scopeName: 'externalTest'
+              },
+              {
+                scopeId: new ObjectId('7751e606a171ebffac3cc9dd'),
+                scopeName: 'admin'
+              }
+            ],
             teamId: 'platform',
             users: []
-          })
+          }
         ])
       })
     })
@@ -145,33 +188,45 @@ describe('GET:/teams', () => {
         expect(statusMessage).toBe('OK')
 
         expect(result).toEqual([
-          expect.objectContaining({
-            alertEmailAddresses: ['mary@mary.com'],
+          {
+            name: 'Platform',
             description: 'The team that runs the platform',
             github: 'cdp-platform',
-            name: 'Platform',
-            scopes: [],
             serviceCodes: ['CDP'],
+            alertEmailAddresses: ['mary@mary.com'],
+            alertEnvironments: ['infra-dev', 'management'],
+            createdAt: '2023-09-28T13:52:01.906Z',
+            updatedAt: '2024-12-04T08:17:06.795Z',
+            scopes: [
+              {
+                scopeId: new ObjectId('67500e94922c4fe819dd8832'),
+                scopeName: 'externalTest'
+              },
+              {
+                scopeId: new ObjectId('7751e606a171ebffac3cc9dd'),
+                scopeName: 'admin'
+              }
+            ],
             teamId: 'platform',
             users: []
-          })
+          }
         ])
       })
     })
+  })
 
-    describe('When NO teams are in the DB', () => {
-      beforeEach(async () => {
-        await deleteManyTestHelper('teams')
-      })
+  describe('When NO teams are in the DB', () => {
+    beforeEach(async () => {
+      await deleteManyTestHelper('teams')
+    })
 
-      test('Should provide expected response', async () => {
-        const { result, statusCode, statusMessage } = await getTeamsEndpoint()
+    test('Should provide expected response', async () => {
+      const { result, statusCode, statusMessage } = await getTeamsEndpoint()
 
-        expect(statusCode).toBe(200)
-        expect(statusMessage).toBe('OK')
+      expect(statusCode).toBe(200)
+      expect(statusMessage).toBe('OK')
 
-        expect(result).toEqual([])
-      })
+      expect(result).toEqual([])
     })
   })
 })

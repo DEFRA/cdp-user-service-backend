@@ -1,6 +1,6 @@
+import { scopes, statusCodes } from '@defra/cdp-validation-kit'
+
 import { removeUserFromTeam } from '../../../helpers/mongo/transactions/delete-transactions.js'
-import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
-import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
 
 const removeUserFromTeamController = {
   options: {

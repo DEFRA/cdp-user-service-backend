@@ -3,8 +3,7 @@ import Boom from '@hapi/boom'
 import isNull from 'lodash/isNull.js'
 
 import { getUser } from '../helpers/get-user.js'
-import { userIdValidation } from '@defra/cdp-validation-kit'
-import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
+import { userIdValidation, statusCodes } from '@defra/cdp-validation-kit'
 
 const getUserController = {
   options: {

@@ -1,7 +1,9 @@
 import Boom from '@hapi/boom'
-import { teamIdValidation, userIdValidation } from '@defra/cdp-validation-kit'
-import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
-import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
+import {
+  statusCodes,
+  userIdValidation,
+  scopes
+} from '@defra/cdp-validation-kit'
 
 import Joi from '../../../../helpers/extended-joi.js'
 import { addScopeToUser } from '../../helpers/add-scope-to-user.js'
@@ -19,28 +21,18 @@ const adminAddScopeToUserController = {
         userId: userIdValidation,
         scopeId: Joi.objectId().required()
       }),
-      payload: Joi.object({
-        teamId: teamIdValidation.optional(),
-        startDate: Joi.date().optional(),
-        endDate: Joi.date().optional()
-      }).optional(),
       failAction: () => Boom.boomify(Boom.badRequest())
     }
   },
   handler: async (request, h) => {
-    const userId = request.params.userId
-    const scopeId = request.params.scopeId
-    const teamId = request.payload?.teamId
-    const startDate = request.payload?.startDate
-    const endDate = request.payload?.endDate
+    const params = request.params
+    const userId = params.userId
+    const scopeId = params.scopeId
 
     const scope = await addScopeToUser({
       request,
       userId,
-      scopeId,
-      teamId,
-      startDate,
-      endDate
+      scopeId
     })
 
     return h.response(scope).code(statusCodes.ok)

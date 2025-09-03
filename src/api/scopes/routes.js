@@ -6,9 +6,12 @@ import { adminGetScopesController } from './controllers/admin/get-scopes.js'
 import { adminRemoveScopeFromTeamController } from './controllers/admin/remove-scope-from-team.js'
 import { adminUpdateScopeController } from './controllers/admin/update-scope.js'
 import { getScopesForUserController } from './controllers/get-scopes-for-user.js'
-import { adminAddScopeToUserController } from './controllers/admin/add-scope-to-user.js'
 import { adminRemoveScopeFromUserController } from './controllers/admin/remove-scope-from-user.js'
 import { adminGetScopeByNameController } from './controllers/admin/get-scope-by-name.js'
+import { adminAddScopeToMemberController } from './controllers/admin/add-scope-to-member.js'
+import { adminRemoveScopeFromMemberController } from './controllers/admin/remove-scope-from-member.js'
+import { adminAddScopeToUserController } from './controllers/admin/add-scope-to-user.js'
+import { getActiveBreakGlassScopeForUser } from './controllers/get-active-break-glass-scope-for-user.js'
 
 const scopes = {
   plugin: {
@@ -19,6 +22,11 @@ const scopes = {
           method: 'GET',
           path: '/scopes',
           ...getScopesForUserController
+        },
+        {
+          method: 'GET',
+          path: '/scopes/active-break-glass',
+          ...getActiveBreakGlassScopeForUser
         },
         {
           method: 'GET',
@@ -69,6 +77,16 @@ const scopes = {
           method: 'PATCH',
           path: '/scopes/admin/{scopeId}/user/remove/{userId}',
           ...adminRemoveScopeFromUserController
+        },
+        {
+          method: 'PATCH',
+          path: '/scopes/admin/{scopeId}/member/add/{userId}/team/{teamId}',
+          ...adminAddScopeToMemberController
+        },
+        {
+          method: 'PATCH',
+          path: '/scopes/admin/{scopeId}/member/remove/{userId}/team/{teamId}',
+          ...adminRemoveScopeFromMemberController
         }
       ])
     }

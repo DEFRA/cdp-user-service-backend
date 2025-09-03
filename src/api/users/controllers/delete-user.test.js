@@ -14,7 +14,7 @@ import {
   tenantTeamFixture
 } from '../../../__fixtures__/teams.js'
 import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
-import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
+import { scopes } from '@defra/cdp-validation-kit'
 
 vi.mock('@microsoft/microsoft-graph-client')
 vi.mock('@azure/identity')
@@ -41,10 +41,6 @@ describe('DELETE:/users/{userId}', () => {
 
     replaceOneTestHelper = replaceOne(server.db)
     deleteManyTestHelper = deleteMany(server.db)
-  })
-
-  afterAll(async () => {
-    await server.stop({ timeout: 0 })
   })
 
   async function deleteUserEndpoint(url) {

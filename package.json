@@ -33,7 +33,8 @@
   "dependencies": {
     "@aws-sdk/client-cognito-identity": "3.864.0",
     "@azure/identity": "4.11.1",
-    "@defra/cdp-validation-kit": "0.50.0",
+    "@date-fns/utc": "2.1.1",
+    "@defra/cdp-validation-kit": "0.51.0",
     "@defra/hapi-tracing": "1.26.0",
     "@elastic/ecs-pino-format": "1.5.0",
     "@hapi/boom": "10.0.1",
@@ -49,6 +50,7 @@
     "aws4": "1.13.2",
     "babel-plugin-module-resolver": "5.0.2",
     "convict": "6.2.4",
+    "date-fns": "4.1.0",
     "global-agent": "3.0.0",
     "hapi-pino": "12.1.0",
     "hapi-pulse": "3.0.1",

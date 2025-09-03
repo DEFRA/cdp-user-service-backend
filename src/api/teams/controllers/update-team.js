@@ -11,8 +11,7 @@ import {
   addSharedRepoAccess,
   deleteSharedRepoAccess
 } from '../helpers/github/github-shared-repo-access.js'
-import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
-import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
+import { scopes, statusCodes } from '@defra/cdp-validation-kit'
 
 const updateTeamController = {
   options: {

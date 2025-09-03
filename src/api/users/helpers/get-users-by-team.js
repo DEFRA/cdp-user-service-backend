@@ -1,8 +1,8 @@
 import { userAggregation } from './aggregations/user.js'
 
-async function getUsersByTeam(db, teamId) {
+function getUsersByTeam(db, teamId) {
   const pipeline = [
-    ...userAggregation(),
+    ...userAggregation,
     {
       $match: {
         'teams.teamId': teamId
@@ -10,7 +10,7 @@ async function getUsersByTeam(db, teamId) {
     }
   ]
 
-  return await db.collection('users').aggregate(pipeline).toArray()
+  return db.collection('users').aggregate(pipeline).toArray()
 }
 
 export { getUsersByTeam }

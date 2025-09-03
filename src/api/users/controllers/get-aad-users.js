@@ -1,7 +1,7 @@
 import Joi from 'joi'
 
 import { searchAadUsers } from '../helpers/search-aad-users.js'
-import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
+import { statusCodes } from '@defra/cdp-validation-kit'
 
 const getAadUsersController = {
   options: {

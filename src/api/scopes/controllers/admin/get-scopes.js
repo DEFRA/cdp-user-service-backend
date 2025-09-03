@@ -1,6 +1,5 @@
 import { getScopes } from '../../helpers/get-scopes.js'
-import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
-import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
+import { scopes, statusCodes } from '@defra/cdp-validation-kit'
 
 const adminGetScopesController = {
   options: {

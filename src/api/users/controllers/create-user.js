@@ -5,7 +5,7 @@ import { MongoErrors } from '../../../helpers/mongodb-errors.js'
 import { aadUserIdExists } from '../helpers/aad-user-id-exists.js'
 import { gitHubUserExists } from '../helpers/github-user-exists.js'
 import { createUser } from '../helpers/create-user.js'
-import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
+import { scopes } from '@defra/cdp-validation-kit'
 
 const createUserController = {
   options: {

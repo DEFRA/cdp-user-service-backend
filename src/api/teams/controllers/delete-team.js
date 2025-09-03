@@ -1,9 +1,11 @@
 import Joi from 'joi'
 
 import { deleteTeam } from '../../../helpers/mongo/transactions/delete-transactions.js'
-import { teamIdValidation } from '@defra/cdp-validation-kit'
-import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
-import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
+import {
+  teamIdValidation,
+  scopes,
+  statusCodes
+} from '@defra/cdp-validation-kit'
 
 const deleteTeamController = {
   options: {

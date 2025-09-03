@@ -6,7 +6,7 @@ import { teamNameExists } from '../helpers/team-name-exists.js'
 import { gitHubTeamExists } from '../helpers/github/github-team-exists.js'
 import { createTeam } from '../helpers/create-team.js'
 import { addSharedRepoAccess } from '../helpers/github/github-shared-repo-access.js'
-import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
+import { scopes } from '@defra/cdp-validation-kit'
 
 const createTeamController = {
   options: {
