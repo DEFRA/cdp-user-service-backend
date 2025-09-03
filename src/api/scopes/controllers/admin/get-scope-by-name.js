@@ -1,7 +1,6 @@
 import Joi from '../../../../helpers/extended-joi.js'
 import { getScopeByName } from '../../helpers/get-scope-by-name.js'
-import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
-import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
+import { statusCodes, scopes } from '@defra/cdp-validation-kit'
 
 const adminGetScopeByNameController = {
   options: {

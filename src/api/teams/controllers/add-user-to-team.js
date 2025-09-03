@@ -1,11 +1,10 @@
 import Boom from '@hapi/boom'
+import { statusCodes, scopes } from '@defra/cdp-validation-kit'
 
 import { getTeam } from '../helpers/get-team.js'
 import { getUser } from '../../users/helpers/get-user.js'
 import { teamHasUser } from '../helpers/team-has-user.js'
 import { addUserToTeam } from '../../../helpers/mongo/transactions/add-user-to-team.js'
-import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
-import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
 
 const addUserToTeamController = {
   options: {

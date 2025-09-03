@@ -3,8 +3,7 @@ import Boom from '@hapi/boom'
 import { getTeam } from '../helpers/get-team.js'
 
 import Joi from 'joi'
-import { teamIdValidation } from '@defra/cdp-validation-kit'
-import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
+import { teamIdValidation, statusCodes } from '@defra/cdp-validation-kit'
 
 const getTeamController = {
   options: {

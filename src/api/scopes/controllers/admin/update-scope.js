@@ -3,8 +3,7 @@ import Boom from '@hapi/boom'
 
 import { updateScope } from '../../helpers/update-scope.js'
 import { scopeExists } from '../../helpers/scope-exists.js'
-import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
-import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
+import { scopes, statusCodes } from '@defra/cdp-validation-kit'
 
 const adminUpdateScopeController = {
   options: {
@@ -15,7 +14,7 @@ const adminUpdateScopeController = {
       payload: Joi.object({
         kind: Joi.array()
           .items(Joi.string())
-          .has(Joi.string().valid('user', 'team'))
+          .has(Joi.string().valid('user', 'team', 'member'))
           .required(),
         description: Joi.string().optional().max(256)
       })

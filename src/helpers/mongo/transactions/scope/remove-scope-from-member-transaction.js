@@ -3,20 +3,26 @@ import { UTCDate } from '@date-fns/utc'
 
 import { withMongoTransaction } from '../with-mongo-transaction.js'
 
-async function removeScopeFromUserTransaction(request, userId, scopeId) {
+async function removeScopeFromMemberTransaction(
+  request,
+  userId,
+  scopeId,
+  teamId
+) {
   const db = request.db
 
-  return await withMongoTransaction(request, async () => {
-    await removeScopeFromUser({ db, scopeId, userId })
+  return withMongoTransaction(request, async () => {
+    await removeMemberScopeFromUser({ db, scopeId, userId, teamId })
 
-    return removeUserFromScope({ db, scopeId, userId })
+    return removeMemberFromScope({ db, userId, scopeId, teamId })
   })
 }
 
-function removeScopeFromUser({ db, scopeId, userId }) {
+function removeMemberScopeFromUser({ db, scopeId, userId, teamId }) {
   const utcDateNow = new UTCDate()
   const elemMatch = {
     scopeId: new ObjectId(scopeId),
+    teamId,
     $and: [
       {
         $or: [
@@ -31,7 +37,8 @@ function removeScopeFromUser({ db, scopeId, userId }) {
           { endDate: { $exists: false } },
           { endDate: { $gt: utcDateNow } }
         ]
-      }
+      },
+      ...(teamId === undefined ? [{ teamId: { $exists: false } }] : [])
     ]
   }
 
@@ -53,19 +60,18 @@ function removeScopeFromUser({ db, scopeId, userId }) {
   )
 }
 
-function removeUserFromScope({ db, scopeId, userId }) {
-  const utcDateNow = new UTCDate()
-
-  return db
-    .collection('scopes')
-    .findOneAndUpdate(
-      { _id: new ObjectId(scopeId) },
-      { $pull: { users: { userId } }, $set: { updatedAt: utcDateNow } }
-    )
+function removeMemberFromScope({ db, userId, scopeId, teamId, utcDateNow }) {
+  return db.collection('scopes').findOneAndUpdate(
+    { _id: new ObjectId(scopeId) },
+    {
+      $pull: { members: { userId, teamId } },
+      $set: { updatedAt: utcDateNow }
+    }
+  )
 }
 
 export {
-  removeScopeFromUserTransaction,
-  removeUserFromScope,
-  removeScopeFromUser
+  removeScopeFromMemberTransaction,
+  removeMemberFromScope,
+  removeMemberScopeFromUser
 }

@@ -1,4 +1,4 @@
-import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
+import { statusCodes } from '@defra/cdp-validation-kit'
 
 const healthController = {
   handler: (_request, h) =>

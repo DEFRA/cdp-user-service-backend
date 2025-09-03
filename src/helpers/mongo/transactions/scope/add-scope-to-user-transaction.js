@@ -5,10 +5,9 @@ import { withMongoTransaction } from '../with-mongo-transaction.js'
 async function addScopeToUserTransaction({
   request,
   userId,
+  userName,
   scopeId,
-  teamId,
-  startDate = new Date(),
-  endDate
+  scopeName
 }) {
   const db = request.db
 
@@ -17,7 +16,10 @@ async function addScopeToUserTransaction({
       { _id: userId },
       {
         $addToSet: {
-          scopes: { scopeId: new ObjectId(scopeId), teamId, startDate, endDate }
+          scopes: {
+            scopeId: new ObjectId(scopeId),
+            scopeName
+          }
         },
         $set: { updatedAt: new Date() }
       },
@@ -27,17 +29,18 @@ async function addScopeToUserTransaction({
       }
     )
 
-    return await addUserToScope(db, userId, scopeId)
+    return addUserToScope(db, { userId, userName }, scopeId)
   })
 }
 
-function addUserToScope(db, userId, scopeId) {
-  return db
-    .collection('scopes')
-    .findOneAndUpdate(
-      { _id: new ObjectId(scopeId) },
-      { $addToSet: { users: userId }, $set: { updatedAt: new Date() } }
-    )
+function addUserToScope(db, values, scopeId) {
+  return db.collection('scopes').findOneAndUpdate(
+    { _id: new ObjectId(scopeId) },
+    {
+      $addToSet: { users: values },
+      $set: { updatedAt: new Date() }
+    }
+  )
 }
 
 export { addScopeToUserTransaction }

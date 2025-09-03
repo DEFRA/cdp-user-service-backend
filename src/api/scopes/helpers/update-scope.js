@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb'
+import { UTCDate } from '@date-fns/utc'
 
 import { checkScopeExists } from './check-scope-exists.js'
 
@@ -10,7 +11,7 @@ async function updateScope(db, scopeId, updatedScope) {
     {
       $set: {
         ...updatedScope,
-        updatedAt: new Date()
+        updatedAt: new UTCDate()
       }
     },
     {

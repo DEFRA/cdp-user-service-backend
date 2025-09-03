@@ -1,5 +1,7 @@
+import { UTCDate } from '@date-fns/utc'
+
 import { getUser } from '../../users/helpers/get-user.js'
-import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
+import { scopes } from '@defra/cdp-validation-kit'
 
 async function scopesForUser(credentials, db) {
   const scopeList = new Set()
@@ -10,11 +12,14 @@ async function scopesForUser(credentials, db) {
   // user assigned scopes
   if (user) {
     scopeList.add(`user:${userId}`)
-    user.scopes.forEach((s) => {
-      if (s.teamId !== undefined) {
-        scopeList.add(`permission:${s.scopeName}:team:${s.teamId}`)
+    user.scopes.forEach((scope) => {
+      if (
+        scope.teamId !== undefined &&
+        (scope.endDate === undefined || scope.endDate >= new UTCDate())
+      ) {
+        scopeList.add(`permission:${scope.scopeName}:team:${scope.teamId}`)
       } else {
-        scopeList.add(`permission:${s.scopeName}`)
+        scopeList.add(`permission:${scope.scopeName}`)
       }
     })
   }
@@ -39,11 +44,14 @@ async function scopesForUser(credentials, db) {
     scopeList.add(scopes.tenant)
   }
 
+  const hasBreakGlass = user?.hasBreakGlass ?? false
+
   return {
     scopes: Array.from(scopeList).sort((a, b) => a.localeCompare(b)),
     scopeFlags: {
       isAdmin,
-      isTenant
+      isTenant,
+      hasBreakGlass
     }
   }
 }

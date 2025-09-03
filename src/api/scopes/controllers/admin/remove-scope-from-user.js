@@ -1,7 +1,9 @@
 import Boom from '@hapi/boom'
-import { userIdValidation } from '@defra/cdp-validation-kit'
-import { scopes } from '@defra/cdp-validation-kit'
-import { statusCodes } from '@defra/cdp-validation-kit'
+import {
+  userIdValidation,
+  scopes,
+  statusCodes
+} from '@defra/cdp-validation-kit'
 
 import Joi from '../../../../helpers/extended-joi.js'
 import { removeScopeFromUserTransaction } from '../../../../helpers/mongo/transactions/scope/remove-scope-from-user-transaction.js'

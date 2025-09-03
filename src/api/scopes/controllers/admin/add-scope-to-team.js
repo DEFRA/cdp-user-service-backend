@@ -1,7 +1,9 @@
 import Boom from '@hapi/boom'
-import { teamIdValidation } from '@defra/cdp-validation-kit'
-import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
-import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
+import {
+  statusCodes,
+  teamIdValidation,
+  scopes
+} from '@defra/cdp-validation-kit'
 
 import Joi from '../../../../helpers/extended-joi.js'
 import { getTeam } from '../../../teams/helpers/get-team.js'
@@ -43,7 +45,13 @@ const adminAddScopeToTeamController = {
       throw Boom.badRequest('Scope cannot be applied to a team')
     }
 
-    const scope = await addScopeToTeamTransaction(request, teamId, scopeId)
+    const scope = await addScopeToTeamTransaction({
+      request,
+      teamId,
+      teamName: dbTeam.name,
+      scopeId,
+      scopeName: dbScope.value
+    })
 
     return h.response(scope).code(statusCodes.ok)
   }

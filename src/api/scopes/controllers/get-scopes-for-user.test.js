@@ -8,22 +8,22 @@ import {
   tenantTeamFixture
 } from '../../../__fixtures__/teams.js'
 import {
-  adminFixture,
-  breakGlassFixture,
+  adminScopeFixture,
+  breakGlassScopeFixture,
   externalTestScopeFixture,
   postgresScopeFixture,
   terminalScopeFixture,
-  testAsTenantFixture
+  testAsTenantScopeFixture
 } from '../../../__fixtures__/scopes.js'
 import {
   userAdminFixture,
   userAdminWithTestAsTenantFixture,
   userPostgresFixture,
   userTenantFixture,
-  userWithGranularScopesFixture
+  memberWithGranularScopesFixture
 } from '../../../__fixtures__/users.js'
 import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
-import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
+import { scopes } from '@defra/cdp-validation-kit'
 
 describe('GET:/scopes', () => {
   let server
@@ -48,7 +48,7 @@ describe('GET:/scopes', () => {
       userTenantFixture,
       userPostgresFixture,
       userAdminWithTestAsTenantFixture,
-      userWithGranularScopesFixture
+      memberWithGranularScopesFixture
     ])
     await replaceManyTestHelper('teams', [
       platformTeamFixture,
@@ -58,9 +58,9 @@ describe('GET:/scopes', () => {
       externalTestScopeFixture,
       postgresScopeFixture,
       terminalScopeFixture,
-      breakGlassFixture,
-      adminFixture,
-      testAsTenantFixture
+      breakGlassScopeFixture,
+      adminScopeFixture,
+      testAsTenantScopeFixture
     ])
   })
 
@@ -68,9 +68,8 @@ describe('GET:/scopes', () => {
     await deleteManyTestHelper(['users', 'teams', 'scopes'])
   })
 
-  afterAll(async () => {
+  afterAll(() => {
     vi.useRealTimers()
-    await server.stop({ timeout: 0 })
   })
 
   function scopesEndpoint(credentials) {
@@ -97,12 +96,12 @@ describe('GET:/scopes', () => {
         scopes: [
           `team:${tenantTeamFixture._id}`,
           `user:${userTenantFixture._id}`,
-          'permission:postgres',
           'permission:tenant',
           'permission:serviceOwner:team:animalsandplants',
           'permission:terminal'
         ].sort(),
         scopeFlags: {
+          hasBreakGlass: false,
           isAdmin: false,
           isTenant: true
         }
@@ -141,15 +140,15 @@ describe('GET:/scopes', () => {
       expect(statusMessage).toBe('OK')
       expect(result).toEqual({
         scopes: [
-          'user:62bb35d2-d4f2-4cf6-abd3-262d99727677',
+          scopes.admin,
+          scopes.breakGlass,
           'permission:serviceOwner:team:platform',
           `team:${platformTeamFixture._id}`,
-          scopes.admin,
-          scopes.externalTest,
-          scopes.breakGlass
-        ].sort(),
+          'user:62bb35d2-d4f2-4cf6-abd3-262d99727677'
+        ],
         scopeFlags: {
           isAdmin: true,
+          hasBreakGlass: true,
           isTenant: false
         }
       })
@@ -166,15 +165,15 @@ describe('GET:/scopes', () => {
       expect(statusMessage).toBe('OK')
       expect(result).toEqual({
         scopes: [
-          `user:${userAdminWithTestAsTenantFixture._id}`,
+          scopes.breakGlass,
           'permission:serviceOwner:team:platform',
-          `team:${platformTeamFixture._id}`,
-          'permission:breakGlass',
-          'permission:externalTest',
           'permission:tenant',
-          'permission:testAsTenant'
-        ].sort(),
+          'permission:testAsTenant',
+          `team:${platformTeamFixture._id}`,
+          `user:${userAdminWithTestAsTenantFixture._id}`
+        ],
         scopeFlags: {
+          hasBreakGlass: true,
           isAdmin: false,
           isTenant: true
         }
@@ -225,7 +224,7 @@ describe('GET:/scopes', () => {
   describe('With time and team-specific scope', () => {
     test('Should only return scopes where the current date time is within the start and end date of the scope', async () => {
       const { result, statusCode, statusMessage } = await scopesEndpoint({
-        id: userWithGranularScopesFixture._id
+        id: memberWithGranularScopesFixture._id
       })
 
       expect(statusCode).toBe(200)
@@ -233,17 +232,18 @@ describe('GET:/scopes', () => {
 
       expect(result).toEqual({
         scopes: [
-          scopes.admin,
+          'permission:canGrantBreakGlass:team:animalsandplants',
           'permission:breakGlass:team:animalsandplants',
-          'permission:postgres',
           'permission:serviceOwner:team:animalsandplants',
-          'permission:terminal:team:animalsandplants',
-          'team:animalsandplants',
-          `user:${userWithGranularScopesFixture._id}`
-        ],
+          'permission:tenant',
+          'permission:testAsTenant',
+          `team:${tenantTeamFixture._id}`,
+          'user:62bb35d2-d4f2-4cf6-abd3-262d997276ee'
+        ].sort(),
         scopeFlags: {
-          isAdmin: true,
-          isTenant: false
+          hasBreakGlass: false,
+          isAdmin: false,
+          isTenant: true
         }
       })
     })
@@ -260,14 +260,14 @@ describe('GET:/scopes', () => {
 
       expect(result).toEqual({
         scopes: [
-          `user:${userAdminFixture._id}`,
-          'team:platform',
+          scopes.admin,
+          scopes.breakGlass,
           'permission:serviceOwner:team:platform',
-          'permission:admin',
-          'permission:breakGlass',
-          'permission:externalTest'
-        ].sort(),
+          `team:${platformTeamFixture._id}`,
+          `user:${userAdminFixture._id}`
+        ],
         scopeFlags: {
+          hasBreakGlass: true,
           isAdmin: true,
           isTenant: false
         }

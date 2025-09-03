@@ -2,9 +2,11 @@ import Joi from 'joi'
 import Boom from '@hapi/boom'
 
 import { deleteUser } from '../../../helpers/mongo/transactions/delete-transactions.js'
-import { userIdValidation } from '@defra/cdp-validation-kit'
-import { scopes } from '@defra/cdp-validation-kit/src/constants/scopes.js'
-import { statusCodes } from '@defra/cdp-validation-kit/src/constants/status-codes.js'
+import {
+  userIdValidation,
+  scopes,
+  statusCodes
+} from '@defra/cdp-validation-kit'
 
 const deleteUserController = {
   options: {
