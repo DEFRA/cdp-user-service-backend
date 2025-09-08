@@ -1,6 +1,6 @@
 /**
  * Get base64 certs from all environment variables starting with TRUSTSTORE_
- * @param envs
+ * @param {Record<string, string>} envs
  * @returns {string[]}
  */
 const getTrustStoreCerts = (envs) =>
