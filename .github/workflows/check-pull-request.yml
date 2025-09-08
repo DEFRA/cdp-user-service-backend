@@ -27,8 +27,8 @@ jobs:
           npm run lint
           npm test
 
-#      - name: Security audit
-#        run: npm run security-audit
+      - name: Security audit
+        run: npm run security-audit
 
       - name: SonarCloud Scan
         if: github.actor != 'dependabot[bot]'
