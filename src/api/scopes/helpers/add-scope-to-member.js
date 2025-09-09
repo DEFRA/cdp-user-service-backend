@@ -25,7 +25,7 @@ export async function addScopeToMember({
   if (!team) {
     throw Boom.notFound('Team not found')
   }
-  if (dbUser.teams.filter((t) => t.teamId === teamId).length === 0) {
+  if (dbUser.teams?.filter((t) => t.teamId === teamId).length === 0) {
     throw Boom.badRequest('User is not a member of the team')
   }
 
@@ -42,7 +42,7 @@ export async function addScopeToMember({
   }
 
   if (
-    dbUser.scopes.filter((scope) => {
+    dbUser.scopes?.filter((scope) => {
       const utcDateNow = new UTCDate()
       const hasActiveDateBasedScope =
         scope.scopeId.toHexString() === scopeId &&

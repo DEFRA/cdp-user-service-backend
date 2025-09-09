@@ -21,7 +21,7 @@ export async function addScopeToUser({ request, userId, scopeId }) {
   }
 
   if (
-    dbUser.scopes.filter((userScope) => {
+    dbUser.scopes?.filter((userScope) => {
       const userHasScope = userScope.scopeId?.toHexString() === scopeId
 
       return userHasScope
