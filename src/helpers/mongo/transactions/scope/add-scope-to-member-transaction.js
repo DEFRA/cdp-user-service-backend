@@ -13,7 +13,9 @@ async function addScopeToMemberTransaction({
   teamId,
   teamName,
   startDate,
-  endDate
+  endDate,
+  requestor,
+  reason
 }) {
   const db = request.db
   const utcDateNow = new UTCDate()
@@ -21,26 +23,19 @@ async function addScopeToMemberTransaction({
   return withMongoTransaction(request, async () => {
     await removeOldScopesFromUser({ db, userId, scopeName, utcDateNow })
 
-    await db.collection('users').findOneAndUpdate(
-      { _id: userId },
-      {
-        $addToSet: {
-          scopes: removeNil({
-            scopeId: new ObjectId(scopeId),
-            scopeName,
-            teamId,
-            teamName,
-            startDate,
-            endDate
-          })
-        },
-        $set: { updatedAt: utcDateNow }
-      },
-      {
-        upsert: false,
-        returnDocument: 'after'
-      }
-    )
+    await addScopeToUser({
+      db,
+      userId,
+      scopeId,
+      scopeName,
+      teamId,
+      teamName,
+      startDate,
+      endDate,
+      requestor,
+      reason,
+      utcDateNow
+    })
 
     await removeOldMembersFromScope({ db, scopeId, userId, utcDateNow })
 
@@ -64,6 +59,43 @@ async function removeOldScopesFromUser({ db, userId, scopeName, utcDateNow }) {
         }
       },
       $set: { updatedAt: utcDateNow }
+    }
+  )
+}
+
+async function addScopeToUser({
+  db,
+  userId,
+  scopeId,
+  scopeName,
+  teamId,
+  teamName,
+  startDate,
+  endDate,
+  requestor,
+  reason,
+  utcDateNow
+}) {
+  await db.collection('users').findOneAndUpdate(
+    { _id: userId },
+    {
+      $addToSet: {
+        scopes: removeNil({
+          scopeId: new ObjectId(scopeId),
+          scopeName,
+          teamId,
+          teamName,
+          startDate,
+          endDate,
+          requestor,
+          reason
+        })
+      },
+      $set: { updatedAt: utcDateNow }
+    },
+    {
+      upsert: false,
+      returnDocument: 'after'
     }
   )
 }

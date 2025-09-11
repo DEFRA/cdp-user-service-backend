@@ -11,6 +11,8 @@ import {
 import Joi from '../../../helpers/extended-joi.js'
 import { addScopeToMember } from '../../scopes/helpers/add-scope-to-member.js'
 import { getScopeByName } from '../../scopes/helpers/get-scope-by-name.js'
+import { recordAudit } from '../../../helpers/audit/record-audit.js'
+import { getUser } from '../helpers/get-user.js'
 
 const addBreakGlassToMemberController = {
   options: {
@@ -28,6 +30,9 @@ const addBreakGlassToMemberController = {
         userId: userIdValidation,
         teamId: teamIdValidation
       }),
+      payload: Joi.object({
+        reason: Joi.string().required()
+      }),
       failAction: () => Boom.boomify(Boom.badRequest())
     }
   },
@@ -35,20 +40,49 @@ const addBreakGlassToMemberController = {
     const params = request.params
     const userId = params.userId
     const teamId = params.teamId
+    const payload = request.payload
+    const reason = payload.reason
 
-    const breakGlassScope = await getScopeByName(request.db, 'breakGlass')
+    const requestor = {
+      id: request.auth.credentials.id,
+      displayName: request.auth.credentials.displayName
+    }
+
+    const scopeName = 'breakGlass'
+    const breakGlassScope = await getScopeByName(request.db, scopeName)
 
     // breakGlass start date is UTC now and end date is 2 hours later
     const utcDateNow = new UTCDate()
     const utcDatePlusTwoHours = addHours(utcDateNow, 2)
-
     const scope = await addScopeToMember({
       request,
       userId,
       scopeId: breakGlassScope?.scopeId?.toHexString(),
       teamId,
       startDate: utcDateNow,
-      endDate: utcDatePlusTwoHours
+      endDate: utcDatePlusTwoHours,
+      requestor,
+      reason
+    })
+
+    const user = await getUser(request.db, userId)
+    const team = user?.teams.find((t) => t.teamId === teamId)
+
+    await recordAudit({
+      category: scopeName,
+      action: 'Granted',
+      performedBy: requestor,
+      performedAt: utcDateNow,
+      details: {
+        user: {
+          userId: user.userId,
+          displayName: user?.name
+        },
+        team,
+        startDate: utcDateNow,
+        endDate: utcDatePlusTwoHours,
+        reason
+      }
     })
 
     return h.response(scope).code(statusCodes.ok)

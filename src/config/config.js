@@ -262,6 +262,12 @@ const config = convict({
     doc: 'Enable API documentation',
     format: Boolean,
     default: isDevelopment
+  },
+  portalBackendUrl: {
+    doc: 'Portal backend for deployments and deployables root API url',
+    format: String,
+    default: 'http://localhost:5094',
+    env: 'PORTAL_BACKEND_URL'
   }
 })
 
