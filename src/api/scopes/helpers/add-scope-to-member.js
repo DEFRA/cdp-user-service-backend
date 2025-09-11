@@ -12,7 +12,9 @@ export async function addScopeToMember({
   scopeId,
   teamId,
   startDate,
-  endDate
+  endDate,
+  requestor,
+  reason
 }) {
   const dbUser = await getUser(request.db, userId)
   const dbScope = await getScope(request.db, scopeId)
@@ -75,6 +77,8 @@ export async function addScopeToMember({
     teamId,
     teamName: team.name,
     startDate,
-    endDate
+    endDate,
+    requestor,
+    reason
   })
 }
