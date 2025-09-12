@@ -60,7 +60,10 @@ const removeBreakGlassFromMemberController = {
       performedBy: requestor,
       performedAt: utcDateNow,
       details: {
-        user,
+        user: {
+          userId: user.userId,
+          displayName: user?.name
+        },
         team,
         endDate: utcDateNow
       }
