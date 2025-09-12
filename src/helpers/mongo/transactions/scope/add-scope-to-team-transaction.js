@@ -1,5 +1,4 @@
 import { ObjectId } from 'mongodb'
-import { UTCDate } from '@date-fns/utc'
 
 import { withMongoTransaction } from '../with-mongo-transaction.js'
 
@@ -10,16 +9,42 @@ async function addScopeToTeamTransaction({
   scopeId,
   scopeName
 }) {
-  const db = request.db
+  const mongoTransaction = withMongoTransaction(request)
 
-  return await withMongoTransaction(request, async () => {
-    await addScopeToTeam({ db, teamId, scopeId, scopeName })
-    await addTeamToScope({ db, teamId, teamName, scopeId })
-    return addScopeToTeamUsers({ db, teamId, scopeId, scopeName })
+  return mongoTransaction(async ({ db, session }) => {
+    await addScopeToTeam({ db, session, teamId, scopeId, scopeName })
+    await addTeamToScope({ db, session, teamId, teamName, scopeId })
+    return addScopeToTeamUsers({ db, session, teamId, scopeId, scopeName })
   })
 }
 
-function addScopeToTeamUsers({ db, teamId, scopeId, scopeName }) {
+function addScopeToTeam({ db, session, teamId, scopeId, scopeName }) {
+  return db.collection('teams').findOneAndUpdate(
+    { _id: teamId },
+    {
+      $addToSet: { scopes: { scopeId: new ObjectId(scopeId), scopeName } },
+      $currentDate: { updatedAt: true }
+    },
+    {
+      upsert: false,
+      returnDocument: 'after',
+      session
+    }
+  )
+}
+
+function addTeamToScope({ db, session, teamId, teamName, scopeId }) {
+  return db.collection('scopes').findOneAndUpdate(
+    { _id: new ObjectId(scopeId) },
+    {
+      $addToSet: { teams: { teamId, teamName } },
+      $currentDate: { updatedAt: true }
+    },
+    { session }
+  )
+}
+
+function addScopeToTeamUsers({ db, session, teamId, scopeId, scopeName }) {
   return db.collection('users').updateMany(
     { teams: teamId },
     {
@@ -29,32 +54,9 @@ function addScopeToTeamUsers({ db, teamId, scopeId, scopeName }) {
           scopeName
         }
       },
-      $set: { updatedAt: new UTCDate() }
-    }
-  )
-}
-
-function addScopeToTeam({ db, teamId, scopeId, scopeName }) {
-  return db.collection('teams').findOneAndUpdate(
-    { _id: teamId },
-    {
-      $addToSet: { scopes: { scopeId: new ObjectId(scopeId), scopeName } },
-      $set: { updatedAt: new UTCDate() }
+      $currentDate: { updatedAt: true }
     },
-    {
-      upsert: false,
-      returnDocument: 'after'
-    }
-  )
-}
-
-function addTeamToScope({ db, teamId, teamName, scopeId }) {
-  return db.collection('scopes').findOneAndUpdate(
-    { _id: new ObjectId(scopeId) },
-    {
-      $addToSet: { teams: { teamId, teamName } },
-      $set: { updatedAt: new UTCDate() }
-    }
+    { session }
   )
 }
 

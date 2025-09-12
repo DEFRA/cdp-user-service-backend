@@ -24,25 +24,26 @@ vi.mock('@azure/identity')
 const userCollection = 'users'
 const scopeCollection = 'scopes'
 const request = {}
-let replaceOneTestHelper
+let replaceOneTestHelper, deleteManyTestHelper
 
 vi.mock(
   '../../../helpers/mongo/transactions/scope/add-scope-to-user-transaction.js'
 )
 
-beforeAll(async () => {
-  const { db, client } = await connectToTestMongoDB()
-  request.db = db
-  request.client = client
-
-  replaceOneTestHelper = replaceOne(db)
-})
-
-beforeEach(async () => {
-  await deleteMany(request.db)([userCollection, scopeCollection])
-})
-
 describe('#addScopeToUser', () => {
+  beforeAll(async () => {
+    const { db, mongoClient } = await connectToTestMongoDB()
+    request.db = db
+    request.mongoClient = mongoClient
+
+    replaceOneTestHelper = replaceOne(db)
+    deleteManyTestHelper = deleteMany(db)
+  })
+
+  beforeEach(async () => {
+    await deleteManyTestHelper([userCollection, scopeCollection])
+  })
+
   test('Successfully adds scope to user when all conditions are met', async () => {
     await replaceOneTestHelper(userCollection, userAdminOtherFixture)
     await replaceOneTestHelper(scopeCollection, breakGlassScopeFixture)

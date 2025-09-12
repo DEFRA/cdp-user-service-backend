@@ -26,9 +26,7 @@ import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
 import { scopes } from '@defra/cdp-validation-kit'
 
 describe('GET:/scopes', () => {
-  let server
-  let replaceManyTestHelper
-  let deleteManyTestHelper
+  let server, replaceManyTestHelper, deleteManyTestHelper
 
   beforeAll(async () => {
     vi.useFakeTimers()

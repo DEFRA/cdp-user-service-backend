@@ -1,6 +1,5 @@
 import { scopes, statusCodes } from '@defra/cdp-validation-kit'
-
-import { removeUserFromTeam } from '../../../helpers/mongo/transactions/delete-transactions.js'
+import { removeUserFromTeamTransaction } from '../../../helpers/mongo/transactions/team/remove-user-from-team-transaction.js'
 
 const removeUserFromTeamController = {
   options: {
@@ -15,7 +14,12 @@ const removeUserFromTeamController = {
     const teamId = request.params.teamId
     const userId = request.params.userId
 
-    const team = await removeUserFromTeam(request, userId, teamId)
+    const team = await removeUserFromTeamTransaction({
+      request,
+      userId,
+      teamId
+    })
+
     return h.response(team).code(statusCodes.ok)
   }
 }

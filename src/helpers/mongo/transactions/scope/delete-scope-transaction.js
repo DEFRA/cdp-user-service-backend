@@ -1,49 +1,66 @@
+import Boom from '@hapi/boom'
 import { ObjectId } from 'mongodb'
 
+import { getScope } from '../../../../api/scopes/helpers/get-scope.js'
 import { withMongoTransaction } from '../with-mongo-transaction.js'
 import { removeScopeFromTeam } from './remove-scope-from-team-transaction.js'
-import { removeScopeFromUser } from './remove-scope-from-user-transaction.js'
-import { removeMemberScopeFromUser } from './remove-scope-from-member-transaction.js'
+import {
+  removeScopeFromUser,
+  removeScopeFromUsers
+} from '../remove-transaction-helpers.js'
 
-async function deleteScopeTransaction(request, scopeId) {
-  const db = request.db
+async function deleteScopeTransaction({ request, scopeId }) {
+  const scope = await getScope(request.db, scopeId)
 
-  return await withMongoTransaction(request, async () => {
-    const scope = await db
-      .collection('scopes')
-      .findOne({ _id: new ObjectId(scopeId) })
+  if (!scope) {
+    throw Boom.notFound('Scope not found')
+  }
 
-    const teamPromises = scope.teams.map((team) =>
+  const mongoTransaction = withMongoTransaction(request)
+
+  await mongoTransaction(async ({ db, session }) => {
+    // Remove scope from teams
+    const scopeTeamsPromises = scope.teams.map((team) =>
       removeScopeFromTeam({
         db,
+        session,
         teamId: team.teamId,
         scopeId,
         scopeName: scope.value
       })
     )
-    const userPromises = scope.users.map((user) =>
-      removeScopeFromUser({ db, scopeId, userId: user.userId })
+    await Promise.all(scopeTeamsPromises)
+
+    // Remove scope from users
+    const scopeUsersPromises = scope.users.map((user) =>
+      removeScopeFromUser({ db, session, scopeId, userId: user.userId })
     )
-    const memberPromises =
-      scope.members?.map((member) =>
-        removeMemberScopeFromUser({
-          db,
-          scopeId,
-          userId: member.userId,
-          teamId: member.teamId
-        })
-      ) ?? []
+    await Promise.all(scopeUsersPromises)
 
-    await Promise.all([...teamPromises, ...userPromises, ...memberPromises])
+    // Remove scope from members
+    const scopeMembersPromises = scope.members.map((member) =>
+      removeScopeFromUsers({
+        db,
+        session,
+        scopeId,
+        userId: member.userId
+      })
+    )
+    await Promise.all(scopeMembersPromises)
 
-    return await deleteScope(db, scopeId)
+    // Remove any left-over scopes from users. For instance scopes assigned due to team membership
+    await removeScopeFromUsers({ db, session, scopeId })
+
+    const { deletedCount } = await db
+      .collection('scopes')
+      .deleteOne({ _id: new ObjectId(scopeId) }, { session })
+
+    if (deletedCount === 1) {
+      request.logger.info(`Scope ${scope.value} deleted from CDP`)
+    }
   })
-}
 
-function deleteScope(db, scopeId) {
-  return db
-    .collection('scopes')
-    .findOneAndDelete({ _id: new ObjectId(scopeId) })
+  return scope
 }
 
 export { deleteScopeTransaction }

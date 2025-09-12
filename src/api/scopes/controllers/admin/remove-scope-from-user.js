@@ -28,7 +28,12 @@ const adminRemoveScopeFromUserController = {
     const userId = request.params.userId
     const scopeId = request.params.scopeId
 
-    const scope = await removeScopeFromUserTransaction(request, userId, scopeId)
+    const scope = await removeScopeFromUserTransaction({
+      request,
+      userId,
+      scopeId
+    })
+
     return h.response(scope).code(statusCodes.ok)
   }
 }

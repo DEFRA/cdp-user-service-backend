@@ -1,5 +1,4 @@
 import { ObjectId } from 'mongodb'
-import { UTCDate } from '@date-fns/utc'
 
 import { withMongoTransaction } from '../with-mongo-transaction.js'
 
@@ -10,69 +9,75 @@ async function removeScopeFromTeamTransaction({
   scopeId,
   scopeName
 }) {
-  const db = request.db
+  const mongoTransaction = withMongoTransaction(request)
 
-  return await withMongoTransaction(request, async () => {
-    await removeScopeFromTeam({ db, teamId, scopeId, scopeName })
-    return removeTeamFromScope({ db, teamId, teamName, scopeId })
+  return mongoTransaction(async ({ db, session }) => {
+    await removeScopeFromTeam({ db, session, teamId, scopeId, scopeName })
+
+    return removeTeamFromScopeTeams({
+      db,
+      session,
+      teamId,
+      teamName,
+      scopeId
+    })
   })
 }
 
-async function removeScopeFromTeam({ db, teamId, scopeId, scopeName }) {
-  const utcDateNow = new UTCDate()
-
+async function removeScopeFromTeam({
+  db,
+  session,
+  teamId,
+  scopeId,
+  scopeName
+}) {
   await db.collection('teams').findOneAndUpdate(
     { _id: teamId },
     {
       $pull: {
         scopes: {
           scopeId: new ObjectId(scopeId),
-          scopeName,
-          startDate: { $exists: false },
-          endDate: { $exists: false }
+          scopeName
         }
       },
-      $set: { updatedAt: utcDateNow }
+      $currentDate: { updatedAt: true }
     },
     {
       upsert: false,
-      returnDocument: 'after'
+      returnDocument: 'after',
+      session
     }
   )
 
-  return removeScopeFromTeamUsers({ db, teamId, scopeId })
+  return removeScopeFromTeamUsers({ db, session, teamId, scopeId })
 }
 
-function removeScopeFromTeamUsers({ db, teamId, scopeId }) {
+function removeScopeFromTeamUsers({ db, session, teamId, scopeId }) {
   return db.collection('users').updateMany(
     { teams: teamId },
     {
       $pull: {
-        scopes: {
-          scopeId: new ObjectId(scopeId),
-          startDate: { $exists: false },
-          endDate: { $exists: false }
-        }
+        scopes: { scopeId: new ObjectId(scopeId) }
       },
-      $set: { updatedAt: new UTCDate() }
-    }
+      $currentDate: { updatedAt: true }
+    },
+    { session }
   )
 }
 
-function removeTeamFromScope({ db, teamId, teamName, scopeId }) {
-  const utcDateNow = new UTCDate()
-
+function removeTeamFromScopeTeams({ db, session, teamId, teamName, scopeId }) {
   return db.collection('scopes').findOneAndUpdate(
     { _id: new ObjectId(scopeId) },
     {
       $pull: { teams: { teamId, teamName } },
-      $set: { updatedAt: utcDateNow }
-    }
+      $currentDate: { updatedAt: true }
+    },
+    { session }
   )
 }
 
 export {
   removeScopeFromTeamTransaction,
-  removeTeamFromScope,
+  removeTeamFromScopeTeams,
   removeScopeFromTeam
 }

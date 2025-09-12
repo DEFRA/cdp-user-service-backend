@@ -49,9 +49,9 @@ beforeAll(async () => {
   vi.useFakeTimers()
   vi.setSystemTime(new Date('2025-08-12T14:16:00.000Z'))
 
-  const { db, client } = await connectToTestMongoDB()
+  const { db, mongoClient } = await connectToTestMongoDB()
   request.db = db
-  request.client = client
+  request.mongoClient = mongoClient
 
   replaceOneTestHelper = replaceOne(db)
 })

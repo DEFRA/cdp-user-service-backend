@@ -25,7 +25,7 @@ function deleteMany(db) {
   return (value) => {
     const collectionArray = Array.isArray(value) ? value : [value]
     const collectionPromises = collectionArray.map((collection) =>
-      db.collection(collection).deleteMany({})
+      db.collection(collection).deleteMany({}, { writeConcern: { w: 1 } })
     )
 
     return Promise.all(collectionPromises)

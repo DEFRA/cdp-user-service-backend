@@ -4,7 +4,7 @@ import { statusCodes, scopes } from '@defra/cdp-validation-kit'
 import { getTeam } from '../helpers/get-team.js'
 import { getUser } from '../../users/helpers/get-user.js'
 import { teamHasUser } from '../helpers/team-has-user.js'
-import { addUserToTeam } from '../../../helpers/mongo/transactions/add-user-to-team.js'
+import { addUserToTeamTransaction } from '../../../helpers/mongo/transactions/team/add-user-to-team-transaction.js'
 
 const addUserToTeamController = {
   options: {
@@ -32,7 +32,7 @@ const addUserToTeamController = {
       return h.response(dbTeam).code(statusCodes.ok)
     }
 
-    const team = await addUserToTeam(request, userId, teamId)
+    const team = await addUserToTeamTransaction(request, userId, teamId)
 
     return h.response(team).code(statusCodes.ok)
   }

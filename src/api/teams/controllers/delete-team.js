@@ -1,11 +1,11 @@
 import Joi from 'joi'
-
-import { deleteTeam } from '../../../helpers/mongo/transactions/delete-transactions.js'
 import {
   teamIdValidation,
   scopes,
   statusCodes
 } from '@defra/cdp-validation-kit'
+
+import { deleteTeamTransaction } from '../../../helpers/mongo/transactions/team/delete-team-transaction.js'
 
 const deleteTeamController = {
   options: {
@@ -22,7 +22,8 @@ const deleteTeamController = {
     }
   },
   handler: async (request, h) => {
-    await deleteTeam(request, request.params.teamId)
+    await deleteTeamTransaction({ request, teamId: request.params.teamId })
+
     return h.response().code(statusCodes.ok)
   }
 }

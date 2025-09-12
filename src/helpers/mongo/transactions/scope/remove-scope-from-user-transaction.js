@@ -1,71 +1,17 @@
-import { ObjectId } from 'mongodb'
-import { UTCDate } from '@date-fns/utc'
-
 import { withMongoTransaction } from '../with-mongo-transaction.js'
+import {
+  removeScopeFromUser,
+  removeUserFromScope
+} from '../remove-transaction-helpers.js'
 
-async function removeScopeFromUserTransaction(request, userId, scopeId) {
-  const db = request.db
+function removeScopeFromUserTransaction({ request, userId, scopeId }) {
+  const mongoTransaction = withMongoTransaction(request)
 
-  return await withMongoTransaction(request, async () => {
-    await removeScopeFromUser({ db, scopeId, userId })
+  return mongoTransaction(async ({ db, session }) => {
+    await removeScopeFromUser({ db, session, scopeId, userId })
 
-    return removeUserFromScope({ db, scopeId, userId })
+    return removeUserFromScope({ db, session, scopeId, userId })
   })
 }
 
-function removeScopeFromUser({ db, scopeId, userId }) {
-  const utcDateNow = new UTCDate()
-  const elemMatch = {
-    scopeId: new ObjectId(scopeId),
-    $and: [
-      {
-        $or: [
-          { startDate: null },
-          { startDate: { $exists: false } },
-          { startDate: { $lt: utcDateNow } }
-        ]
-      },
-      {
-        $or: [
-          { endDate: null },
-          { endDate: { $exists: false } },
-          { endDate: { $gt: utcDateNow } }
-        ]
-      }
-    ]
-  }
-
-  const filter = {
-    _id: userId,
-    scopes: { $elemMatch: elemMatch }
-  }
-
-  return db.collection('users').findOneAndUpdate(
-    filter,
-    {
-      $pull: { scopes: elemMatch },
-      $set: { updatedAt: utcDateNow }
-    },
-    {
-      upsert: false,
-      returnDocument: 'after'
-    }
-  )
-}
-
-function removeUserFromScope({ db, scopeId, userId }) {
-  const utcDateNow = new UTCDate()
-
-  return db
-    .collection('scopes')
-    .findOneAndUpdate(
-      { _id: new ObjectId(scopeId) },
-      { $pull: { users: { userId } }, $set: { updatedAt: utcDateNow } }
-    )
-}
-
-export {
-  removeScopeFromUserTransaction,
-  removeUserFromScope,
-  removeScopeFromUser
-}
+export { removeScopeFromUserTransaction }

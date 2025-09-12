@@ -1,15 +1,24 @@
+import { UTCDate } from '@date-fns/utc'
+
 import { transactionOptions } from '../../../constants/transaction-options.js'
 
-async function withMongoTransaction(request, fn) {
-  const { mongoClient, logger } = request
-  const session = mongoClient.startSession()
-  try {
-    return await session.withTransaction(() => fn(), transactionOptions)
-  } catch (error) {
-    logger.error({ error }, `Transaction aborted due to: ${error.message}`)
-    throw error
-  } finally {
-    await session.endSession()
+/**
+ * Higher-order function, that wraps a function in a MongoDB transaction and provides db, session,  and logger
+ *
+ * @param {import('@hapi/hapi').Request} request
+ * @returns {function(function, import('mongodb').TransactionOptions): Promise<*>}
+ */
+function withMongoTransaction(request) {
+  return (fn, options = transactionOptions) => {
+    const { db, mongoClient, logger } = request
+    const now = new UTCDate()
+
+    return mongoClient.withSession(async (session) =>
+      session.withTransaction(
+        async () => fn({ db, session, now, logger }),
+        options
+      )
+    )
   }
 }
 
