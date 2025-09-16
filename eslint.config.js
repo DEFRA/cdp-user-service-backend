@@ -35,15 +35,7 @@ export default [
       parser: tsParser,
       sourceType: 'module',
       globals: {
-        document: true,
-        KeyboardEvent: true,
-        Element: true,
-        HTMLElement: true,
-        location: true,
-        window: true,
-        localStorage: true,
-        fetchMock: true,
-        Option: true
+        fetchMock: true
       },
       parserOptions: {
         project: ['./tsconfig.json'],
