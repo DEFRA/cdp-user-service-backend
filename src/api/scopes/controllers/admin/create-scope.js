@@ -1,9 +1,9 @@
 import Joi from 'joi'
 import Boom from '@hapi/boom'
+import { scopes, scopeKind } from '@defra/cdp-validation-kit'
 
 import { createScope } from '../../helpers/create-scope.js'
 import { scopeNameExists } from '../../helpers/scope-name-exists.js'
-import { scopes } from '@defra/cdp-validation-kit'
 
 const adminCreateScopeController = {
   options: {
@@ -14,10 +14,7 @@ const adminCreateScopeController = {
           .max(53)
           .regex(/^[A-Za-z0-9]+$/)
           .required(),
-        kind: Joi.array()
-          .items(Joi.string())
-          .has(Joi.string().valid('user', 'team', 'member')) // TODO add to validations
-          .required(),
+        kind: scopeKind,
         description: Joi.string().optional().max(256)
       })
     },

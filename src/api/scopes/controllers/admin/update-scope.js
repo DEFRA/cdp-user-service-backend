@@ -1,9 +1,9 @@
-import Joi from '../../../../helpers/extended-joi.js'
 import Boom from '@hapi/boom'
+import { scopeKind, scopes, statusCodes } from '@defra/cdp-validation-kit'
 
+import Joi from '../../../../helpers/extended-joi.js'
 import { updateScope } from '../../helpers/update-scope.js'
 import { scopeExists } from '../../helpers/scope-exists.js'
-import { scopes, statusCodes } from '@defra/cdp-validation-kit'
 
 const adminUpdateScopeController = {
   options: {
@@ -12,10 +12,7 @@ const adminUpdateScopeController = {
         scopeId: Joi.objectId().required()
       }),
       payload: Joi.object({
-        kind: Joi.array()
-          .items(Joi.string())
-          .has(Joi.string().valid('user', 'team', 'member'))
-          .required(),
+        kind: scopeKind,
         description: Joi.string().optional().max(256)
       })
     },
