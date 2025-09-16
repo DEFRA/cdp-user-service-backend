@@ -1,3 +1,4 @@
+import { UTCDate } from '@date-fns/utc'
 import Boom from '@hapi/boom'
 import {
   scopes,
@@ -7,11 +8,10 @@ import {
 } from '@defra/cdp-validation-kit'
 
 import Joi from '../../../helpers/extended-joi.js'
+import { getUser } from '../helpers/get-user.js'
+import { recordAudit } from '../../../helpers/audit/record-audit.js'
 import { getScopeByName } from '../../scopes/helpers/get-scope-by-name.js'
 import { removeScopeFromMemberTransaction } from '../../../helpers/mongo/transactions/scope/remove-scope-from-member-transaction.js'
-import { UTCDate } from '@date-fns/utc'
-import { recordAudit } from '../../../helpers/audit/record-audit.js'
-import { getUser } from '../helpers/get-user.js'
 
 const removeBreakGlassFromMemberController = {
   options: {
@@ -44,28 +44,29 @@ const removeBreakGlassFromMemberController = {
 
     const scopeName = 'breakGlass'
     const breakGlassScope = await getScopeByName(request.db, scopeName)
-    const scope = await removeScopeFromMemberTransaction(
+    const scope = await removeScopeFromMemberTransaction({
       request,
       userId,
-      breakGlassScope?.scopeId?.toHexString(),
+      scopeId: breakGlassScope?.scopeId?.toHexString(),
       teamId
-    )
+    })
+
     const user = await getUser(request.db, userId)
     const team = user?.teams.find((t) => t.teamId === teamId)
 
-    const utcDateNow = new UTCDate()
+    const now = new UTCDate()
     await recordAudit({
       category: scopeName,
       action: 'Removed',
       performedBy: requestor,
-      performedAt: utcDateNow,
+      performedAt: now,
       details: {
         user: {
           userId: user.userId,
-          displayName: user?.name
+          displayName: user.name
         },
         team,
-        endDate: utcDateNow
+        endDate: now
       }
     })
 

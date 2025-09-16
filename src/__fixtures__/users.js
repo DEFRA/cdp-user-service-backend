@@ -131,12 +131,23 @@ const userPostgresFixture = {
   ]
 }
 
+const userTenantWithoutTeamFixture = {
+  _id: 'd4f4c751-50e2-4d39-96e3-19b9974b04a5',
+  name: 'Fred Tenant User',
+  email: 'fred.tenant.user@defra.onmicrosoft.com',
+  createdAt: '2024-09-28T13:55:42.049Z',
+  updatedAt: '2025-07-15T09:56:32.809Z',
+  teams: [],
+  scopes: []
+}
+
 export {
   userAdminFixture,
   userAdminWithTeamBreakGlassFixture,
   userAdminOtherFixture,
   userAdminWithTestAsTenantFixture,
   userTenantFixture,
+  userTenantWithoutTeamFixture,
   userPostgresFixture,
   memberWithGranularScopesFixture
 }

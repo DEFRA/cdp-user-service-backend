@@ -1,6 +1,7 @@
 import { ObjectId } from 'mongodb'
 
 import { createServer } from '../../server.js'
+import { collections } from '../../../../test-helpers/constants.js'
 import { platformTeamFixture } from '../../../__fixtures__/teams.js'
 import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
 import {
@@ -32,11 +33,11 @@ describe('GET:/teams/{teamId}', () => {
 
   describe('When a team is in the DB', () => {
     beforeEach(async () => {
-      await replaceOneTestHelper('teams', platformTeamFixture)
+      await replaceOneTestHelper(collections.team, platformTeamFixture)
     })
 
     afterEach(async () => {
-      await deleteManyTestHelper('teams')
+      await deleteManyTestHelper([collections.team])
     })
 
     test('Should provide expected response', async () => {

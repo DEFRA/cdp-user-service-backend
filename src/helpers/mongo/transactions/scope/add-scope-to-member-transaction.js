@@ -4,7 +4,7 @@ import { UTCDate } from '@date-fns/utc'
 import { withMongoTransaction } from '../with-mongo-transaction.js'
 import { removeNil } from '../../../remove-nil.js'
 
-async function addScopeToMemberTransaction({
+function addScopeToMemberTransaction({
   request,
   userId,
   userName,
@@ -17,111 +17,98 @@ async function addScopeToMemberTransaction({
   requestor,
   reason
 }) {
-  const db = request.db
-  const utcDateNow = new UTCDate()
+  const mongoTransaction = withMongoTransaction(request)
 
-  return withMongoTransaction(request, async () => {
-    await removeOldScopesFromUser({ db, userId, scopeName, utcDateNow })
-
-    await addScopeToUser({
+  return mongoTransaction(async ({ db, session }) => {
+    await removeOldScopesFromUser({
       db,
+      session,
       userId,
-      scopeId,
-      scopeName,
-      teamId,
-      teamName,
-      startDate,
-      endDate,
-      requestor,
-      reason,
-      utcDateNow
+      scopeName
     })
 
-    await removeOldMembersFromScope({ db, scopeId, userId, utcDateNow })
+    await addScopeToMember({
+      db,
+      session,
+      userId,
+      scopeId,
+      values: {
+        scopeName,
+        teamId,
+        teamName,
+        startDate,
+        endDate,
+        requestor,
+        reason
+      }
+    })
+
+    await removeOldMembersFromScope({
+      db,
+      session,
+      scopeId,
+      userId
+    })
 
     return addMemberToScope({
       db,
-      values: { userId, userName, teamId, teamName, startDate, endDate },
+      session,
       scopeId,
-      utcDateNow
+      values: { userId, userName, teamId, teamName, startDate, endDate }
     })
   })
 }
 
-async function removeOldScopesFromUser({ db, userId, scopeName, utcDateNow }) {
-  await db.collection('users').updateOne(
-    { _id: userId },
-    {
-      $pull: {
-        scopes: {
-          scopeName,
-          endDate: { $lt: utcDateNow }
-        }
-      },
-      $set: { updatedAt: utcDateNow }
-    }
-  )
-}
-
-async function addScopeToUser({
-  db,
-  userId,
-  scopeId,
-  scopeName,
-  teamId,
-  teamName,
-  startDate,
-  endDate,
-  requestor,
-  reason,
-  utcDateNow
-}) {
-  await db.collection('users').findOneAndUpdate(
+function addScopeToMember({ db, session, userId, scopeId, values }) {
+  return db.collection('users').findOneAndUpdate(
     { _id: userId },
     {
       $addToSet: {
         scopes: removeNil({
           scopeId: new ObjectId(scopeId),
-          scopeName,
-          teamId,
-          teamName,
-          startDate,
-          endDate,
-          requestor,
-          reason
+          ...values
         })
       },
-      $set: { updatedAt: utcDateNow }
+      $currentDate: { updatedAt: true }
     },
     {
       upsert: false,
-      returnDocument: 'after'
+      returnDocument: 'after',
+      session
     }
   )
 }
 
-function addMemberToScope({ db, values, scopeId, utcDateNow }) {
+function removeOldScopesFromUser({ db, session, userId, scopeName }) {
+  return db.collection('users').updateOne(
+    { _id: userId },
+    {
+      $pull: { scopes: { scopeName, endDate: { $lt: new UTCDate() } } },
+      $currentDate: { updatedAt: true }
+    },
+    { session }
+  )
+}
+
+function addMemberToScope({ db, session, scopeId, values }) {
   return db.collection('scopes').findOneAndUpdate(
     { _id: new ObjectId(scopeId) },
     {
       $addToSet: { members: removeNil(values) },
-      $set: { updatedAt: utcDateNow }
-    }
+      $currentDate: { updatedAt: true }
+    },
+    { session }
   )
 }
 
-async function removeOldMembersFromScope({ db, scopeId, userId, utcDateNow }) {
-  await db.collection('scopes').updateOne(
+function removeOldMembersFromScope({ db, session, scopeId, userId }) {
+  return db.collection('scopes').updateOne(
     { _id: new ObjectId(scopeId) },
     {
-      $pull: {
-        members: {
-          userId,
-          endDate: { $lt: utcDateNow }
-        }
-      },
-      $set: { updatedAt: utcDateNow }
-    }
+      $pull: { members: { userId, endDate: { $lt: new UTCDate() } } },
+      $currentDate: { updatedAt: true }
+    },
+    { session }
   )
 }
 

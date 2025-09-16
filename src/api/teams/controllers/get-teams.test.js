@@ -1,6 +1,7 @@
 import { ObjectId } from 'mongodb'
 
 import { createServer } from '../../server.js'
+import { collections } from '../../../../test-helpers/constants.js'
 import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
 import {
   deleteMany,
@@ -35,14 +36,14 @@ describe('GET:/teams', () => {
 
   describe('When teams are in the DB', () => {
     beforeEach(async () => {
-      await replaceManyTestHelper('teams', [
+      await replaceManyTestHelper(collections.team, [
         platformTeamFixture,
         tenantTeamFixture
       ])
     })
 
     afterEach(async () => {
-      await deleteManyTestHelper('teams')
+      await deleteManyTestHelper([collections.team])
     })
 
     test('Should provide expected response', async () => {
@@ -217,7 +218,7 @@ describe('GET:/teams', () => {
 
   describe('When NO teams are in the DB', () => {
     beforeEach(async () => {
-      await deleteManyTestHelper('teams')
+      await deleteManyTestHelper([collections.team])
     })
 
     test('Should provide expected response', async () => {

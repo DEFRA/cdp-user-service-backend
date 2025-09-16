@@ -1,4 +1,8 @@
+import { ObjectId } from 'mongodb'
+
 import { createServer } from '../../server.js'
+import { collections } from '../../../../test-helpers/constants.js'
+import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
 import {
   deleteMany,
   replaceMany
@@ -7,7 +11,6 @@ import {
   userAdminFixture,
   userTenantFixture
 } from '../../../__fixtures__/users.js'
-import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
 import {
   adminScopeFixture,
   breakGlassScopeFixture,
@@ -16,7 +19,6 @@ import {
   terminalScopeFixture,
   testAsTenantScopeFixture
 } from '../../../__fixtures__/scopes.js'
-import { ObjectId } from 'mongodb'
 import {
   platformTeamFixture,
   tenantTeamFixture
@@ -46,15 +48,15 @@ describe('GET:/users', () => {
 
   describe('When users are in the DB', () => {
     beforeEach(async () => {
-      await replaceManyTestHelper('users', [
+      await replaceManyTestHelper(collections.user, [
         userAdminFixture,
         userTenantFixture
       ])
-      await replaceManyTestHelper('teams', [
+      await replaceManyTestHelper(collections.team, [
         platformTeamFixture,
         tenantTeamFixture
       ])
-      await replaceManyTestHelper('scopes', [
+      await replaceManyTestHelper(collections.scope, [
         externalTestScopeFixture,
         postgresScopeFixture,
         terminalScopeFixture,
@@ -65,8 +67,8 @@ describe('GET:/users', () => {
     })
 
     afterEach(async () => {
-      await deleteManyTestHelper('users')
-      await deleteManyTestHelper('scopes')
+      await deleteManyTestHelper([collections.user])
+      await deleteManyTestHelper([collections.scope])
     })
 
     test('Should provide expected response', async () => {
@@ -198,7 +200,7 @@ describe('GET:/users', () => {
 
   describe('When NO users are in the DB', () => {
     beforeEach(async () => {
-      await deleteManyTestHelper('users')
+      await deleteManyTestHelper([collections.user])
     })
 
     test('Should provide expected response', async () => {

@@ -22,14 +22,12 @@ function replaceMany(db) {
 
 // Simple mongo deleteMany wrapper test helper to reduce boilerplate
 function deleteMany(db) {
-  return (value) => {
-    const collectionArray = Array.isArray(value) ? value : [value]
-    const collectionPromises = collectionArray.map((collection) =>
-      db.collection(collection).deleteMany({})
+  return (value) =>
+    Promise.all(
+      value.map((collection) =>
+        db.collection(collection).deleteMany({}, { writeConcern: { w: 1 } })
+      )
     )
-
-    return Promise.all(collectionPromises)
-  }
 }
 
 export { replaceOne, replaceMany, deleteMany }

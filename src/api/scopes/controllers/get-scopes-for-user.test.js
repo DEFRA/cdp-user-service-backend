@@ -1,4 +1,8 @@
+import { scopes } from '@defra/cdp-validation-kit'
+
 import { createServer } from '../../server.js'
+import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
+import { collections } from '../../../../test-helpers/constants.js'
 import {
   deleteMany,
   replaceMany
@@ -15,6 +19,7 @@ import {
   terminalScopeFixture,
   testAsTenantScopeFixture
 } from '../../../__fixtures__/scopes.js'
+
 import {
   userAdminFixture,
   userAdminWithTestAsTenantFixture,
@@ -22,13 +27,9 @@ import {
   userTenantFixture,
   memberWithGranularScopesFixture
 } from '../../../__fixtures__/users.js'
-import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
-import { scopes } from '@defra/cdp-validation-kit'
 
 describe('GET:/scopes', () => {
-  let server
-  let replaceManyTestHelper
-  let deleteManyTestHelper
+  let server, replaceManyTestHelper, deleteManyTestHelper
 
   beforeAll(async () => {
     vi.useFakeTimers()
@@ -43,18 +44,18 @@ describe('GET:/scopes', () => {
   })
 
   beforeEach(async () => {
-    await replaceManyTestHelper('users', [
+    await replaceManyTestHelper(collections.user, [
       userAdminFixture,
       userTenantFixture,
       userPostgresFixture,
       userAdminWithTestAsTenantFixture,
       memberWithGranularScopesFixture
     ])
-    await replaceManyTestHelper('teams', [
+    await replaceManyTestHelper(collections.team, [
       platformTeamFixture,
       tenantTeamFixture
     ])
-    await replaceManyTestHelper('scopes', [
+    await replaceManyTestHelper(collections.scope, [
       externalTestScopeFixture,
       postgresScopeFixture,
       terminalScopeFixture,
@@ -65,7 +66,11 @@ describe('GET:/scopes', () => {
   })
 
   afterEach(async () => {
-    await deleteManyTestHelper(['users', 'teams', 'scopes'])
+    await deleteManyTestHelper([
+      collections.user,
+      collections.team,
+      collections.scope
+    ])
   })
 
   afterAll(() => {

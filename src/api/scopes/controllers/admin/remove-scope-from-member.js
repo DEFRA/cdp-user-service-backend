@@ -31,12 +31,12 @@ const adminRemoveScopeFromMemberController = {
     const scopeId = params.scopeId
     const teamId = params.teamId
 
-    const scope = await removeScopeFromMemberTransaction(
+    const scope = await removeScopeFromMemberTransaction({
       request,
       userId,
       scopeId,
       teamId
-    )
+    })
     return h.response(scope).code(200)
   }
 }

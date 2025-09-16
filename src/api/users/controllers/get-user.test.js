@@ -1,12 +1,14 @@
+import { ObjectId } from 'mongodb'
+
 import { createServer } from '../../server.js'
 import { userAdminFixture } from '../../../__fixtures__/users.js'
+import { collections } from '../../../../test-helpers/constants.js'
+import { platformTeamFixture } from '../../../__fixtures__/teams.js'
+import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
 import {
   deleteMany,
   replaceOne
 } from '../../../../test-helpers/mongo-helpers.js'
-import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
-import { ObjectId } from 'mongodb'
-import { platformTeamFixture } from '../../../__fixtures__/teams.js'
 
 describe('GET:/users/{userId}', () => {
   let server
@@ -32,12 +34,12 @@ describe('GET:/users/{userId}', () => {
 
   describe('When a user is in the DB', () => {
     beforeEach(async () => {
-      await replaceOneTestHelper('users', userAdminFixture)
-      await replaceOneTestHelper('teams', platformTeamFixture)
+      await replaceOneTestHelper(collections.user, userAdminFixture)
+      await replaceOneTestHelper(collections.team, platformTeamFixture)
     })
 
     afterEach(async () => {
-      await deleteManyTestHelper('users')
+      await deleteManyTestHelper([collections.user])
     })
 
     test('Should provide expected response', async () => {

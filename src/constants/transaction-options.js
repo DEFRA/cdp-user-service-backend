@@ -1,5 +1,9 @@
+import { config } from '../config/config.js'
+
+const { mongoOptions } = config.get('mongo')
+
 const transactionOptions = {
-  readPreference: 'primary',
+  ...mongoOptions,
   readConcern: { level: 'local' },
   writeConcern: { w: 'majority' }
 }

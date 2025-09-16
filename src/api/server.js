@@ -6,7 +6,7 @@ import Vision from '@hapi/vision'
 import { azureOidc } from '../helpers/azure-oidc.js'
 import { config } from '../config/config.js'
 import { failAction } from '../helpers/fail-action.js'
-import { mongoPlugin } from '../helpers/mongodb.js'
+import { mongoDb } from '../helpers/mongodb.js'
 import { msGraphPlugin } from '../helpers/ms-graph.js'
 import { octokitPlugin } from '../helpers/octokit.js'
 import { setupProxy } from '../helpers/proxy.js'
@@ -64,10 +64,7 @@ async function createServer(configOverrides = {}) {
   await server.register([
     pulse,
     azureOidc,
-    {
-      plugin: mongoPlugin,
-      options: config.get('mongo')
-    },
+    { plugin: mongoDb.plugin, options: config.get('mongo') },
     msGraphPlugin,
     octokitPlugin,
     router
