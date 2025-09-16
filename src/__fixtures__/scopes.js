@@ -13,6 +13,7 @@ const externalTestScopeFixture = {
       teamName: 'Platform'
     }
   ],
+  members: [],
   createdAt: '2024-12-04T08:11:00.441Z',
   updatedAt: '2024-12-04T08:17:06.797Z'
 }
@@ -30,6 +31,7 @@ const postgresScopeFixture = {
       teamName: 'AnimalsAndPlants'
     }
   ],
+  members: [],
   createdAt: '2024-12-05T14:29:16.437Z',
   updatedAt: '2024-12-05T14:29:16.437Z'
 }
@@ -47,6 +49,7 @@ const terminalScopeFixture = {
       teamName: 'Platform'
     }
   ],
+  members: [],
   createdAt: '2024-12-05T17:42:01.063Z',
   updatedAt: '2024-12-05T17:42:01.063Z'
 }
@@ -64,6 +67,7 @@ const breakGlassScopeFixture = {
       teamName: 'Platform'
     }
   ],
+  members: [],
   createdAt: '2024-12-05T17:42:30.508Z',
   updatedAt: '2024-12-06T17:42:30.508Z'
 }
@@ -75,13 +79,14 @@ const canGrantBreakGlassScopeFixture = {
   kind: ['member'],
   description:
     "Tenant user is allowed to provide team members with the 'breakGlass' permission",
+  users: [],
   teams: [
     {
       teamId: 'animalsandplants',
       teamName: 'AnimalsAndPlants'
     }
   ],
-  users: [],
+  members: [],
   createdAt: '2025-08-15T11:08:29.452Z',
   updatedAt: '2025-08-22T21:12:12.205Z'
 }
@@ -99,6 +104,7 @@ const adminScopeFixture = {
       teamName: 'Platform'
     }
   ],
+  members: [],
   createdAt: '2024-12-05T17:42:30.508Z',
   updatedAt: '2024-12-05T17:42:30.508Z'
 }
@@ -111,6 +117,7 @@ const testAsTenantScopeFixture = {
   description: 'Allows team to test the Portal without admin rights',
   users: [],
   teams: [],
+  members: [],
   createdAt: '2024-12-05T17:42:30.508Z',
   updatedAt: '2024-12-05T17:42:30.508Z'
 }

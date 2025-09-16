@@ -2,16 +2,16 @@ import { ObjectId } from 'mongodb'
 
 import { withMongoTransaction } from '../with-mongo-transaction.js'
 
-async function addScopeToUserTransaction({
+function addScopeToUserTransaction({
   request,
   userId,
   userName,
   scopeId,
   scopeName
 }) {
-  const db = request.db
+  const mongoTransaction = withMongoTransaction(request)
 
-  return await withMongoTransaction(request, async () => {
+  return mongoTransaction(async ({ db, session }) => {
     await db.collection('users').findOneAndUpdate(
       { _id: userId },
       {
@@ -21,25 +21,32 @@ async function addScopeToUserTransaction({
             scopeName
           }
         },
-        $set: { updatedAt: new Date() }
+        $currentDate: { updatedAt: true }
       },
       {
         upsert: false,
-        returnDocument: 'after'
+        returnDocument: 'after',
+        session
       }
     )
 
-    return addUserToScope(db, { userId, userName }, scopeId)
+    return addUserToScope({
+      db,
+      session,
+      values: { userId, userName },
+      scopeId
+    })
   })
 }
 
-function addUserToScope(db, values, scopeId) {
+function addUserToScope({ db, session, values, scopeId }) {
   return db.collection('scopes').findOneAndUpdate(
     { _id: new ObjectId(scopeId) },
     {
       $addToSet: { users: values },
-      $set: { updatedAt: new Date() }
-    }
+      $currentDate: { updatedAt: true }
+    },
+    { session }
   )
 }
 

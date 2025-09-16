@@ -32,14 +32,14 @@ const tenantTeamFixture = {
   alertEmailAddresses: [],
   createdAt: '2024-12-03T12:26:10.858Z',
   updatedAt: '2024-12-04T08:17:06.796Z',
-  users: ['b7606810-f0c6-4db7-b067-ba730ef706e8'], // userTwoFixture
+  users: ['b7606810-f0c6-4db7-b067-ba730ef706e8'], // userTenantFixture
   scopes: [
     { scopeId: new ObjectId('6751b8bcfd2ecb117d6277de'), scopeName: 'postgres' }
   ]
 }
 
 const teamWithoutUsers = {
-  _id: 'f09b562e-ed21-428c-a617-8d1bb1f32720',
+  _id: 'teamwithoutusers',
   name: 'TeamWithoutUsers',
   description: 'An team with no users',
   github: 'cdp-demo1',

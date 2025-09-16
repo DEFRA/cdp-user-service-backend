@@ -1,6 +1,7 @@
 import Boom from '@hapi/boom'
 
 import { addScopeToUser } from './add-scope-to-user.js'
+import { collections } from '../../../../test-helpers/constants.js'
 import { connectToTestMongoDB } from '../../../../test-helpers/connect-to-test-mongodb.js'
 import { addScopeToUserTransaction } from '../../../helpers/mongo/transactions/scope/add-scope-to-user-transaction.js'
 import {
@@ -21,31 +22,30 @@ import {
 
 vi.mock('@azure/identity')
 
-const userCollection = 'users'
-const scopeCollection = 'scopes'
 const request = {}
-let replaceOneTestHelper
+let replaceOneTestHelper, deleteManyTestHelper
 
 vi.mock(
   '../../../helpers/mongo/transactions/scope/add-scope-to-user-transaction.js'
 )
 
-beforeAll(async () => {
-  const { db, client } = await connectToTestMongoDB()
-  request.db = db
-  request.client = client
-
-  replaceOneTestHelper = replaceOne(db)
-})
-
-beforeEach(async () => {
-  await deleteMany(request.db)([userCollection, scopeCollection])
-})
-
 describe('#addScopeToUser', () => {
+  beforeAll(async () => {
+    const { db, mongoClient } = await connectToTestMongoDB()
+    request.db = db
+    request.mongoClient = mongoClient
+
+    replaceOneTestHelper = replaceOne(db)
+    deleteManyTestHelper = deleteMany(db)
+  })
+
+  beforeEach(async () => {
+    await deleteManyTestHelper([collections.user, collections.scope])
+  })
+
   test('Successfully adds scope to user when all conditions are met', async () => {
-    await replaceOneTestHelper(userCollection, userAdminOtherFixture)
-    await replaceOneTestHelper(scopeCollection, breakGlassScopeFixture)
+    await replaceOneTestHelper(collections.user, userAdminOtherFixture)
+    await replaceOneTestHelper(collections.scope, breakGlassScopeFixture)
 
     await addScopeToUser({
       request,
@@ -63,8 +63,8 @@ describe('#addScopeToUser', () => {
   })
 
   test('Should throw not found error when user does not exist', async () => {
-    await replaceOneTestHelper(userCollection, userTenantFixture)
-    await replaceOneTestHelper(scopeCollection, breakGlassScopeFixture)
+    await replaceOneTestHelper(collections.user, userTenantFixture)
+    await replaceOneTestHelper(collections.scope, breakGlassScopeFixture)
 
     await expect(
       addScopeToUser({
@@ -76,8 +76,8 @@ describe('#addScopeToUser', () => {
   })
 
   test('Should throw not found error when scope does not exist', async () => {
-    await replaceOneTestHelper(userCollection, userTenantFixture)
-    await replaceOneTestHelper(scopeCollection, breakGlassScopeFixture)
+    await replaceOneTestHelper(collections.user, userTenantFixture)
+    await replaceOneTestHelper(collections.scope, breakGlassScopeFixture)
 
     await expect(
       addScopeToUser({
@@ -89,8 +89,8 @@ describe('#addScopeToUser', () => {
   })
 
   test('Throws bad request error when scope cannot be applied to a user', async () => {
-    await replaceOneTestHelper(userCollection, userAdminFixture)
-    await replaceOneTestHelper(scopeCollection, terminalScopeFixture)
+    await replaceOneTestHelper(collections.user, userAdminFixture)
+    await replaceOneTestHelper(collections.scope, terminalScopeFixture)
 
     await expect(
       addScopeToUser({
@@ -103,10 +103,10 @@ describe('#addScopeToUser', () => {
 
   test('Throws bad request error when user already has this scope assigned', async () => {
     await replaceOneTestHelper(
-      userCollection,
+      collections.user,
       userAdminWithTeamBreakGlassFixture
     )
-    await replaceOneTestHelper(scopeCollection, breakGlassScopeFixture)
+    await replaceOneTestHelper(collections.scope, breakGlassScopeFixture)
 
     await expect(
       addScopeToUser({

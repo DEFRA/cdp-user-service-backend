@@ -1,7 +1,10 @@
 import Boom from '@hapi/boom'
 import { addYears } from 'date-fns'
 
+import { addScopeToMember } from './add-scope-to-member.js'
+import { collections } from '../../../../test-helpers/constants.js'
 import { connectToTestMongoDB } from '../../../../test-helpers/connect-to-test-mongodb.js'
+import { addScopeToMemberTransaction } from '../../../helpers/mongo/transactions/scope/add-scope-to-member-transaction.js'
 import {
   replaceOne,
   deleteMany
@@ -22,14 +25,9 @@ import {
   breakGlassScopeFixture,
   terminalScopeFixture
 } from '../../../__fixtures__/scopes.js'
-import { addScopeToMember } from './add-scope-to-member.js'
-import { addScopeToMemberTransaction } from '../../../helpers/mongo/transactions/scope/add-scope-to-member-transaction.js'
 
 vi.mock('@azure/identity')
 
-const userCollection = 'users'
-const scopeCollection = 'scopes'
-const teamCollection = 'teams'
 const request = {}
 let replaceOneTestHelper
 
@@ -49,18 +47,18 @@ beforeAll(async () => {
   vi.useFakeTimers()
   vi.setSystemTime(new Date('2025-08-12T14:16:00.000Z'))
 
-  const { db, client } = await connectToTestMongoDB()
+  const { db, mongoClient } = await connectToTestMongoDB()
   request.db = db
-  request.client = client
+  request.mongoClient = mongoClient
 
   replaceOneTestHelper = replaceOne(db)
 })
 
 beforeEach(async () => {
   await deleteMany(request.db)([
-    userCollection,
-    scopeCollection,
-    teamCollection
+    collections.user,
+    collections.scope,
+    collections.team
   ])
 })
 
@@ -68,9 +66,12 @@ describe('#addScopeToMember', () => {
   test('Successfully adds scope with teamId to member when all conditions are met', async () => {
     const { startDate, endDate } = generateDates()
 
-    await replaceOneTestHelper(userCollection, userAdminOtherFixture)
-    await replaceOneTestHelper(scopeCollection, canGrantBreakGlassScopeFixture)
-    await replaceOneTestHelper(teamCollection, platformTeamFixture)
+    await replaceOneTestHelper(collections.user, userAdminOtherFixture)
+    await replaceOneTestHelper(
+      collections.scope,
+      canGrantBreakGlassScopeFixture
+    )
+    await replaceOneTestHelper(collections.team, platformTeamFixture)
 
     await addScopeToMember({
       request,
@@ -95,9 +96,12 @@ describe('#addScopeToMember', () => {
   })
 
   test('Successfully adds scope to member without dates', async () => {
-    await replaceOneTestHelper(userCollection, userAdminOtherFixture)
-    await replaceOneTestHelper(scopeCollection, canGrantBreakGlassScopeFixture)
-    await replaceOneTestHelper(teamCollection, platformTeamFixture)
+    await replaceOneTestHelper(collections.user, userAdminOtherFixture)
+    await replaceOneTestHelper(
+      collections.scope,
+      canGrantBreakGlassScopeFixture
+    )
+    await replaceOneTestHelper(collections.team, platformTeamFixture)
 
     await addScopeToMember({
       request,
@@ -120,9 +124,9 @@ describe('#addScopeToMember', () => {
   test('Should throw not found error when user does not exist', async () => {
     const { startDate, endDate } = generateDates()
 
-    await replaceOneTestHelper(userCollection, userTenantFixture)
-    await replaceOneTestHelper(scopeCollection, breakGlassScopeFixture)
-    await replaceOneTestHelper(teamCollection, tenantTeamFixture)
+    await replaceOneTestHelper(collections.user, userTenantFixture)
+    await replaceOneTestHelper(collections.scope, breakGlassScopeFixture)
+    await replaceOneTestHelper(collections.team, tenantTeamFixture)
 
     await expect(
       addScopeToMember({
@@ -139,9 +143,9 @@ describe('#addScopeToMember', () => {
   test('Should throw not found error when scope does not exist', async () => {
     const { startDate, endDate } = generateDates()
 
-    await replaceOneTestHelper(userCollection, userTenantFixture)
-    await replaceOneTestHelper(scopeCollection, breakGlassScopeFixture)
-    await replaceOneTestHelper(teamCollection, tenantTeamFixture)
+    await replaceOneTestHelper(collections.user, userTenantFixture)
+    await replaceOneTestHelper(collections.scope, breakGlassScopeFixture)
+    await replaceOneTestHelper(collections.team, tenantTeamFixture)
 
     await expect(
       addScopeToMember({
@@ -158,9 +162,9 @@ describe('#addScopeToMember', () => {
   test('Throws not found error when team does not exist', async () => {
     const { startDate, endDate } = generateDates()
 
-    await replaceOneTestHelper(userCollection, userAdminFixture)
-    await replaceOneTestHelper(scopeCollection, adminScopeFixture)
-    await replaceOneTestHelper(teamCollection, tenantTeamFixture)
+    await replaceOneTestHelper(collections.user, userAdminFixture)
+    await replaceOneTestHelper(collections.scope, adminScopeFixture)
+    await replaceOneTestHelper(collections.team, tenantTeamFixture)
 
     await expect(
       addScopeToMember({
@@ -177,9 +181,9 @@ describe('#addScopeToMember', () => {
   test('Throws bad request error when user is not a member of the team', async () => {
     const { startDate, endDate } = generateDates()
 
-    await replaceOneTestHelper(userCollection, userAdminFixture)
-    await replaceOneTestHelper(scopeCollection, adminScopeFixture)
-    await replaceOneTestHelper(teamCollection, tenantTeamFixture)
+    await replaceOneTestHelper(collections.user, userAdminFixture)
+    await replaceOneTestHelper(collections.scope, adminScopeFixture)
+    await replaceOneTestHelper(collections.team, tenantTeamFixture)
 
     await expect(
       addScopeToMember({
@@ -194,9 +198,9 @@ describe('#addScopeToMember', () => {
   })
 
   test('Throws bad request error when start date is after or equal to end date', async () => {
-    await replaceOneTestHelper(userCollection, userAdminFixture)
-    await replaceOneTestHelper(scopeCollection, adminScopeFixture)
-    await replaceOneTestHelper(teamCollection, platformTeamFixture)
+    await replaceOneTestHelper(collections.user, userAdminFixture)
+    await replaceOneTestHelper(collections.scope, adminScopeFixture)
+    await replaceOneTestHelper(collections.team, platformTeamFixture)
 
     await expect(
       addScopeToMember({
@@ -213,9 +217,9 @@ describe('#addScopeToMember', () => {
   test('Throws bad request error when scope cannot be applied to a user', async () => {
     const { startDate, endDate } = generateDates()
 
-    await replaceOneTestHelper(userCollection, userAdminFixture)
-    await replaceOneTestHelper(scopeCollection, terminalScopeFixture)
-    await replaceOneTestHelper(teamCollection, platformTeamFixture)
+    await replaceOneTestHelper(collections.user, userAdminFixture)
+    await replaceOneTestHelper(collections.scope, terminalScopeFixture)
+    await replaceOneTestHelper(collections.team, platformTeamFixture)
 
     await expect(
       addScopeToMember({
@@ -234,9 +238,15 @@ describe('#addScopeToMember', () => {
   test('Throws bad request error when user already has this scope assigned with team id and its active', async () => {
     const { startDate, endDate } = generateDates()
 
-    await replaceOneTestHelper(userCollection, memberWithGranularScopesFixture)
-    await replaceOneTestHelper(scopeCollection, canGrantBreakGlassScopeFixture)
-    await replaceOneTestHelper(teamCollection, tenantTeamFixture)
+    await replaceOneTestHelper(
+      collections.user,
+      memberWithGranularScopesFixture
+    )
+    await replaceOneTestHelper(
+      collections.scope,
+      canGrantBreakGlassScopeFixture
+    )
+    await replaceOneTestHelper(collections.team, tenantTeamFixture)
 
     await expect(
       addScopeToMember({

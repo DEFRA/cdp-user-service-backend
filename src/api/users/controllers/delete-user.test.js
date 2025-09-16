@@ -1,6 +1,9 @@
 import { Client } from '@microsoft/microsoft-graph-client'
 
 import { createServer } from '../../server.js'
+import { scopes } from '@defra/cdp-validation-kit'
+import { collections } from '../../../../test-helpers/constants.js'
+import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
 import {
   deleteMany,
   replaceOne
@@ -13,8 +16,6 @@ import {
   platformTeamFixture,
   tenantTeamFixture
 } from '../../../__fixtures__/teams.js'
-import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
-import { scopes } from '@defra/cdp-validation-kit'
 
 vi.mock('@microsoft/microsoft-graph-client')
 vi.mock('@azure/identity')
@@ -77,8 +78,8 @@ describe('DELETE:/users/{userId}', () => {
     let deleteUserResponse
 
     beforeEach(async () => {
-      await replaceOneTestHelper('users', userAdminFixture)
-      await replaceOneTestHelper('teams', tenantTeamFixture)
+      await replaceOneTestHelper(collections.user, userAdminFixture)
+      await replaceOneTestHelper(collections.team, tenantTeamFixture)
 
       deleteUserResponse = await deleteUserEndpoint(
         `/users/${userAdminFixture._id}`
@@ -86,7 +87,7 @@ describe('DELETE:/users/{userId}', () => {
     })
 
     afterEach(async () => {
-      await deleteManyTestHelper(['users', 'teams'])
+      await deleteManyTestHelper([collections.user, collections.team])
     })
 
     test('Should have deleted the user from DB', async () => {
@@ -123,8 +124,8 @@ describe('DELETE:/users/{userId}', () => {
       })
       mockMsGraph.delete.mockResolvedValue()
 
-      await replaceOneTestHelper('users', userAdminFixture)
-      await replaceOneTestHelper('teams', platformTeamFixture)
+      await replaceOneTestHelper(collections.user, userAdminFixture)
+      await replaceOneTestHelper(collections.team, platformTeamFixture)
 
       deleteUserResponse = await deleteUserEndpoint(
         `/users/${userAdminFixture._id}`
@@ -132,7 +133,7 @@ describe('DELETE:/users/{userId}', () => {
     })
 
     afterEach(async () => {
-      await deleteManyTestHelper(['users', 'teams'])
+      await deleteManyTestHelper([collections.user, collections.team])
     })
 
     test('User should have been removed from DB', async () => {
@@ -183,8 +184,8 @@ describe('DELETE:/users/{userId}', () => {
     beforeEach(async () => {
       mockMsGraph.get.mockReturnValue({ value: [] })
 
-      await replaceOneTestHelper('users', userTenantFixture)
-      await replaceOneTestHelper('teams', tenantTeamFixture)
+      await replaceOneTestHelper(collections.user, userTenantFixture)
+      await replaceOneTestHelper(collections.team, tenantTeamFixture)
 
       deleteUserResponse = await deleteUserEndpoint(
         `/users/${userTenantFixture._id}`
@@ -192,7 +193,7 @@ describe('DELETE:/users/{userId}', () => {
     })
 
     afterEach(async () => {
-      await deleteManyTestHelper(['users', 'teams'])
+      await deleteManyTestHelper([collections.user, collections.team])
     })
 
     test('Should not call AAD to remove user from a group', () => {
