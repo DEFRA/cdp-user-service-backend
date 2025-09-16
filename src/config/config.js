@@ -88,9 +88,9 @@ const config = convict({
   },
   mongo: {
     mongoUrl: {
-      doc: 'URI for mongodb',
+      doc: 'URL for mongodb',
       format: String,
-      default: 'mongodb://127.0.0.1:27017/',
+      default: 'mongodb://127.0.0.1:27017/?replicaSet=rs0',
       env: 'MONGO_URI'
     },
     databaseName: {
@@ -114,7 +114,7 @@ const config = convict({
           'secondaryPreferred',
           'nearest'
         ],
-        default: 'secondary'
+        default: 'secondaryPreferred'
       }
     }
   },
