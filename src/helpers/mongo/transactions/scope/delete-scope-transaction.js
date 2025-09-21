@@ -20,33 +20,30 @@ async function deleteScopeTransaction({ request, scopeId }) {
 
   await mongoTransaction(async ({ db, session }) => {
     // Remove scope from teams
-    const scopeTeamsPromises = scope.teams.map((team) =>
-      removeScopeFromTeam({
+    for (const team of scope.teams) {
+      await removeScopeFromTeam({
         db,
         session,
         teamId: team.teamId,
         scopeId,
         scopeName: scope.value
       })
-    )
-    await Promise.all(scopeTeamsPromises)
+    }
 
     // Remove scope from users
-    const scopeUsersPromises = scope.users.map((user) =>
-      removeScopeFromUser({ db, session, scopeId, userId: user.userId })
-    )
-    await Promise.all(scopeUsersPromises)
+    for (const user of scope.users) {
+      await removeScopeFromUser({ db, session, scopeId, userId: user.userId })
+    }
 
     // Remove scope from members
-    const scopeMembersPromises = scope.members.map((member) =>
-      removeScopeFromUsers({
+    for (const member of scope.members) {
+      await removeScopeFromUsers({
         db,
         session,
         scopeId,
         userId: member.userId
       })
-    )
-    await Promise.all(scopeMembersPromises)
+    }
 
     // Remove any left-over scopes from users. For instance scopes assigned due to team membership
     await removeScopeFromUsers({ db, session, scopeId })

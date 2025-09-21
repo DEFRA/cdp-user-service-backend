@@ -19,22 +19,20 @@ async function deleteUserTransaction({ request, userId }) {
 
   await mongoTransaction(async ({ db, session }) => {
     if (user.teams?.length) {
-      const removeFromTeams = user.teams.map((team) =>
-        removeUserFromTeam({
+      for (const { teamId } of user.teams) {
+        await removeUserFromTeam({
           db,
           session,
           userId: user.userId,
-          teamId: team.teamId
+          teamId
         })
-      )
-
-      await Promise.all(removeFromTeams)
+      }
     }
 
     if (user.scopes?.length) {
-      const removeFromScopes = user.scopes.map((scope) => {
+      for (const scope of user.scopes) {
         if (scope.teamId) {
-          return removeMemberFromScopeMembers({
+          await removeMemberFromScopeMembers({
             db,
             session,
             userId,
@@ -43,14 +41,13 @@ async function deleteUserTransaction({ request, userId }) {
           })
         }
 
-        return removeUserFromScope({
+        await removeUserFromScope({
           db,
           session,
           userId: user.userId,
           scopeId: scope.scopeId
         })
-      })
-      await Promise.all(removeFromScopes)
+      }
     }
 
     const { deletedCount } = await db

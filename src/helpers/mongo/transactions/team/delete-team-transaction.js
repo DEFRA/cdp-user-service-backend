@@ -20,26 +20,24 @@ async function deleteTeamTransaction({ request, teamId }) {
   await mongoTransaction(async ({ db, session }) => {
     if (team.users?.length) {
       // Remove any team scopes from user.teams
-      const removeTeamScopesFromTeamUsers = team.users.map((user) =>
-        removeTeamScopesFromUser({
+      for (const user of team.users) {
+        await removeTeamScopesFromUser({
           db,
           session,
           userId: user.userId,
           teamId
         })
-      )
-      await Promise.all(removeTeamScopesFromTeamUsers)
+      }
 
       // Remove the team from user.teams
-      const removeTeamFromUsers = team.users.map((user) =>
-        removeTeamFromUser({
+      for (const user of team.users) {
+        await removeTeamFromUser({
           db,
           session,
           userId: user.userId,
           teamId: team.teamId
         })
-      )
-      await Promise.all(removeTeamFromUsers)
+      }
     }
 
     // Remove any scopes in scope.teams or scope.members for this team
