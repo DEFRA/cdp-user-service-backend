@@ -114,7 +114,7 @@ const config = convict({
           'secondaryPreferred',
           'nearest'
         ],
-        default: 'secondaryPreferred'
+        default: 'primary'
       }
     }
   },
