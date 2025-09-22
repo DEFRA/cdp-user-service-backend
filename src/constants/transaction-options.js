@@ -4,7 +4,7 @@ const { mongoOptions } = config.get('mongo')
 
 const transactionOptions = {
   ...mongoOptions,
-  readConcern: { level: 'local' },
+  readConcern: { level: 'majority' },
   writeConcern: { w: 'majority' }
 }
 
