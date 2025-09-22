@@ -103,7 +103,9 @@ const config = convict({
       retryWrites: {
         doc: 'enable mongo write retries',
         format: Boolean,
-        default: false
+        nullable: true,
+        default: null,
+        env: 'MONGO_RETRY_WRITES'
       },
       readPreference: {
         doc: 'mongo read preference',
@@ -114,7 +116,9 @@ const config = convict({
           'secondaryPreferred',
           'nearest'
         ],
-        default: 'primary'
+        nullable: true,
+        default: null,
+        env: 'MONGO_READ_PREFERENCE'
       }
     }
   },
