@@ -52,7 +52,7 @@
     "convict": "6.2.4",
     "date-fns": "4.1.0",
     "global-agent": "3.0.0",
-    "hapi-pino": "12.1.0",
+    "hapi-pino": "13.0.0",
     "hapi-pulse": "3.0.1",
     "https-proxy-agent": "7.0.6",
     "joi": "18.0.1",
@@ -60,7 +60,7 @@
     "lodash": "4.17.21",
     "mongo-locks": "3.0.2",
     "mongodb": "6.19.0",
-    "pino": "9.9.5",
+    "pino": "9.13.1",
     "tsx": "4.20.5",
     "undici": "7.16.0"
   },
