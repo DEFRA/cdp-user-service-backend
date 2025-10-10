@@ -61,7 +61,7 @@
     "mongo-locks": "3.0.2",
     "mongodb": "6.19.0",
     "pino": "9.9.5",
-    "tsx": "4.20.5",
+    "tsx": "4.20.6",
     "undici": "7.16.0"
   },
   "devDependencies": {
