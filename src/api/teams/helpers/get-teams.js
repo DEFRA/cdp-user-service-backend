@@ -7,19 +7,25 @@ async function getTeams(db, queryParams) {
   const name = queryParams?.name
   const hasGithub = queryParams?.hasGithub
 
+  const filter = {}
+
   if (!isNil(name)) {
+    filter.name = name
+
     stages.push({
       $match: { name }
     })
   }
 
   if (!isNil(hasGithub)) {
+    filter.github = { $exists: hasGithub }
     stages.push({
       $match: { github: { $exists: hasGithub } }
     })
   }
 
   if (!isNil(query)) {
+    filter.name = { $regex: query, $options: 'i' }
     stages.push({
       $match: {
         $or: [{ name: { $regex: query, $options: 'i' } }]

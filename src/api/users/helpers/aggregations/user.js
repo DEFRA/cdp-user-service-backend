@@ -20,6 +20,16 @@ export const userAggregation = [
     }
   },
   { $set: { userId: '$_id' } },
+  { $set: { subject: '$_id' } },
+  {
+    $graphLookup: {
+      from: 'relationships',
+      startWith: '$subject',
+      connectFromField: 'object',
+      connectToField: 'subject',
+      as: 'relationships'
+    }
+  },
   {
     $project: {
       _id: 0,
@@ -28,6 +38,7 @@ export const userAggregation = [
       github: 1,
       createdAt: 1,
       updatedAt: 1,
+      relationships: 1,
       teams: {
         $map: {
           input: '$teamDocs',
