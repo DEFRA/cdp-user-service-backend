@@ -61,13 +61,13 @@
     "mongo-locks": "3.0.2",
     "mongodb": "6.20.0",
     "pino": "9.9.5",
-    "tsx": "4.20.5",
+    "tsx": "4.20.6",
     "undici": "7.16.0"
   },
   "devDependencies": {
     "@babel/cli": "7.28.3",
-    "@babel/core": "7.28.4",
-    "@babel/preset-env": "7.28.3",
+    "@babel/core": "7.28.5",
+    "@babel/preset-env": "7.28.5",
     "@types/convict": "6.1.6",
     "@types/eslint": "9.6.1",
     "@types/lodash": "4.17.20",
