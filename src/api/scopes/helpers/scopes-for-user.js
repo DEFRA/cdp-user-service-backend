@@ -1,5 +1,4 @@
 import { UTCDate } from '@date-fns/utc'
-
 import { getUser } from '../../users/helpers/get-user.js'
 import { scopes } from '@defra/cdp-validation-kit'
 
@@ -9,19 +8,24 @@ async function scopesForUser(credentials, db) {
   const userId = credentials.id
   const user = await getUser(db, userId)
 
+  const nowUTC = new UTCDate()
+
   // user assigned scopes
   if (user) {
     scopeList.add(`user:${userId}`)
-    user.scopes.forEach((scope) => {
-      if (
-        scope.teamId !== undefined &&
-        (scope.endDate === undefined || scope.endDate >= new UTCDate())
-      ) {
-        scopeList.add(`permission:${scope.scopeName}:team:${scope.teamId}`)
-      } else {
-        scopeList.add(`permission:${scope.scopeName}`)
-      }
-    })
+    user.scopes
+      .filter(
+        (scope) =>
+          (scope.startDate === undefined || scope.startDate <= nowUTC) &&
+          (scope.endDate === undefined || scope.endDate >= nowUTC)
+      )
+      .forEach((scope) => {
+        if (scope.teamId !== undefined) {
+          scopeList.add(`permission:${scope.scopeName}:team:${scope.teamId}`)
+        } else {
+          scopeList.add(`permission:${scope.scopeName}`)
+        }
+      })
   }
 
   // team assigned scopes
