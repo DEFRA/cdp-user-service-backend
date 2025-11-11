@@ -62,6 +62,10 @@ beforeEach(async () => {
   ])
 })
 
+afterAll(() => {
+  vi.useRealTimers()
+})
+
 describe('#addScopeToMember', () => {
   test('Successfully adds scope with teamId to member when all conditions are met', async () => {
     const { startDate, endDate } = generateDates()
@@ -259,6 +263,64 @@ describe('#addScopeToMember', () => {
       })
     ).rejects.toThrow(
       Boom.badRequest('Team member already has this scope assigned')
+    )
+  })
+
+  test('Should throw error when startDate is set and endDate is "undefined"', async () => {
+    const { startDate } = generateDates()
+
+    await replaceOneTestHelper(
+      collections.user,
+      memberWithGranularScopesFixture
+    )
+    await replaceOneTestHelper(
+      collections.scope,
+      canGrantBreakGlassScopeFixture
+    )
+    await replaceOneTestHelper(collections.team, tenantTeamFixture)
+
+    await expect(
+      addScopeToMember({
+        request,
+        userId: memberWithGranularScopesFixture._id,
+        scopeId: canGrantBreakGlassScopeFixture._id.toHexString(),
+        teamId: tenantTeamFixture._id,
+        startDate,
+        endDate: undefined
+      })
+    ).rejects.toThrow(
+      Boom.badRequest(
+        'Start and End date must either both be set or both be empty'
+      )
+    )
+  })
+
+  test('Should throw error when date pair not provided', async () => {
+    const { endDate } = generateDates()
+
+    await replaceOneTestHelper(
+      collections.user,
+      memberWithGranularScopesFixture
+    )
+    await replaceOneTestHelper(
+      collections.scope,
+      canGrantBreakGlassScopeFixture
+    )
+    await replaceOneTestHelper(collections.team, tenantTeamFixture)
+
+    await expect(
+      addScopeToMember({
+        request,
+        userId: memberWithGranularScopesFixture._id,
+        scopeId: canGrantBreakGlassScopeFixture._id.toHexString(),
+        teamId: tenantTeamFixture._id,
+        startDate: undefined,
+        endDate
+      })
+    ).rejects.toThrow(
+      Boom.badRequest(
+        'Start and End date must either both be set or both be empty'
+      )
     )
   })
 })

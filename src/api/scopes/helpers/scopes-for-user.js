@@ -1,6 +1,14 @@
-import { UTCDate } from '@date-fns/utc'
-import { getUser } from '../../users/helpers/get-user.js'
+import { isPast, isFuture } from 'date-fns'
 import { scopes } from '@defra/cdp-validation-kit'
+
+import { getUser } from '../../users/helpers/get-user.js'
+
+function includeValidScopes({ startDate, endDate }) {
+  const withoutDates = startDate === undefined && endDate === undefined
+  const isActive = isPast(startDate) && isFuture(endDate)
+
+  return withoutDates || isActive
+}
 
 async function scopesForUser(credentials, db) {
   const scopeList = new Set()
@@ -8,24 +16,18 @@ async function scopesForUser(credentials, db) {
   const userId = credentials.id
   const user = await getUser(db, userId)
 
-  const nowUTC = new UTCDate()
-
   // user assigned scopes
   if (user) {
     scopeList.add(`user:${userId}`)
-    user.scopes
-      .filter(
-        (scope) =>
-          (scope.startDate === undefined || scope.startDate <= nowUTC) &&
-          (scope.endDate === undefined || scope.endDate >= nowUTC)
-      )
-      .forEach((scope) => {
-        if (scope.teamId !== undefined) {
-          scopeList.add(`permission:${scope.scopeName}:team:${scope.teamId}`)
-        } else {
-          scopeList.add(`permission:${scope.scopeName}`)
-        }
-      })
+
+    const validUserScopes = user.scopes.filter(includeValidScopes)
+    for (const scope of validUserScopes) {
+      if (scope.teamId) {
+        scopeList.add(`permission:${scope.scopeName}:team:${scope.teamId}`)
+      } else {
+        scopeList.add(`permission:${scope.scopeName}`)
+      }
+    }
   }
 
   // team assigned scopes
