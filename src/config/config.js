@@ -83,7 +83,8 @@ const config = convict({
       format: Array,
       default: isProduction
         ? ['req.headers.authorization', 'req.headers.cookie', 'res.headers']
-        : []
+        : [],
+      env: 'LOG_REDACT'
     }
   },
   mongo: {
@@ -104,8 +105,9 @@ const config = convict({
         doc: 'enable mongo write retries',
         format: Boolean,
         nullable: true,
-        default: null,
-        env: 'MONGO_RETRY_WRITES'
+        default: null
+        // env: 'MONGO_RETRY_WRITES'
+        // This retryWrites, defaults to true in the MongoDB driver
       },
       readPreference: {
         doc: 'mongo read preference',
@@ -117,8 +119,9 @@ const config = convict({
           'nearest'
         ],
         nullable: true,
-        default: null,
-        env: 'MONGO_READ_PREFERENCE'
+        default: null
+        // env: 'MONGO_READ_PREFERENCE'
+        // This readPreference, defaults to primary in the MongoDB driver
       }
     }
   },
