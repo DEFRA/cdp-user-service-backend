@@ -47,6 +47,10 @@ describe('#deleteTeamTransaction', () => {
     ])
   })
 
+  afterAll(() => {
+    vi.useRealTimers()
+  })
+
   test('Should delete team, team scopes and remove members', async () => {
     const { db } = request
     const { _id: userId, name: userName } = userTenantWithoutTeamFixture

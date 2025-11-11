@@ -36,6 +36,10 @@ describe('#removeScopeFromMemberTransaction', () => {
     ])
   })
 
+  afterAll(() => {
+    vi.useRealTimers()
+  })
+
   test('Should remove currently active team based scope from a member', async () => {
     const { db } = request
     const { _id: scopeId, value: scopeName } = externalTestScopeFixture

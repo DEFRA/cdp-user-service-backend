@@ -9,6 +9,7 @@ import {
 } from '../../../../test-helpers/mongo-helpers.js'
 import {
   platformTeamFixture,
+  teamWithoutUsers,
   tenantTeamFixture
 } from '../../../__fixtures__/teams.js'
 import {
@@ -25,7 +26,8 @@ import {
   userAdminWithTestAsTenantFixture,
   userPostgresFixture,
   userTenantFixture,
-  memberWithGranularScopesFixture
+  memberWithGranularScopesFixture,
+  memberWithExpiredBreakGlassFixture
 } from '../../../__fixtures__/users.js'
 
 describe('GET:/scopes', () => {
@@ -49,11 +51,13 @@ describe('GET:/scopes', () => {
       userTenantFixture,
       userPostgresFixture,
       userAdminWithTestAsTenantFixture,
-      memberWithGranularScopesFixture
+      memberWithGranularScopesFixture,
+      memberWithExpiredBreakGlassFixture
     ])
     await replaceManyTestHelper(collections.team, [
       platformTeamFixture,
-      tenantTeamFixture
+      tenantTeamFixture,
+      teamWithoutUsers
     ])
     await replaceManyTestHelper(collections.scope, [
       externalTestScopeFixture,
@@ -251,6 +255,35 @@ describe('GET:/scopes', () => {
           isTenant: true
         }
       })
+    })
+
+    test('Should not return expired scopes', async () => {
+      const { result, statusCode, statusMessage } = await scopesEndpoint({
+        id: memberWithExpiredBreakGlassFixture._id
+      })
+
+      expect(statusCode).toBe(200)
+      expect(statusMessage).toBe('OK')
+
+      expect(result).toEqual({
+        scopes: [
+          'permission:canGrantBreakGlass:team:teamwithoutusers',
+          'permission:serviceOwner:team:teamwithoutusers',
+          'permission:tenant',
+          `team:${teamWithoutUsers._id}`,
+          `user:${memberWithExpiredBreakGlassFixture._id}`
+        ].sort(),
+        scopeFlags: {
+          hasBreakGlass: false,
+          isAdmin: false,
+          isTenant: true
+        }
+      })
+
+      expect(result.scopes).not.toContain(
+        'permission:breakGlass:team:teamwithoutusers'
+      )
+      expect(result.scopes).not.toContain('permission:breakGlass')
     })
   })
 

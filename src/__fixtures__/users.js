@@ -101,6 +101,34 @@ const memberWithGranularScopesFixture = {
   ]
 }
 
+const memberWithExpiredBreakGlassFixture = {
+  _id: '62bb35d2-d4f2-4cf6-abd3-262d997276yy',
+  name: 'TenantWithExpiredBreakGlass',
+  email: 'tenant.withexpiredbreakglass@defra.onmicrosoft.com',
+  createdAt: '2023-10-28T13:53:44.948Z',
+  updatedAt: '2024-01-03T12:26:28.965Z',
+  github: 'tenantWithExpiredBreakGlass',
+  teams: ['teamwithoutusers'],
+  scopes: [
+    {
+      scopeId: new ObjectId('6751e606a171ebffac3cc9dd'), // EXPIRED breakGlass for tenant team
+      scopeName: 'breakGlass',
+      teamId: 'teamwithoutusers',
+      teamName: 'TeamWithoutUsers',
+      startDate: new Date('2025-08-11T08:01:00.000Z'),
+      endDate: new Date('2025-08-11T10:01:00.000Z')
+    },
+    {
+      scopeId: new ObjectId('689f152d37490a37b1bbf51f'), // canGrantBreakGlass for tenant team for 2 hours
+      scopeName: 'canGrantBreakGlass',
+      teamId: 'teamwithoutusers',
+      teamName: 'TeamWithoutUsers',
+      startDate: new Date('2025-08-12T13:16:00.000Z'),
+      endDate: new Date('2025-08-12T15:16:00.000Z')
+    }
+  ]
+}
+
 const userTenantFixture = {
   _id: 'b7606810-f0c6-4db7-b067-ba730ef706e8',
   name: 'Tenant User',
@@ -149,5 +177,6 @@ export {
   userTenantFixture,
   userTenantWithoutTeamFixture,
   userPostgresFixture,
-  memberWithGranularScopesFixture
+  memberWithGranularScopesFixture,
+  memberWithExpiredBreakGlassFixture
 }

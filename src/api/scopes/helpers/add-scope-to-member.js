@@ -31,6 +31,15 @@ export async function addScopeToMember({
     throw Boom.badRequest('User is not a member of the team')
   }
 
+  if (
+    (startDate && endDate === undefined) ||
+    (startDate === undefined && endDate)
+  ) {
+    throw Boom.badRequest(
+      'Start and End date must either both be set or both be empty'
+    )
+  }
+
   if (startDate && endDate && startDate.getTime() >= endDate.getTime()) {
     throw Boom.badRequest('Start date must be before End date')
   }

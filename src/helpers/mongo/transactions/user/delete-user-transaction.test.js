@@ -47,6 +47,10 @@ describe('#deleteUserTransaction', () => {
     ])
   })
 
+  afterAll(() => {
+    vi.useRealTimers()
+  })
+
   test('Should delete user', async () => {
     const { db } = request
     const { _id: userId, name: userName } = userTenantWithoutTeamFixture

@@ -31,6 +31,10 @@ describe('#addScopeToMemberTransaction', () => {
     await deleteManyTestHelper([collections.scope, collections.user])
   })
 
+  afterAll(() => {
+    vi.useRealTimers()
+  })
+
   test('Should add scope to member', async () => {
     const { db } = request
     const { _id: scopeId, value: scopeName } = externalTestScopeFixture
