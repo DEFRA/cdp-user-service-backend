@@ -1,4 +1,5 @@
 import Joi from 'joi'
+import { scopes } from '@defra/cdp-validation-kit'
 const collection = 'relationships'
 
 const ruleLaunchTerminal = {
@@ -34,6 +35,62 @@ const ruleLaunchTerminal = {
       ]
     }
   ]
+}
+
+const codePolicy = {
+  name: 'deploy-service',
+  apply: async function (ctx) {
+    const user = 'user:' + ctx.user
+    const team = 'team:' + ctx.team
+    const env = ctd.environment
+
+    const isAdmin = await checkPathAny(ctx.db, user, 'permission:admin')
+    if (isAdmin) {
+      return {
+        allow: true,
+        reason: 'is admin'
+      }
+    }
+
+    if (env === 'management' || env === 'infra-dev') {
+      return {
+        allow: false,
+        reason: 'only admins can deploy to this env'
+      }
+    }
+
+    if (env === 'ext-test') {
+      const hasExtTestPermission = await checkPathAny(
+        ctx.db,
+        user,
+        'permission:ext-test'
+      )
+
+      if (!hasExtTestPermission) {
+        return {
+          allow: false,
+          reason: 'user requires ext-test permission'
+        }
+      }
+    }
+
+    const isMember = await checkDirect(ctx.db, user, {
+      relation: 'member',
+      object: team
+    })
+
+    if (isMember) {
+      return {
+        allow: true,
+        reason: 'user is member of team'
+      }
+    }
+
+    return {
+      allow: false,
+      reason: 'user does not own this service'
+    }
+  }
 }
 
 async function createIndexes(db) {
@@ -115,6 +172,68 @@ async function checkPathAny(db, subject, target, terminalRel) {
   return false
 }
 
+async function getPerms(db, userId) {
+  const result = await db
+    .collection(collection)
+    .aggregate([
+      {
+        $match: {
+          subject: `user:${userId}`,
+          $or: [{ end: { $gt: new Date() } }, { end: null }]
+        }
+      },
+      {
+        $graphLookup: {
+          from: collection,
+          startWith: '$object',
+          connectFromField: 'object',
+          connectToField: 'subject',
+          as: 'path',
+          maxDepth: 5,
+          restrictSearchWithMatch: {
+            $and: [
+              { $or: [{ start: { $gte: new Date() } }, { start: null }] },
+              { $or: [{ end: { $gt: new Date() } }, { end: null }] }
+            ]
+          }
+        }
+      }
+    ])
+    .toArray()
+
+  const perms = new Set()
+  perms.add(`user:${userId}`)
+
+  const scopeFlags = {
+    isAdmin: false,
+    isTenant: false,
+    hasBreakGlass: false
+  }
+
+  for (const r of result) {
+    if (r.relation === 'breakglass') {
+      perms.add(`${scopes.breakGlass}:${r.object}`)
+      scopeFlags.hasBreakGlass = true
+    }
+
+    perms.add(r.object)
+    if (r.relation === 'member') {
+      scopeFlags.isTenant = true
+    }
+
+    r.path.forEach((p) => {
+      perms.add(p.object)
+    })
+  }
+
+  scopeFlags.isAdmin = perms.has('permission:admin')
+
+  return {
+    scopes: Array.from(perms).sort((a, b) => a.localeCompare(b)),
+    scopeFlags
+  }
+}
+
 async function drawPerms(db, subject) {
   const result = await db
     .collection(collection)
@@ -129,7 +248,13 @@ async function drawPerms(db, subject) {
           connectFromField: 'object',
           connectToField: 'subject',
           as: 'path',
-          maxDepth: 5
+          maxDepth: 5,
+          restrictSearchWithMatch: {
+            $and: [
+              { $or: [{ start: { $gte: new Date() } }, { start: null }] },
+              { $or: [{ end: { $gt: new Date() } }, { end: null }] }
+            ]
+          }
         }
       }
     ])
@@ -138,7 +263,9 @@ async function drawPerms(db, subject) {
   const seen = new Set()
   const ids = new Set()
 
-  for (const r of result) {
+  for (const r of result.filter(
+    (r) => !r.object.startsWith('permission:serviceOwner:') // dupe of team:id
+  )) {
     ids.add(r.subject)
     ids.add(r.object)
     seen.add(`${r.subject} -->|${r.relation}| ${r.object}`)
@@ -149,35 +276,37 @@ async function drawPerms(db, subject) {
     })
   }
 
-  console.log('subgraph team')
+  let mermaid = 'flowchart TD\n'
+  mermaid += 'subgraph team\n'
   ids.forEach((id) => {
-    if (id.startsWith('team:')) console.log('    ' + id)
+    if (id.startsWith('team:')) mermaid += '    ' + id + '\n'
   })
-  console.log('end')
+  mermaid += 'end\n'
 
-  console.log('subgraph user')
+  mermaid += 'subgraph user\n'
   ids.forEach((id) => {
-    if (id.startsWith('user:')) console.log('    ' + id)
+    if (id.startsWith('user:')) mermaid += '    ' + id + '\n'
   })
-  console.log('end')
+  mermaid += 'end\n'
 
-  console.log('subgraph perm')
+  mermaid += 'subgraph permissions\n'
   ids.forEach((id) => {
-    if (id.startsWith('perm:')) console.log('    ' + id)
+    if (id.startsWith('permission:')) mermaid += '    ' + id + '\n'
   })
-  console.log('end')
+  mermaid += 'end\n'
 
-  console.log('subgraph service')
+  /*mermaid += 'subgraph service\n'
   ids.forEach((id) => {
-    if (id.startsWith('service:')) console.log('    ' + id)
+    if (id.startsWith('service:')) mermaid += '    ' + id + '\n'
   })
-  console.log('end')
-
+  mermaid += 'end\n'
+*/
   seen.forEach((p) => {
-    console.log(p.replaceAll('@', '_'))
+    mermaid += p.replaceAll('@', '_') + '\n'
   })
+  mermaid += '\n'
 
-  return false
+  return mermaid
 }
 
 async function findMembersOfTeam(db, team) {
@@ -190,26 +319,48 @@ async function findMembersOfTeam(db, team) {
 }
 
 async function backfill(db) {
+  await db.collection('relationships').drop()
   const users = await db.collection('users').find().toArray()
   const scopes = await db.collection('scopes').find().toArray()
 
   for (const user of users) {
     for (const team of user.teams) {
-      await addRelationship(db, user._id, 'member', team)
+      await addRelationship(db, `user:${user._id}`, 'member', `team:${team}`)
+      await addRelationship(
+        db,
+        `user:${user._id}`,
+        'member',
+        `permission:serviceOwner:team:${team}`
+      )
     }
   }
 
   for (const scope of scopes) {
     for (const user of scope.users) {
-      await addRelationship(db, user.userId, 'granted', scope.value)
+      await addRelationship(
+        db,
+        `user:${user.userId}`,
+        'granted',
+        `permission:${scope.value}`
+      )
     }
 
     for (const team of scope.teams) {
-      await addRelationship(db, team.teamId, 'granted', scope.value)
+      await addRelationship(
+        db,
+        `team:${team.teamId}`,
+        'granted',
+        `permission:${scope.value}`
+      )
     }
 
     for (const member of scope.members) {
-      await addRelationship(db, member.userId, member.value, member.teamId)
+      await addRelationship(
+        db,
+        `user:${member.userId}`,
+        member.value,
+        `team:${member.teamId}`
+      )
     }
   }
 }
@@ -222,5 +373,6 @@ export {
   findMembersOfTeam,
   createIndexes,
   drawPerms,
-  backfill
+  backfill,
+  getPerms
 }

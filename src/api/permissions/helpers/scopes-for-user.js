@@ -15,7 +15,7 @@ async function scopesForUser(credentials, db) {
 
   const userId = credentials.id
   const user = await getUser(db, userId)
-
+/*
   user.relationships.forEach((r) => {
     switch (r.relation) {
       case 'member':
@@ -29,7 +29,7 @@ async function scopesForUser(credentials, db) {
         scopeList.add(`permission:${r.object}:team:${r.object}`)
         break
     }
-  })
+  })*/
 
   // user assigned scopes
   if (user) {
@@ -66,7 +66,7 @@ async function scopesForUser(credentials, db) {
   }
 
   const hasBreakGlass = user?.hasBreakGlass ?? false
-  console.log(scopeList)
+
   return {
     scopes: Array.from(scopeList).sort((a, b) => a.localeCompare(b)),
     scopeFlags: {
