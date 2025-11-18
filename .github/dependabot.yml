@@ -64,6 +64,7 @@ updates:
           - 'vitest-fetch-mock'
           - 'vitest-mongodb'
           - 'mongodb-memory-server-core'
+          - '@vitest/*'
 
       db:
         patterns:
