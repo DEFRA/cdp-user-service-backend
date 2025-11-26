@@ -1,11 +1,10 @@
 import { getScopesForUserController } from './controllers/get-scopes-for-user.js'
 import { getActiveBreakGlassScopeForUser } from './controllers/get-active-break-glass-scope-for-user.js'
 
-import { drawPerms , backfill } from './permissions.js'
 import {backfill, drawPerms, getPerms} from './permissions.js'
 import { policyCanDeployService } from './policies.js'
 import { canAccess } from './eval.js'
-import {scopesForUser} from "../scopes/helpers/scopes-for-user.js";
+import { scopesForUser } from '../scopes/helpers/scopes-for-user.js'
 
 const permissions = {
   plugin: {
@@ -24,16 +23,6 @@ const permissions = {
         },
         {
           method: 'GET',
-          path: '/auth/debug',
-          ...debug
-        },
-        {
-          method: 'GET',
-          path: '/auth/backfill',
-          ...backfillController
-        },
-        {
-          method: 'GET',
           path: '/auth/perms',
           ...perms
         },
@@ -41,6 +30,16 @@ const permissions = {
           method: 'GET',
           path: '/auth/graph',
           ...graph
+        },
+        {
+          method: 'GET',
+          path: '/auth/debug',
+          ...debug
+        },
+        {
+          method: 'GET',
+          path: '/auth/backfill',
+          ...backfillController
         }
       ])
     }
@@ -86,10 +85,8 @@ const perms = {
     const user = request.query.user
 
     const v2Perms = await getPerms(request.db, user)
-    const v1Perms = await  scopesForUser({id: user}, request.db)
-    return h
-      .response({v2:v2Perms, v1: v1Perms})
-      .code(200)
+    const v1Perms = await scopesForUser({ id: user }, request.db)
+    return h.response({ v2: v2Perms, v1: v1Perms }).code(200)
   }
 }
 
@@ -99,9 +96,7 @@ const graph = {
     const user = request.query.user
 
     const mermaid = await drawPerms(request.db, `user:${user}`)
-    return h
-      .response(mermaid)
-      .code(200)
+    return h.response(mermaid).code(200)
   }
 }
 

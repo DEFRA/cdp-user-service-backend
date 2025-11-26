@@ -179,4 +179,67 @@ describe('#removeScopeFromTeamTransaction', () => {
       .findOne({ _id: scopeId })
     expect(rolledBackScope.teams).toEqual(preTransactionScopeTeams)
   })
+
+  test('Removing scope for one team revokes users even when another team still grants it', async () => {
+    const { db } = request
+    const userId = userTenantWithoutTeamFixture._id
+    const { _id: scopeId, value: scopeName } = externalTestScopeFixture
+    const { _id: firstTeamId, name: firstTeamName } = teamWithoutUsers
+    const secondTeam = {
+      ...teamWithoutUsers,
+      _id: 'teamwithoutusers-two',
+      name: 'TeamWithoutUsersTwo',
+      users: [],
+      scopes: []
+    }
+
+    await replaceOneTestHelper(collections.user, userTenantWithoutTeamFixture)
+    await replaceOneTestHelper(collections.scope, externalTestScopeFixture)
+    await replaceOneTestHelper(collections.team, teamWithoutUsers)
+    await replaceOneTestHelper(collections.team, secondTeam)
+
+    await addScopeToTeamTransaction({
+      request,
+      teamId: firstTeamId,
+      teamName: firstTeamName,
+      scopeId,
+      scopeName
+    })
+    await addScopeToTeamTransaction({
+      request,
+      teamId: secondTeam._id,
+      teamName: secondTeam.name,
+      scopeId,
+      scopeName
+    })
+
+    await addUserToTeamTransaction(request, userId, firstTeamId)
+    await addUserToTeamTransaction(request, userId, secondTeam._id)
+
+    const initialUser = await db
+      .collection(collections.user)
+      .findOne({ _id: userId })
+    expect(initialUser.scopes).toEqual([{ scopeId, scopeName }])
+
+    await removeScopeFromTeamTransaction({
+      request,
+      teamId: firstTeamId,
+      teamName: firstTeamName,
+      scopeId,
+      scopeName
+    })
+
+    const updatedUser = await db
+      .collection(collections.user)
+      .findOne({ _id: userId })
+    expect(updatedUser.scopes).toEqual([{ scopeId, scopeName }])
+
+    const scope = await db
+      .collection(collections.scope)
+      .findOne({ _id: scopeId })
+    expect(scope.teams).toEqual([
+      ...externalTestScopeFixture.teams,
+      { teamId: secondTeam._id, teamName: secondTeam.name }
+    ])
+  })
 })

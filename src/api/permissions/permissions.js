@@ -1,97 +1,5 @@
-import Joi from 'joi'
 import { scopes } from '@defra/cdp-validation-kit'
 const collection = 'relationships'
-
-const ruleLaunchTerminal = {
-  name: 'service:terminal',
-  context: Joi.object({
-    service: Joi.string().required(),
-    team: Joi.string().required(),
-    environment: Joi.string().required()
-  }),
-  rules: (ctx) => [
-    {
-      and: [
-        isAdmin,
-        {
-          relation: 'breakglass',
-          object: `team:admin`,
-          if: ctx.environment === 'prod',
-          desc: 'Must have break-glass for admin'
-        }
-      ]
-    },
-    {
-      and: [
-        { relation: 'owns', object: ctx.service, desc: 'must own service' },
-        {
-          // for production, path to service must run via a break-glass relationship as well
-          // user:id -->|breakglass| team:id -->|owns| service:id
-          path: ['breakglass', 'owns', 'team:admin'],
-          object: `service:${ctx.service}`,
-          if: ctx.environment === 'prod',
-          desc: 'Must have break-glass for team'
-        }
-      ]
-    }
-  ]
-}
-
-const codePolicy = {
-  name: 'deploy-service',
-  apply: async function (ctx) {
-    const user = 'user:' + ctx.user
-    const team = 'team:' + ctx.team
-    const env = ctd.environment
-
-    const isAdmin = await checkPathAny(ctx.db, user, 'permission:admin')
-    if (isAdmin) {
-      return {
-        allow: true,
-        reason: 'is admin'
-      }
-    }
-
-    if (env === 'management' || env === 'infra-dev') {
-      return {
-        allow: false,
-        reason: 'only admins can deploy to this env'
-      }
-    }
-
-    if (env === 'ext-test') {
-      const hasExtTestPermission = await checkPathAny(
-        ctx.db,
-        user,
-        'permission:ext-test'
-      )
-
-      if (!hasExtTestPermission) {
-        return {
-          allow: false,
-          reason: 'user requires ext-test permission'
-        }
-      }
-    }
-
-    const isMember = await checkDirect(ctx.db, user, {
-      relation: 'member',
-      object: team
-    })
-
-    if (isMember) {
-      return {
-        allow: true,
-        reason: 'user is member of team'
-      }
-    }
-
-    return {
-      allow: false,
-      reason: 'user does not own this service'
-    }
-  }
-}
 
 async function createIndexes(db) {
   await db.collection(collection).createIndex({ subject: 1, object: 1 })
@@ -100,6 +8,7 @@ async function createIndexes(db) {
 async function addRelationship(db, subject, relation, object) {
   await db.collection(collection).insertOne({ subject, relation, object })
 
+  // { "principal": "user:alice", "action": "member", "resource": "team:7" }
   // { "subject": "user:alice", "relation": "member", "object": "team:7" }
   // { "subject": "team:7", "relation": "owner", "object": "service:123" }
   // { "subject": "user:alice", "relation": "has_perm", "object": "prod" }
