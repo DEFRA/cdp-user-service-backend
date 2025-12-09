@@ -65,11 +65,9 @@ async function syncTeams(db, teams) {
     }
   } else {
     // Avoid deleting all the teams if the payload is empty.
-    if (teams.length === 0) {
-      logger.warn(
-        'No teams in payload. This would delete everything which is probably not what we want.'
-      )
-    }
+    logger.warn(
+      'No teams in payload. This would delete everything which is probably not what we want.'
+    )
   }
 }
 

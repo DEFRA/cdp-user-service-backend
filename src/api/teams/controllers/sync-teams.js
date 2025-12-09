@@ -11,7 +11,9 @@ const syncTeamsController = {
   },
   handler: async (request, h) => {
     const teams = request.payload?.teams
-    if (!teams) throw Boom.badRequest('Missing team data')
+    if (!teams) {
+      throw Boom.badRequest('Missing team data')
+    }
     await syncTeams(request.db, teams)
     return h.response().code(statusCodes.ok)
   }
