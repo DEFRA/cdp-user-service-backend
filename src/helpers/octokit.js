@@ -28,11 +28,11 @@ const octokitPlugin = {
         request: { fetch: proxyFetch }
       }
 
-      const cfg = config.get('gitHubBaseUrl')
+      const cfg = config.get('github.baseUrl')
         ? {
             ...commonConfig,
             // Test Mode, for use with cdp-portal-stubs
-            baseUrl: config.get('gitHubBaseUrl')
+            baseUrl: config.get('github.baseUrl')
           }
         : commonConfig
 

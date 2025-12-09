@@ -4,9 +4,10 @@ import { createTeamValidationSchema } from '../helpers/create-team-validation-sc
 import { MongoErrors } from '../../../helpers/mongodb-errors.js'
 import { teamNameExists } from '../helpers/team-name-exists.js'
 import { gitHubTeamExists } from '../helpers/github/github-team-exists.js'
-import { createTeam } from '../helpers/create-team.js'
+import { createTeam, normalizeTeamName } from '../helpers/create-team.js'
 import { addSharedRepoAccess } from '../helpers/github/github-shared-repo-access.js'
 import { scopes } from '@defra/cdp-validation-kit'
+import { triggerCreateTeamWorkflow } from '../helpers/github/trigger-create-team-workflow.js'
 
 const createTeamController = {
   options: {
@@ -35,11 +36,23 @@ const createTeamController = {
       throw Boom.conflict('Team already exists')
     }
 
-    await addGithubSharedRepos(payload?.github, request)
+    try {
+      const triggerCreateTeamPayload = {
+        team_id: normalizeTeamName(payload.name),
+        name: payload.name,
+        description: payload.description,
+        service_code: (payload.serviceCodes ?? [])[0],
+        github: payload.github
+      }
+      await triggerCreateTeamWorkflow(request.octokit, triggerCreateTeamPayload)
+    } catch (error) {
+      request.logger.error(error)
+      // Non-fatal for now. Once we switch over to using cdp-tenant-config this will change.
+    }
 
     try {
       const team = await createTeam(request.db, dbTeam)
-
+      await addGithubSharedRepos(payload?.github, request)
       return h.response(team).code(201)
     } catch (error) {
       if (error.code === MongoErrors.DuplicateKey) {

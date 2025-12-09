@@ -12,6 +12,7 @@ import {
   deleteSharedRepoAccess
 } from '../helpers/github/github-shared-repo-access.js'
 import { scopes, statusCodes } from '@defra/cdp-validation-kit'
+import { triggerUpdateTeamWorkflow } from '../helpers/github/trigger-create-team-workflow.js'
 
 const updateTeamController = {
   options: {
@@ -41,14 +42,43 @@ const updateTeamController = {
       'alertEnvironments'
     ])
     await existingTeamInDb(updateFields?.$set?.name, request)
+    const updatedTeam = await updateTeam(request.db, teamId, updateFields)
     await updateGithubSharedRepos(
       existingTeam?.github,
       updateFields?.$set?.github,
       request
     )
-    const updatedTeam = await updateTeam(request.db, teamId, updateFields)
+    await triggerUpdateTeamWorkflow(
+      request.octokit,
+      buildWorkflowPayload(teamId, request?.payload)
+    )
+
     return h.response(updatedTeam).code(statusCodes.ok)
   }
+}
+
+function buildWorkflowPayload(teamId, update) {
+  const payload = {
+    team_id: teamId
+  }
+
+  if (update.name) {
+    payload.name = update.name
+  }
+
+  if (update.description) {
+    payload.description = update.description
+  }
+
+  if (update.serviceCodes) {
+    payload.service_code = (update.serviceCodes ?? [])[0]
+  }
+
+  if (update.github) {
+    payload.github = update.github
+  }
+
+  return payload
 }
 
 async function existingTeamInDb(name, request) {

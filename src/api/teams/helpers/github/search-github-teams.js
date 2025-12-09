@@ -1,7 +1,7 @@
 import { config } from '../../../../config/config.js'
 
 async function searchGitHubTeams(octokit, query) {
-  const org = config.get('gitHubOrg')
+  const org = config.get('github.org')
   const orgTeamsQuery = `
   query orgTeams($cursor: String, $orgName: String!) {
     organization(login: $orgName) {

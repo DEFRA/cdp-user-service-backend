@@ -209,17 +209,61 @@ const config = convict({
     env: 'GITHUB_APP_INSTALLATION_ID',
     default: '42703033'
   },
-  gitHubOrg: {
-    doc: 'GitHub Organisation',
-    format: String,
-    env: 'GITHUB_APP_ORG_ID',
-    default: 'DEFRA'
-  },
-  gitHubBaseUrl: {
-    doc: 'Override the github base url for local testing',
-    format: String,
-    env: 'GITHUB_BASE_URL',
-    default: ''
+  github: {
+    baseUrl: {
+      doc: 'Override the github base url for local testing',
+      format: String,
+      env: 'GITHUB_BASE_URL',
+      default: ''
+    },
+    org: {
+      doc: 'GitHub Organisation',
+      format: String,
+      env: 'GITHUB_APP_ORG_ID',
+      default: 'DEFRA'
+    },
+    cdpTenantConfigRepo: {
+      doc: 'Repo that holds teams/users/tenants',
+      format: String,
+      env: 'GITHUB_TENANT_CONFIG_REPO',
+      default: 'cdp-tenant-config'
+    },
+    createTeamWorkflow: {
+      doc: 'Create Team workflow',
+      format: String,
+      env: 'GITHUB_WORKFLOW_TEAM_CREATE',
+      default: 'create-team.yml'
+    },
+    updateTeamWorkflow: {
+      doc: 'Update Team workflow',
+      format: String,
+      env: 'GITHUB_WORKFLOW_TEAM_UPDATE',
+      default: 'update-team.yml'
+    },
+    removeTeamWorkflow: {
+      doc: 'Remove Team workflow',
+      format: String,
+      env: 'GITHUB_WORKFLOW_TEAM_DELETE',
+      default: 'remove-team.yml'
+    },
+    createUserWorkflow: {
+      doc: 'Create User workflow',
+      format: String,
+      env: 'GITHUB_WORKFLOW_USER_CREATE',
+      default: 'create-user.yml'
+    },
+    updateUserWorkflow: {
+      doc: 'Update User workflow',
+      format: String,
+      env: 'GITHUB_WORKFLOW_USER_UPDATE',
+      default: 'update-user.yml'
+    },
+    removeUserWorkflow: {
+      doc: 'Remove User workflow',
+      format: String,
+      env: 'GITHUB_WORKFLOW_USER_DELETE',
+      default: 'remove-user.yml'
+    }
   },
   oidcKeysUrl: {
     doc: 'Url to the oidc JWT keys endpoint',

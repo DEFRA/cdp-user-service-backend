@@ -1,7 +1,7 @@
 import { config } from '../../../config/config.js'
 
 async function gitHubUserExists(octokit, github) {
-  const org = config.get('gitHubOrg')
+  const org = config.get('github.org')
   const userExistsInOrgQuery = `
   query userExistsInOrg($user: String!, $orgName: String!) {
     user(login: $user) {
