@@ -7,6 +7,7 @@ import { getTeamController } from './controllers/get-team.js'
 import { getTeamsController } from './controllers/get-teams.js'
 import { removeUserFromTeamController } from './controllers/remove-user-from-team.js'
 import { updateTeamController } from './controllers/update-team.js'
+import { syncTeamsController } from './controllers/sync-teams.js'
 
 const teams = {
   plugin: {
@@ -57,6 +58,11 @@ const teams = {
           method: 'POST',
           path: '/shared-repos',
           ...addTeamToSharedReposController
+        },
+        {
+          method: 'POST',
+          path: '/sync/teams',
+          ...syncTeamsController
         }
       ])
     }

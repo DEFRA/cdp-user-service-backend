@@ -6,6 +6,7 @@ import {
 } from '@defra/cdp-validation-kit'
 
 import { deleteTeamTransaction } from '../../../helpers/mongo/transactions/team/delete-team-transaction.js'
+import { triggerRemoveTeamWorkflow } from '../helpers/github/trigger-create-team-workflow.js'
 
 const deleteTeamController = {
   options: {
@@ -22,8 +23,16 @@ const deleteTeamController = {
     }
   },
   handler: async (request, h) => {
-    await deleteTeamTransaction({ request, teamId: request.params.teamId })
+    try {
+      await triggerRemoveTeamWorkflow(request.octokit, {
+        team_id: request.params.teamId
+      })
+    } catch (error) {
+      request.logger.error(error, error.message)
+      // Non-fatal for now...
+    }
 
+    await deleteTeamTransaction({ request, teamId: request.params.teamId })
     return h.response().code(statusCodes.ok)
   }
 }

@@ -5,7 +5,7 @@ const logger = createLogger()
 
 // returns 204 response if team already has access
 const addSharedRepoAccess = async (octokit, githubTeam) => {
-  const orgName = config.get('gitHubOrg')
+  const orgName = config.get('github.org')
   const sharedRepos = config.get('sharedRepos')
 
   const octokitPromises = sharedRepos.map((repo) => {
@@ -29,7 +29,7 @@ const addSharedRepoAccess = async (octokit, githubTeam) => {
 
 // returns 204 response if team doesn't have access
 const deleteSharedRepoAccess = async (octokit, githubTeam) => {
-  const orgName = config.get('gitHubOrg')
+  const orgName = config.get('github.org')
   const sharedRepos = config.get('sharedRepos')
 
   const octokitPromises = sharedRepos.map((repo) => {

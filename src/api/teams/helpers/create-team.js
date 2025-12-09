@@ -9,7 +9,8 @@ async function createTeam(db, dbTeam) {
     ...removeNil(dbTeam),
     _id: normalizeTeamName(dbTeam.name),
     createdAt: utcDateNow,
-    updatedAt: utcDateNow
+    updatedAt: utcDateNow,
+    pending: true
   }
   const insertResult = await db.collection('teams').insertOne(newTeam)
   return await getTeam(db, insertResult.insertedId)
@@ -19,4 +20,4 @@ function normalizeTeamName(name) {
   return name.toLowerCase().trim()
 }
 
-export { createTeam }
+export { createTeam, normalizeTeamName }
