@@ -1,7 +1,7 @@
 import { syncTeamsValidationSchema } from './sync-teams-validation-schema.js'
 
-describe('#sync-teams-validation-schema', () => {
-  test('accepts teamId in correct format', () => {
+describe('#synTeamsValidationSchema', () => {
+  it('accepts teamId in correct format', () => {
     const valid = syncTeamsValidationSchema.validate({
       teams: [
         {

@@ -36,6 +36,12 @@ const octokitPlugin = {
           }
         : commonConfig
 
+      if (config.get('github.baseUrl')) {
+        server.logger.info(
+          `Overriding GitHub base URL: ${config.get('github.baseUrl')}`
+        )
+      }
+
       const OctokitExtra = Octokit.plugin(paginateGraphQL)
       const octokit = new OctokitExtra(cfg)
       server.decorate('request', 'octokit', octokit)
