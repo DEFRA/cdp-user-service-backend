@@ -13,7 +13,10 @@ const syncTeamsValidationSchema = Joi.object({
         name: teamNameValidator,
         description: Joi.string().allow(null),
         github: Joi.string().allow(null),
-        serviceCodes: Joi.array().items(serviceCodeValidator).optional()
+        serviceCodes: Joi.array()
+          .items(serviceCodeValidator)
+          .optional()
+          .allow(null)
       })
     )
     .required()
