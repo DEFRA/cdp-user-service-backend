@@ -66,8 +66,19 @@ describe('#synTeamsValidationSchema', () => {
       ]
     })
 
+    const nullCode = syncTeamsValidationSchema.validate({
+      teams: [
+        {
+          teamId: 'team-name',
+          name: 'Team-Name',
+          serviceCodes: null
+        }
+      ]
+    })
+
     expect(validCode.error).toBeUndefined()
     expect(invalidCode.error).toBeDefined()
     expect(invalidShortCode.error).toBeDefined()
+    expect(nullCode.error).toBeUndefined()
   })
 })
