@@ -12,7 +12,14 @@ const logger = createLogger()
  */
 async function syncTeams(db, teams) {
   const collection = db.collection('teams')
-  logger.info('Syncing teams' + JSON.stringify(teams))
+
+  logger.info('Syncing teams')
+
+  if (teams.length === 0) {
+    logger.warn('No teams set, not syncing as this would delete everything')
+    return
+  }
+
   const incomingTeamIds = teams.map((team) => team.teamId)
 
   if (teams.length > 0) {
@@ -48,6 +55,8 @@ async function syncTeams(db, teams) {
     }
   }
 
+  // Remove teams that are no longer in the list
+  const deletedTeamsCollection = db.collection('deleted-teams')
   if (incomingTeamIds.length > 0) {
     // Construct the query: find documents where _id is NOT IN the list of incomingTeamIds
     const filter = {
@@ -55,19 +64,22 @@ async function syncTeams(db, teams) {
     }
 
     try {
-      const deleteResult = await collection.deleteMany(filter)
-      logger.info(
-        `Successfully deleted ${deleteResult.deletedCount} documents not in the input data.`
-      )
+      const teamsToBackup = await collection.find(filter).toArray()
+
+      if (teamsToBackup.length > 0) {
+        logger.info(
+          `removing ${teamsToBackup.length} teams: ${teamsToBackup.map((t) => t._id)}`
+        )
+        await deletedTeamsCollection.insertMany(teamsToBackup)
+        const deleteResult = await collection.deleteMany(filter)
+        logger.info(
+          `Successfully deleted ${deleteResult.deletedCount} documents not in the input data.`
+        )
+      }
     } catch (error) {
       logger.error('Error during delete operation:', error)
       throw error
     }
-  } else {
-    // Avoid deleting all the teams if the payload is empty.
-    logger.warn(
-      'No teams in payload. This would delete everything which is probably not what we want.'
-    )
   }
 }
 
