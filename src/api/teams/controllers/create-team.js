@@ -3,9 +3,7 @@ import Boom from '@hapi/boom'
 import { createTeamValidationSchema } from '../helpers/create-team-validation-schema.js'
 import { MongoErrors } from '../../../helpers/mongodb-errors.js'
 import { teamNameExists } from '../helpers/team-name-exists.js'
-import { gitHubTeamExists } from '../helpers/github/github-team-exists.js'
 import { createTeam, normalizeTeamName } from '../helpers/create-team.js'
-import { addSharedRepoAccess } from '../helpers/github/github-shared-repo-access.js'
 import { scopes } from '@defra/cdp-validation-kit'
 import { triggerCreateTeamWorkflow } from '../helpers/github/trigger-create-team-workflow.js'
 
@@ -52,31 +50,12 @@ const createTeamController = {
 
     try {
       const team = await createTeam(request.db, dbTeam)
-      await addGithubSharedRepos(payload?.github, request)
       return h.response(team).code(201)
     } catch (error) {
       if (error.code === MongoErrors.DuplicateKey) {
         throw Boom.conflict('Team already exists')
       }
       throw error
-    }
-  }
-}
-
-async function addGithubSharedRepos(team, request) {
-  if (team) {
-    const gitHubExists = await gitHubTeamExists(request.octokit, team)
-    if (!gitHubExists) {
-      throw Boom.badData('Team does not exist in GitHub')
-    }
-
-    // This is still experimental, so we're just going to log the error from this bit for now.
-    try {
-      await addSharedRepoAccess(request.octokit, team)
-    } catch (error) {
-      request.logger.error(
-        `Failed to add ${team} to the shared repos: ${error}`
-      )
     }
   }
 }
