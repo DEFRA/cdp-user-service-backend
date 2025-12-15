@@ -1,6 +1,6 @@
 import Boom from '@hapi/boom'
 
-import Joi from '../../../../helpers/extended-joi.js'
+import Joi from 'joi'
 import {
   teamIdValidation,
   scopes,
@@ -22,7 +22,7 @@ const adminRemoveScopeFromTeamController = {
     validate: {
       params: Joi.object({
         teamId: teamIdValidation,
-        scopeId: Joi.objectId().required()
+        scopeId: Joi.string().required()
       }),
       failAction: () => Boom.boomify(Boom.badRequest())
     }

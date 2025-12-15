@@ -1,4 +1,4 @@
-import Joi from '../../../../helpers/extended-joi.js'
+import Joi from 'joi'
 import { getScopeByName } from '../../helpers/get-scope-by-name.js'
 import { statusCodes, scopes } from '@defra/cdp-validation-kit'
 

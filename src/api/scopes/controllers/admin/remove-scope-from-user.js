@@ -5,7 +5,7 @@ import {
   statusCodes
 } from '@defra/cdp-validation-kit'
 
-import Joi from '../../../../helpers/extended-joi.js'
+import Joi from 'joi'
 import { removeScopeFromUserTransaction } from '../../../../helpers/mongo/transactions/scope/remove-scope-from-user-transaction.js'
 
 const adminRemoveScopeFromUserController = {
@@ -19,7 +19,7 @@ const adminRemoveScopeFromUserController = {
     validate: {
       params: Joi.object({
         userId: userIdValidation,
-        scopeId: Joi.objectId().required()
+        scopeId: Joi.string().required()
       }),
       failAction: () => Boom.boomify(Boom.badRequest())
     }

@@ -1,4 +1,4 @@
-import Joi from '../../../../helpers/extended-joi.js'
+import Joi from 'joi'
 import { getScope } from '../../helpers/get-scope.js'
 import { scopes, statusCodes } from '@defra/cdp-validation-kit'
 
@@ -6,7 +6,7 @@ const adminGetScopeController = {
   options: {
     validate: {
       params: Joi.object({
-        scopeId: Joi.objectId().required()
+        scopeId: Joi.string().required()
       })
     },
     auth: {

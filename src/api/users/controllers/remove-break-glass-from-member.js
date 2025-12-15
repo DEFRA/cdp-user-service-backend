@@ -7,7 +7,7 @@ import {
   userIdValidation
 } from '@defra/cdp-validation-kit'
 
-import Joi from '../../../helpers/extended-joi.js'
+import Joi from 'joi'
 import { getUser } from '../helpers/get-user.js'
 import { recordAudit } from '../../../helpers/audit/record-audit.js'
 import { getScopeByName } from '../../scopes/helpers/get-scope-by-name.js'
