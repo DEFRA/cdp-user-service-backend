@@ -1,4 +1,3 @@
-import { addTeamToSharedReposController } from './controllers/add-team-to-shared-repos.js'
 import { addUserToTeamController } from './controllers/add-user-to-team.js'
 import { createTeamController } from './controllers/create-team.js'
 import { deleteTeamController } from './controllers/delete-team.js'
@@ -53,11 +52,6 @@ const teams = {
           method: 'GET',
           path: '/github-teams',
           ...getGitHubTeamsController
-        },
-        {
-          method: 'POST',
-          path: '/shared-repos',
-          ...addTeamToSharedReposController
         },
         {
           method: 'POST',
