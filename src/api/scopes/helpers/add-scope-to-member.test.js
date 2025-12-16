@@ -80,7 +80,7 @@ describe('#addScopeToMember', () => {
     await addScopeToMember({
       request,
       userId: userAdminOtherFixture._id,
-      scopeId: canGrantBreakGlassScopeFixture._id.toHexString(), // mimic string being passed via api endpoint
+      scopeId: canGrantBreakGlassScopeFixture.scopeId, // mimic string being passed via api endpoint
       teamId: platformTeamFixture._id,
       startDate,
       endDate
@@ -90,7 +90,7 @@ describe('#addScopeToMember', () => {
       request,
       userId: userAdminOtherFixture._id,
       userName: userAdminOtherFixture.name,
-      scopeId: canGrantBreakGlassScopeFixture._id.toHexString(),
+      scopeId: canGrantBreakGlassScopeFixture.scopeId,
       scopeName: canGrantBreakGlassScopeFixture.value,
       teamId: platformTeamFixture._id,
       teamName: platformTeamFixture.name,
@@ -110,7 +110,7 @@ describe('#addScopeToMember', () => {
     await addScopeToMember({
       request,
       userId: userAdminOtherFixture._id,
-      scopeId: canGrantBreakGlassScopeFixture._id.toHexString(), // mimic string being passed via api endpoint
+      scopeId: canGrantBreakGlassScopeFixture.scopeId, // mimic string being passed via api endpoint
       teamId: platformTeamFixture._id
     })
 
@@ -118,7 +118,7 @@ describe('#addScopeToMember', () => {
       request,
       userId: userAdminOtherFixture._id,
       userName: userAdminOtherFixture.name,
-      scopeId: canGrantBreakGlassScopeFixture._id.toHexString(),
+      scopeId: canGrantBreakGlassScopeFixture.scopeId,
       scopeName: canGrantBreakGlassScopeFixture.value,
       teamId: platformTeamFixture._id,
       teamName: platformTeamFixture.name
@@ -136,7 +136,7 @@ describe('#addScopeToMember', () => {
       addScopeToMember({
         request,
         userId: userAdminFixture._id,
-        scopeId: breakGlassScopeFixture._id.toHexString(), // mimic string being passed via api endpoint
+        scopeId: breakGlassScopeFixture.scopeId, // mimic string being passed via api endpoint
         teamId: userTenantFixture._id,
         startDate,
         endDate
@@ -155,7 +155,7 @@ describe('#addScopeToMember', () => {
       addScopeToMember({
         request,
         userId: userTenantFixture._id,
-        scopeId: adminScopeFixture._id.toHexString(), // mimic string being passed via api endpoint
+        scopeId: adminScopeFixture.scopeId, // mimic string being passed via api endpoint
         teamId: tenantTeamFixture._id,
         startDate,
         endDate
@@ -174,7 +174,7 @@ describe('#addScopeToMember', () => {
       addScopeToMember({
         request,
         userId: userAdminFixture._id,
-        scopeId: adminScopeFixture._id.toHexString(), // mimic string being passed via api endpoint
+        scopeId: adminScopeFixture.scopeId, // mimic string being passed via api endpoint
         teamId: platformTeamFixture._id,
         startDate,
         endDate
@@ -193,7 +193,7 @@ describe('#addScopeToMember', () => {
       addScopeToMember({
         request,
         userId: userAdminFixture._id,
-        scopeId: adminScopeFixture._id.toHexString(), // mimic string being passed via api endpoint
+        scopeId: adminScopeFixture.scopeId, // mimic string being passed via api endpoint
         teamId: tenantTeamFixture._id,
         startDate,
         endDate
@@ -210,7 +210,7 @@ describe('#addScopeToMember', () => {
       addScopeToMember({
         request,
         userId: userAdminFixture._id,
-        scopeId: adminScopeFixture._id.toHexString(), // mimic string being passed via api endpoint
+        scopeId: adminScopeFixture.scopeId, // mimic string being passed via api endpoint
         teamId: platformTeamFixture._id,
         startDate: new Date('2025-01-02'),
         endDate: new Date('2025-01-01')
@@ -229,7 +229,7 @@ describe('#addScopeToMember', () => {
       addScopeToMember({
         request,
         userId: userAdminFixture._id,
-        scopeId: terminalScopeFixture._id.toHexString(), // mimic string being passed via api endpoint
+        scopeId: terminalScopeFixture.scopeId, // mimic string being passed via api endpoint
         teamId: platformTeamFixture._id,
         startDate,
         endDate
@@ -256,7 +256,7 @@ describe('#addScopeToMember', () => {
       addScopeToMember({
         request,
         userId: memberWithGranularScopesFixture._id,
-        scopeId: canGrantBreakGlassScopeFixture._id.toHexString(), // mimic string being passed via api endpoint
+        scopeId: canGrantBreakGlassScopeFixture.scopeId, // mimic string being passed via api endpoint
         teamId: tenantTeamFixture._id,
         startDate,
         endDate
@@ -283,7 +283,7 @@ describe('#addScopeToMember', () => {
       addScopeToMember({
         request,
         userId: memberWithGranularScopesFixture._id,
-        scopeId: canGrantBreakGlassScopeFixture._id.toHexString(),
+        scopeId: canGrantBreakGlassScopeFixture.scopeId,
         teamId: tenantTeamFixture._id,
         startDate,
         endDate: undefined
@@ -312,7 +312,7 @@ describe('#addScopeToMember', () => {
       addScopeToMember({
         request,
         userId: memberWithGranularScopesFixture._id,
-        scopeId: canGrantBreakGlassScopeFixture._id.toHexString(),
+        scopeId: canGrantBreakGlassScopeFixture.scopeId,
         teamId: tenantTeamFixture._id,
         startDate: undefined,
         endDate

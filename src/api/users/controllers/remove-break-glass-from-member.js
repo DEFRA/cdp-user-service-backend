@@ -47,7 +47,7 @@ const removeBreakGlassFromMemberController = {
     const scope = await removeScopeFromMemberTransaction({
       request,
       userId,
-      scopeId: breakGlassScope?.scopeId?.toHexString(),
+      scopeId: breakGlassScope?.scopeId,
       teamId
     })
 

@@ -35,7 +35,7 @@ describe('#removeScopeFromTeamTransaction', () => {
   test('Should remove scope from team and all team users', async () => {
     const { db } = request
     const userId = userTenantWithoutTeamFixture._id
-    const { _id: scopeId, value: scopeName } = externalTestScopeFixture
+    const { scopeId, value: scopeName } = externalTestScopeFixture
     const { _id: teamId, name: teamName } = teamWithoutUsers
 
     await replaceOneTestHelper(collections.user, userTenantWithoutTeamFixture)
@@ -61,9 +61,7 @@ describe('#removeScopeFromTeamTransaction', () => {
     const user = await db.collection(collections.user).findOne({ _id: userId })
     expect(user.scopes).toEqual([{ scopeId, scopeName }])
 
-    const scope = await db
-      .collection(collections.scope)
-      .findOne({ _id: scopeId })
+    const scope = await db.collection(collections.scope).findOne({ scopeId })
     expect(scope.teams).toEqual([
       ...externalTestScopeFixture.teams,
       { teamId, teamName }
@@ -92,14 +90,14 @@ describe('#removeScopeFromTeamTransaction', () => {
 
     const updatedScope = await db
       .collection(collections.scope)
-      .findOne({ _id: scopeId })
+      .findOne({ scopeId })
     expect(updatedScope.teams).toEqual(externalTestScopeFixture.teams)
   })
 
   test('Should rollback when a write fails within transaction', async () => {
     const { db } = request
     const userId = userTenantWithoutTeamFixture._id
-    const { _id: scopeId, value: scopeName } = externalTestScopeFixture
+    const { scopeId, value: scopeName } = externalTestScopeFixture
     const { _id: teamId, name: teamName } = teamWithoutUsers
 
     await replaceOneTestHelper(collections.user, userTenantWithoutTeamFixture)
@@ -134,9 +132,7 @@ describe('#removeScopeFromTeamTransaction', () => {
     const user = await db.collection(collections.user).findOne({ _id: userId })
     expect(user.scopes).toEqual(preTransactionUserScopes)
 
-    const scope = await db
-      .collection(collections.scope)
-      .findOne({ _id: scopeId })
+    const scope = await db.collection(collections.scope).findOne({ scopeId })
     expect(scope.teams).toEqual(preTransactionScopeTeams)
 
     // Now throw an error when removing scope from team
@@ -176,7 +172,7 @@ describe('#removeScopeFromTeamTransaction', () => {
 
     const rolledBackScope = await db
       .collection(collections.scope)
-      .findOne({ _id: scopeId })
+      .findOne({ scopeId })
     expect(rolledBackScope.teams).toEqual(preTransactionScopeTeams)
   })
 })

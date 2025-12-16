@@ -27,7 +27,7 @@ describe('#addScopeToUserTransaction', () => {
 
   test('Should add scope to user', async () => {
     const { db } = request
-    const { _id: scopeId, value: scopeName } = externalTestScopeFixture
+    const { scopeId, value: scopeName } = externalTestScopeFixture
     const { _id: userId, name: userName } = userTenantWithoutTeamFixture
 
     await replaceOneTestHelper(collections.scope, externalTestScopeFixture)
@@ -49,9 +49,7 @@ describe('#addScopeToUserTransaction', () => {
       }
     ])
 
-    const scope = await db
-      .collection(collections.scope)
-      .findOne({ _id: scopeId })
+    const scope = await db.collection(collections.scope).findOne({ scopeId })
     expect(scope.users).toEqual([
       {
         userId,
@@ -62,7 +60,7 @@ describe('#addScopeToUserTransaction', () => {
 
   test('Should rollback when a write fails within transaction', async () => {
     const { db } = request
-    const { _id: scopeId, value: scopeName } = externalTestScopeFixture
+    const { scopeId, value: scopeName } = externalTestScopeFixture
     const { _id: userId, name: userName } = userTenantWithoutTeamFixture
 
     await replaceOneTestHelper(collections.scope, externalTestScopeFixture)
@@ -94,9 +92,7 @@ describe('#addScopeToUserTransaction', () => {
     const user = await db.collection(collections.user).findOne({ _id: userId })
     expect(user.scopes).toEqual(userTenantWithoutTeamFixture.scopes)
 
-    const scope = await db
-      .collection(collections.scope)
-      .findOne({ _id: scopeId })
+    const scope = await db.collection(collections.scope).findOne({ scopeId })
     expect(scope.users).toEqual(externalTestScopeFixture.users)
   })
 })

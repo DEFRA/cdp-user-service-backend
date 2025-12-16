@@ -65,11 +65,11 @@ describe('#addUserToTeamTransaction', () => {
     expect(user.teams).toEqual([teamId])
     expect(user.scopes).toEqual([
       {
-        scopeId: externalTestScopeFixture._id,
+        scopeId: externalTestScopeFixture.scopeId,
         scopeName: externalTestScopeFixture.value
       },
       {
-        scopeId: adminScopeFixture._id,
+        scopeId: adminScopeFixture.scopeId,
         scopeName: adminScopeFixture.value
       }
     ])
@@ -129,7 +129,7 @@ describe('#addUserToTeamTransaction', () => {
     expect(user.teams).toEqual([teamId])
     expect(user.scopes).toEqual([
       {
-        scopeId: postgresScopeFixture._id,
+        scopeId: postgresScopeFixture.scopeId,
         scopeName: postgresScopeFixture.value
       }
     ])

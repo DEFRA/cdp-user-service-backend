@@ -41,6 +41,7 @@ const mongoDb = {
 async function createIndexes(db) {
   await db.collection('mongo-locks').createIndex({ id: 1 })
   await db.collection('scopes').createIndex({ value: 1 }, { unique: true })
+  await db.collection('scopes').createIndex({ scopeId: 1 }, { unique: true })
 }
 
 export { mongoDb }

@@ -61,11 +61,11 @@ describe('#removeUserFromTeamTransaction', () => {
     expect(user.teams).toEqual([teamId])
     expect(user.scopes).toEqual([
       {
-        scopeId: externalTestScopeFixture._id,
+        scopeId: externalTestScopeFixture.scopeId,
         scopeName: externalTestScopeFixture.value
       },
       {
-        scopeId: adminScopeFixture._id,
+        scopeId: adminScopeFixture.scopeId,
         scopeName: adminScopeFixture.value
       }
     ])
@@ -105,11 +105,11 @@ describe('#removeUserFromTeamTransaction', () => {
     const preTransactionUserTeams = [teamId]
     const preTransactionUserScopes = [
       {
-        scopeId: externalTestScopeFixture._id,
+        scopeId: externalTestScopeFixture.scopeId,
         scopeName: externalTestScopeFixture.value
       },
       {
-        scopeId: adminScopeFixture._id,
+        scopeId: adminScopeFixture.scopeId,
         scopeName: adminScopeFixture.value
       }
     ]

@@ -37,7 +37,7 @@ describe('#addScopeToMemberTransaction', () => {
 
   test('Should add scope to member', async () => {
     const { db } = request
-    const { _id: scopeId, value: scopeName } = externalTestScopeFixture
+    const { scopeId, value: scopeName } = externalTestScopeFixture
     const { _id: userId, name: userName } = userTenantWithoutTeamFixture
     const { _id: teamId, name: teamName } = teamWithoutUsers
 
@@ -71,9 +71,7 @@ describe('#addScopeToMemberTransaction', () => {
       }
     ])
 
-    const scope = await db
-      .collection(collections.scope)
-      .findOne({ _id: scopeId })
+    const scope = await db.collection(collections.scope).findOne({ scopeId })
     expect(scope.members).toEqual([
       {
         userId,
@@ -88,7 +86,7 @@ describe('#addScopeToMemberTransaction', () => {
 
   test('Should rollback when a write fails within transaction', async () => {
     const { db } = request
-    const { _id: scopeId, value: scopeName } = externalTestScopeFixture
+    const { scopeId, value: scopeName } = externalTestScopeFixture
     const { _id: userId, name: userName } = userTenantWithoutTeamFixture
     const { _id: teamId, name: teamName } = teamWithoutUsers
 
@@ -128,15 +126,13 @@ describe('#addScopeToMemberTransaction', () => {
     const user = await db.collection(collections.user).findOne({ _id: userId })
     expect(user.scopes).toEqual(userTenantWithoutTeamFixture.scopes)
 
-    const scope = await db
-      .collection(collections.scope)
-      .findOne({ _id: scopeId })
+    const scope = await db.collection(collections.scope).findOne({ scopeId })
     expect(scope.members).toEqual(externalTestScopeFixture.members)
   })
 
   test('Should remove old/stale scopes when new ones are added', async () => {
     const { db } = request
-    const { _id: scopeId, value: scopeName } = externalTestScopeFixture
+    const { scopeId, value: scopeName } = externalTestScopeFixture
     const { _id: userId, name: userName } = userTenantWithoutTeamFixture
     const { _id: teamId, name: teamName } = teamWithoutUsers
 
@@ -171,9 +167,7 @@ describe('#addScopeToMemberTransaction', () => {
       }
     ])
 
-    const scope = await db
-      .collection(collections.scope)
-      .findOne({ _id: scopeId })
+    const scope = await db.collection(collections.scope).findOne({ scopeId })
     expect(scope.members).toEqual([
       {
         userId,
@@ -216,7 +210,7 @@ describe('#addScopeToMemberTransaction', () => {
 
     const updatedScope = await db
       .collection(collections.scope)
-      .findOne({ _id: scopeId })
+      .findOne({ scopeId })
     expect(updatedScope.members).toEqual([
       {
         userId,

@@ -1,5 +1,3 @@
-import { ObjectId } from 'mongodb'
-
 import { createServer } from '../../server.js'
 import { userAdminFixture } from '../../../__fixtures__/users.js'
 import { collections } from '../../../../test-helpers/constants.js'
@@ -58,11 +56,11 @@ describe('GET:/users/{userId}', () => {
         github: 'AdminUser',
         scopes: [
           {
-            scopeId: new ObjectId('6751e606a171ebffac3cc9dd'),
+            scopeId: 'breakGlass',
             scopeName: 'breakGlass'
           },
           {
-            scopeId: new ObjectId('7751e606a171ebffac3cc9dd'),
+            scopeId: 'admin',
             scopeName: 'admin'
           }
         ],

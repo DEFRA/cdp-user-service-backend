@@ -1,5 +1,3 @@
-import { ObjectId } from 'mongodb'
-
 import { withMongoTransaction } from '../with-mongo-transaction.js'
 
 async function addScopeToTeamTransaction({
@@ -22,7 +20,7 @@ function addScopeToTeam({ db, session, teamId, scopeId, scopeName }) {
   return db.collection('teams').findOneAndUpdate(
     { _id: teamId },
     {
-      $addToSet: { scopes: { scopeId: new ObjectId(scopeId), scopeName } },
+      $addToSet: { scopes: { scopeId, scopeName } },
       $currentDate: { updatedAt: true }
     },
     {
@@ -35,7 +33,7 @@ function addScopeToTeam({ db, session, teamId, scopeId, scopeName }) {
 
 function addTeamToScope({ db, session, teamId, teamName, scopeId }) {
   return db.collection('scopes').findOneAndUpdate(
-    { _id: new ObjectId(scopeId) },
+    { scopeId },
     {
       $addToSet: { teams: { teamId, teamName } },
       $currentDate: { updatedAt: true }
@@ -50,7 +48,7 @@ function addScopeToTeamUsers({ db, session, teamId, scopeId, scopeName }) {
     {
       $addToSet: {
         scopes: {
-          scopeId: new ObjectId(scopeId),
+          scopeId,
           scopeName
         }
       },

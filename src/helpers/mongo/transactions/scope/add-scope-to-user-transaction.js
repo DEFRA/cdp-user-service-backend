@@ -1,5 +1,3 @@
-import { ObjectId } from 'mongodb'
-
 import { withMongoTransaction } from '../with-mongo-transaction.js'
 
 function addScopeToUserTransaction({
@@ -15,12 +13,7 @@ function addScopeToUserTransaction({
     await db.collection('users').findOneAndUpdate(
       { _id: userId },
       {
-        $addToSet: {
-          scopes: {
-            scopeId: new ObjectId(scopeId),
-            scopeName
-          }
-        },
+        $addToSet: { scopes: { scopeId, scopeName } },
         $currentDate: { updatedAt: true }
       },
       {
@@ -41,7 +34,7 @@ function addScopeToUserTransaction({
 
 function addUserToScope({ db, session, values, scopeId }) {
   return db.collection('scopes').findOneAndUpdate(
-    { _id: new ObjectId(scopeId) },
+    { scopeId },
     {
       $addToSet: { users: values },
       $currentDate: { updatedAt: true }

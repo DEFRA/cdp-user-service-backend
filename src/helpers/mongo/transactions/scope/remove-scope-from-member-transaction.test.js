@@ -42,7 +42,7 @@ describe('#removeScopeFromMemberTransaction', () => {
 
   test('Should remove currently active team based scope from a member', async () => {
     const { db } = request
-    const { _id: scopeId, value: scopeName } = externalTestScopeFixture
+    const { scopeId, value: scopeName } = externalTestScopeFixture
     const { _id: userId, name: userName } = userTenantWithoutTeamFixture
     const { _id: teamId, name: teamName } = teamWithoutUsers
 
@@ -78,9 +78,7 @@ describe('#removeScopeFromMemberTransaction', () => {
       }
     ])
 
-    const scope = await db
-      .collection(collections.scope)
-      .findOne({ _id: scopeId })
+    const scope = await db.collection(collections.scope).findOne({ scopeId })
     expect(scope.members).toEqual([
       {
         userId,
@@ -96,7 +94,7 @@ describe('#removeScopeFromMemberTransaction', () => {
     await removeScopeFromMemberTransaction({
       request,
       userId,
-      scopeId: scopeId.toHexString(),
+      scopeId,
       teamId
     })
 
@@ -108,13 +106,13 @@ describe('#removeScopeFromMemberTransaction', () => {
 
     const updatedScope = await db
       .collection(collections.scope)
-      .findOne({ _id: scopeId })
+      .findOne({ scopeId })
     expect(updatedScope.members).toEqual(externalTestScopeFixture.members)
   })
 
   test('Should remove team based scope from a member', async () => {
     const { db } = request
-    const { _id: scopeId, value: scopeName } = externalTestScopeFixture
+    const { scopeId, value: scopeName } = externalTestScopeFixture
     const { _id: userId, name: userName } = userTenantWithoutTeamFixture
     const { _id: teamId, name: teamName } = teamWithoutUsers
 
@@ -143,9 +141,7 @@ describe('#removeScopeFromMemberTransaction', () => {
       }
     ])
 
-    const scope = await db
-      .collection(collections.scope)
-      .findOne({ _id: scopeId })
+    const scope = await db.collection(collections.scope).findOne({ scopeId })
     expect(scope.members).toEqual([
       {
         userId,
@@ -159,7 +155,7 @@ describe('#removeScopeFromMemberTransaction', () => {
     await removeScopeFromMemberTransaction({
       request,
       userId,
-      scopeId: scopeId.toHexString(),
+      scopeId,
       teamId
     })
 
@@ -171,13 +167,13 @@ describe('#removeScopeFromMemberTransaction', () => {
 
     const updatedScope = await db
       .collection(collections.scope)
-      .findOne({ _id: scopeId })
+      .findOne({ scopeId })
     expect(updatedScope.members).toEqual(externalTestScopeFixture.members)
   })
 
   test('Should rollback when a write fails within transaction', async () => {
     const { db } = request
-    const { _id: scopeId, value: scopeName } = externalTestScopeFixture
+    const { scopeId, value: scopeName } = externalTestScopeFixture
     const { _id: userId, name: userName } = userTenantWithoutTeamFixture
     const { _id: teamId, name: teamName } = teamWithoutUsers
 
@@ -217,9 +213,7 @@ describe('#removeScopeFromMemberTransaction', () => {
     const user = await db.collection(collections.user).findOne({ _id: userId })
     expect(user.scopes).toEqual(preTransactionUserScopes)
 
-    const scope = await db
-      .collection(collections.scope)
-      .findOne({ _id: scopeId })
+    const scope = await db.collection(collections.scope).findOne({ scopeId })
     expect(scope.members).toEqual(preTransactionScopeMembers)
 
     // Now throw an error when removing scope from the member
@@ -237,7 +231,7 @@ describe('#removeScopeFromMemberTransaction', () => {
       removeScopeFromMemberTransaction({
         request,
         userId,
-        scopeId: scopeId.toHexString(),
+        scopeId,
         teamId
       })
     ).rejects.toThrow(/Force rollback/)
@@ -252,7 +246,7 @@ describe('#removeScopeFromMemberTransaction', () => {
 
     const rolledBackScope = await db
       .collection(collections.scope)
-      .findOne({ _id: scopeId })
+      .findOne({ scopeId })
     expect(rolledBackScope.members).toEqual(preTransactionScopeMembers)
   })
 })

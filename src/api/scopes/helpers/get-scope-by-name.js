@@ -15,7 +15,7 @@ async function getScopeByName(db, scopeName) {
       {
         $project: {
           _id: 0,
-          scopeId: '$_id',
+          scopeId: 1,
           value: 1,
           kind: 1,
           description: 1,
@@ -24,13 +24,12 @@ async function getScopeByName(db, scopeName) {
           createdAt: 1,
           updatedAt: 1,
           teams: 1,
+          userId: 1,
           createdBy: {
             $first: '$createdBy'
           }
         }
-      },
-      { $set: { userId: '$_id' } },
-      { $unset: '_id' }
+      }
     ])
     .toArray()
   return scopes?.at(0) ?? null

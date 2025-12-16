@@ -1,5 +1,3 @@
-import { ObjectId } from 'mongodb'
-
 import { createServer } from '../../server.js'
 import { collections } from '../../../../test-helpers/constants.js'
 import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
@@ -63,7 +61,7 @@ describe('GET:/teams', () => {
           updatedAt: '2024-12-04T08:17:06.796Z',
           scopes: [
             {
-              scopeId: new ObjectId('6751b8bcfd2ecb117d6277de'),
+              scopeId: 'postgres',
               scopeName: 'postgres'
             }
           ],
@@ -81,11 +79,11 @@ describe('GET:/teams', () => {
           updatedAt: '2024-12-04T08:17:06.795Z',
           scopes: [
             {
-              scopeId: new ObjectId('67500e94922c4fe819dd8832'),
+              scopeId: 'externalTest',
               scopeName: 'externalTest'
             },
             {
-              scopeId: new ObjectId('7751e606a171ebffac3cc9dd'),
+              scopeId: 'admin',
               scopeName: 'admin'
             }
           ],
@@ -115,7 +113,7 @@ describe('GET:/teams', () => {
             updatedAt: '2024-12-04T08:17:06.796Z',
             scopes: [
               {
-                scopeId: new ObjectId('6751b8bcfd2ecb117d6277de'),
+                scopeId: 'postgres',
                 scopeName: 'postgres'
               }
             ],
@@ -146,7 +144,7 @@ describe('GET:/teams', () => {
             updatedAt: '2024-12-04T08:17:06.796Z',
             scopes: [
               {
-                scopeId: new ObjectId('6751b8bcfd2ecb117d6277de'),
+                scopeId: 'postgres',
                 scopeName: 'postgres'
               }
             ],
@@ -164,11 +162,11 @@ describe('GET:/teams', () => {
             updatedAt: '2024-12-04T08:17:06.795Z',
             scopes: [
               {
-                scopeId: new ObjectId('67500e94922c4fe819dd8832'),
+                scopeId: 'externalTest',
                 scopeName: 'externalTest'
               },
               {
-                scopeId: new ObjectId('7751e606a171ebffac3cc9dd'),
+                scopeId: 'admin',
                 scopeName: 'admin'
               }
             ],
@@ -200,11 +198,11 @@ describe('GET:/teams', () => {
             updatedAt: '2024-12-04T08:17:06.795Z',
             scopes: [
               {
-                scopeId: new ObjectId('67500e94922c4fe819dd8832'),
+                scopeId: 'externalTest',
                 scopeName: 'externalTest'
               },
               {
-                scopeId: new ObjectId('7751e606a171ebffac3cc9dd'),
+                scopeId: 'admin',
                 scopeName: 'admin'
               }
             ],

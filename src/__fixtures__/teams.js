@@ -1,5 +1,3 @@
-import { ObjectId } from 'mongodb'
-
 const platformTeamFixture = {
   _id: 'platform',
   name: 'Platform',
@@ -13,11 +11,11 @@ const platformTeamFixture = {
   users: ['62bb35d2-d4f2-4cf6-abd3-262d99727677'], // admin user
   scopes: [
     {
-      scopeId: new ObjectId('67500e94922c4fe819dd8832'),
+      scopeId: 'externalTest',
       scopeName: 'externalTest'
     },
     {
-      scopeId: new ObjectId('7751e606a171ebffac3cc9dd'),
+      scopeId: 'admin',
       scopeName: 'admin'
     }
   ]
@@ -33,9 +31,7 @@ const tenantTeamFixture = {
   createdAt: '2024-12-03T12:26:10.858Z',
   updatedAt: '2024-12-04T08:17:06.796Z',
   users: ['b7606810-f0c6-4db7-b067-ba730ef706e8'], // userTenantFixture
-  scopes: [
-    { scopeId: new ObjectId('6751b8bcfd2ecb117d6277de'), scopeName: 'postgres' }
-  ]
+  scopes: [{ scopeId: 'postgres', scopeName: 'postgres' }]
 }
 
 const teamWithoutUsers = {

@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb'
 
 const externalTestScopeFixture = {
   _id: new ObjectId('67500e94922c4fe819dd8832'),
+  scopeId: 'externalTest',
   userId: '62bb35d2-d4f2-4cf6-abd3-262d99727677',
   value: 'externalTest',
   description: 'Allow teams to access external test environment',
@@ -20,6 +21,7 @@ const externalTestScopeFixture = {
 
 const postgresScopeFixture = {
   _id: new ObjectId('6751b8bcfd2ecb117d6277de'),
+  scopeId: 'postgres',
   userId: '62bb35d2-d4f2-4cf6-abd3-262d99727677',
   value: 'postgres',
   kind: ['team'],
@@ -38,6 +40,7 @@ const postgresScopeFixture = {
 
 const terminalScopeFixture = {
   _id: new ObjectId('6751e5e9a171ebffac3cc9dc'),
+  scopeId: 'terminal',
   userId: '62bb35d2-d4f2-4cf6-abd3-262d99727677',
   value: 'terminal',
   kind: ['team'],
@@ -56,6 +59,7 @@ const terminalScopeFixture = {
 
 const breakGlassScopeFixture = {
   _id: new ObjectId('6751e606a171ebffac3cc9dd'),
+  scopeId: 'breakGlass',
   userId: '62bb35d2-d4f2-4cf6-abd3-262d99727677',
   value: 'breakGlass',
   kind: ['user'],
@@ -74,6 +78,7 @@ const breakGlassScopeFixture = {
 
 const canGrantBreakGlassScopeFixture = {
   _id: new ObjectId('689f152d37490a37b1bbf51f'),
+  scopeId: 'canGrantBreakGlass',
   userId: '62bb35d2-d4f2-4cf6-abd3-262d99727677',
   value: 'canGrantBreakGlass',
   kind: ['member'],
@@ -93,6 +98,7 @@ const canGrantBreakGlassScopeFixture = {
 
 const adminScopeFixture = {
   _id: new ObjectId('7751e606a171ebffac3cc9dd'),
+  scopeId: 'admin',
   userId: '62bb35d2-d4f2-4cf6-abd3-262d99727677',
   value: 'admin',
   kind: ['user', 'team'],
@@ -111,6 +117,7 @@ const adminScopeFixture = {
 
 const testAsTenantScopeFixture = {
   _id: new ObjectId('7751e606a171ebffac3cc9ff'),
+  scopeId: 'testAsTenant',
   userId: '62bb35d2-d4f2-4cf6-abd3-262d99727677',
   value: 'testAsTenant',
   kind: ['user'],

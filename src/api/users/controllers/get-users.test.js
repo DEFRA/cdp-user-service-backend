@@ -1,5 +1,3 @@
-import { ObjectId } from 'mongodb'
-
 import { createServer } from '../../server.js'
 import { collections } from '../../../../test-helpers/constants.js'
 import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
@@ -86,11 +84,11 @@ describe('GET:/users', () => {
           github: 'AdminUser',
           scopes: [
             {
-              scopeId: new ObjectId('6751e606a171ebffac3cc9dd'),
+              scopeId: 'breakGlass',
               scopeName: 'breakGlass'
             },
             {
-              scopeId: new ObjectId('7751e606a171ebffac3cc9dd'),
+              scopeId: 'admin',
               scopeName: 'admin'
             }
           ],
@@ -110,7 +108,7 @@ describe('GET:/users', () => {
           updatedAt: '2024-07-15T09:56:32.809Z',
           scopes: [
             {
-              scopeId: new ObjectId('6751e5e9a171ebffac3cc9dc'),
+              scopeId: 'terminal',
               scopeName: 'terminal'
             }
           ],
@@ -143,7 +141,7 @@ describe('GET:/users', () => {
             updatedAt: '2024-07-15T09:56:32.809Z',
             scopes: [
               {
-                scopeId: new ObjectId('6751e5e9a171ebffac3cc9dc'),
+                scopeId: 'terminal',
                 scopeName: 'terminal'
               }
             ],
@@ -176,11 +174,11 @@ describe('GET:/users', () => {
             github: 'AdminUser',
             scopes: [
               {
-                scopeId: new ObjectId('6751e606a171ebffac3cc9dd'),
+                scopeId: 'breakGlass',
                 scopeName: 'breakGlass'
               },
               {
-                scopeId: new ObjectId('7751e606a171ebffac3cc9dd'),
+                scopeId: 'admin',
                 scopeName: 'admin'
               }
             ],

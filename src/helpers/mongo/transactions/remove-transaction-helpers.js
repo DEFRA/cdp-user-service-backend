@@ -1,5 +1,3 @@
-import { ObjectId } from 'mongodb'
-
 function removeTeamFromUser({ db, session, userId, teamId }) {
   return db.collection('users').findOneAndUpdate(
     { _id: userId },
@@ -61,7 +59,7 @@ function removeScopeFromUser({ db, session, scopeId, userId }) {
     _id: userId,
     scopes: {
       $elemMatch: {
-        scopeId: new ObjectId(scopeId)
+        scopeId
       }
     }
   }
@@ -71,7 +69,7 @@ function removeScopeFromUser({ db, session, scopeId, userId }) {
     {
       $pull: {
         scopes: {
-          scopeId: new ObjectId(scopeId)
+          scopeId
         }
       },
       $currentDate: { updatedAt: true }
@@ -88,7 +86,7 @@ function removeUserFromScope({ db, session, scopeId, userId }) {
   return db
     .collection('scopes')
     .findOneAndUpdate(
-      { _id: new ObjectId(scopeId) },
+      { scopeId },
       { $pull: { users: { userId } }, $currentDate: { updatedAt: true } },
       { session }
     )
@@ -110,9 +108,9 @@ function removeTeamFromScopes({ db, session, teamId }) {
 
 function removeScopeFromUsers({ db, session, scopeId }) {
   return db.collection('users').updateMany(
-    { 'scopes.scopeId': new ObjectId(scopeId) },
+    { 'scopes.scopeId': scopeId },
     {
-      $pull: { scopes: { scopeId: new ObjectId(scopeId) } },
+      $pull: { scopes: { scopeId } },
       $currentDate: { updatedAt: true }
     },
     { session }

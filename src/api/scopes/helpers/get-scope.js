@@ -1,10 +1,8 @@
-import { ObjectId } from 'mongodb'
-
 async function getScope(db, scopeId) {
   const scopes = await db
     .collection('scopes')
     .aggregate([
-      { $match: { _id: new ObjectId(scopeId) } },
+      { $match: { scopeId } },
       {
         $lookup: {
           from: 'users',
@@ -17,7 +15,7 @@ async function getScope(db, scopeId) {
       {
         $project: {
           _id: 0,
-          scopeId: '$_id',
+          scopeId: 1,
           value: 1,
           kind: 1,
           description: 1,
@@ -26,13 +24,12 @@ async function getScope(db, scopeId) {
           createdAt: 1,
           updatedAt: 1,
           teams: 1,
+          userId: 1,
           createdBy: {
             $first: '$createdBy'
           }
         }
-      },
-      { $set: { userId: '$_id' } },
-      { $unset: '_id' }
+      }
     ])
     .toArray()
   return scopes?.at(0) ?? null

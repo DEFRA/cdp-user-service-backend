@@ -50,14 +50,14 @@ describe('#addScopeToUser', () => {
     await addScopeToUser({
       request,
       userId: userAdminOtherFixture._id,
-      scopeId: breakGlassScopeFixture._id.toHexString() // mimic string being passed via api endpoint
+      scopeId: breakGlassScopeFixture.scopeId
     })
 
     expect(addScopeToUserTransaction).toHaveBeenCalledWith({
       request,
       userId: userAdminOtherFixture._id,
       userName: userAdminOtherFixture.name,
-      scopeId: breakGlassScopeFixture._id.toHexString(),
+      scopeId: breakGlassScopeFixture.scopeId,
       scopeName: breakGlassScopeFixture.value
     })
   })
@@ -70,7 +70,7 @@ describe('#addScopeToUser', () => {
       addScopeToUser({
         request,
         userId: userAdminFixture._id,
-        scopeId: breakGlassScopeFixture._id.toHexString() // mimic string being passed via api endpoint
+        scopeId: breakGlassScopeFixture.scopeId
       })
     ).rejects.toThrow(Boom.notFound('User not found'))
   })
@@ -83,7 +83,7 @@ describe('#addScopeToUser', () => {
       addScopeToUser({
         request,
         userId: userTenantFixture._id,
-        scopeId: adminScopeFixture._id.toHexString() // mimic string being passed via api endpoint
+        scopeId: adminScopeFixture.scopeId
       })
     ).rejects.toThrow(Boom.notFound('Scope not found'))
   })
@@ -96,7 +96,7 @@ describe('#addScopeToUser', () => {
       addScopeToUser({
         request,
         userId: userAdminFixture._id,
-        scopeId: terminalScopeFixture._id.toHexString() // mimic string being passed via api endpoint
+        scopeId: terminalScopeFixture.scopeId
       })
     ).rejects.toThrow(Boom.badRequest('Scope cannot be applied to a user'))
   })
@@ -112,7 +112,7 @@ describe('#addScopeToUser', () => {
       addScopeToUser({
         request,
         userId: userAdminWithTeamBreakGlassFixture._id,
-        scopeId: breakGlassScopeFixture._id.toHexString() // mimic string being passed via api endpoint
+        scopeId: breakGlassScopeFixture.scopeId
       })
     ).rejects.toThrow(Boom.badRequest('User already has this scope assigned'))
   })

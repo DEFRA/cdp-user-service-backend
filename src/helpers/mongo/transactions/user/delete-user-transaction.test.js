@@ -55,9 +55,11 @@ describe('#deleteUserTransaction', () => {
     const { db } = request
     const { _id: userId, name: userName } = userTenantWithoutTeamFixture
     const { _id: teamId, name: teamName } = teamWithoutUsers
-    const { _id: teamScopeId, value: teamScopeName } = externalTestScopeFixture
-    const { _id: userScopeId, value: userScopeName } = testAsTenantScopeFixture
-    const { _id: memberScopeId, value: memberScopeName } =
+    const { scopeId: teamScopeId, value: teamScopeName } =
+      externalTestScopeFixture
+    const { scopeId: userScopeId, value: userScopeName } =
+      testAsTenantScopeFixture
+    const { scopeId: memberScopeId, value: memberScopeName } =
       canGrantBreakGlassScopeFixture
 
     const startDate = new Date()
@@ -139,7 +141,7 @@ describe('#deleteUserTransaction', () => {
     // Check the team scope has the team
     const teamScope = await db
       .collection(collections.scope)
-      .findOne({ _id: teamScopeId })
+      .findOne({ scopeId: teamScopeId })
 
     expect(teamScope.teams).toEqual([
       ...externalTestScopeFixture.teams,
@@ -149,7 +151,7 @@ describe('#deleteUserTransaction', () => {
     // Check the user scope has the users scope
     const userScope = await db
       .collection(collections.scope)
-      .findOne({ _id: userScopeId })
+      .findOne({ scopeId: userScopeId })
 
     expect(userScope.users).toEqual([
       {
@@ -161,7 +163,7 @@ describe('#deleteUserTransaction', () => {
     // Check the member scope has the members scope
     const memberScope = await db
       .collection(collections.scope)
-      .findOne({ _id: memberScopeId })
+      .findOne({ scopeId: memberScopeId })
 
     expect(memberScope.members).toEqual([
       {
@@ -205,7 +207,7 @@ describe('#deleteUserTransaction', () => {
     // Check the teams are correct for the team scope
     const updatedTeamScope = await db
       .collection(collections.scope)
-      .findOne({ _id: teamScopeId })
+      .findOne({ scopeId: teamScopeId })
 
     expect(updatedTeamScope.teams).toEqual([
       ...externalTestScopeFixture.teams,
@@ -215,14 +217,14 @@ describe('#deleteUserTransaction', () => {
     // Check the user has been removed from the user scope
     const updatedUserScope = await db
       .collection(collections.scope)
-      .findOne({ _id: userScopeId })
+      .findOne({ scopeId: userScopeId })
 
     expect(updatedUserScope.users).toEqual([])
 
     // Check the member has been removed from the member scope
     const updatedMemberScope = await db
       .collection(collections.scope)
-      .findOne({ _id: memberScopeId })
+      .findOne({ scopeId: memberScopeId })
 
     expect(updatedMemberScope.members).toEqual([])
   })
@@ -231,9 +233,11 @@ describe('#deleteUserTransaction', () => {
     const { db } = request
     const { _id: userId, name: userName } = userTenantWithoutTeamFixture
     const { _id: teamId, name: teamName } = teamWithoutUsers
-    const { _id: teamScopeId, value: teamScopeName } = externalTestScopeFixture
-    const { _id: userScopeId, value: userScopeName } = testAsTenantScopeFixture
-    const { _id: memberScopeId, value: memberScopeName } =
+    const { scopeId: teamScopeId, value: teamScopeName } =
+      externalTestScopeFixture
+    const { scopeId: userScopeId, value: userScopeName } =
+      testAsTenantScopeFixture
+    const { scopeId: memberScopeId, value: memberScopeName } =
       canGrantBreakGlassScopeFixture
 
     const startDate = new Date()
@@ -327,19 +331,19 @@ describe('#deleteUserTransaction', () => {
     // Check the team scope has the team
     const teamScope = await db
       .collection(collections.scope)
-      .findOne({ _id: teamScopeId })
+      .findOne({ scopeId: teamScopeId })
     expect(teamScope.teams).toEqual(preTransactionTeamScopeTeams)
 
     // Check the user scope has the users scope
     const userScope = await db
       .collection(collections.scope)
-      .findOne({ _id: userScopeId })
+      .findOne({ scopeId: userScopeId })
     expect(userScope.users).toEqual(preTransactionUserScopeUsers)
 
     // Check the member scope has the team
     const memberScope = await db
       .collection(collections.scope)
-      .findOne({ _id: memberScopeId })
+      .findOne({ scopeId: memberScopeId })
     expect(memberScope.members).toEqual(preTransactionMemberScopeMembers)
 
     // Now throw an error when deleting the user
@@ -379,17 +383,17 @@ describe('#deleteUserTransaction', () => {
 
     const rolledBackTeamScope = await db
       .collection(collections.scope)
-      .findOne({ _id: teamScopeId })
+      .findOne({ scopeId: teamScopeId })
     expect(rolledBackTeamScope.teams).toEqual(preTransactionTeamScopeTeams)
 
     const rolledBackUserScope = await db
       .collection(collections.scope)
-      .findOne({ _id: userScopeId })
+      .findOne({ scopeId: userScopeId })
     expect(rolledBackUserScope.users).toEqual(preTransactionUserScopeUsers)
 
     const rolledBackMemberScope = await db
       .collection(collections.scope)
-      .findOne({ _id: memberScopeId })
+      .findOne({ scopeId: memberScopeId })
     expect(rolledBackMemberScope.members).toEqual(
       preTransactionMemberScopeMembers
     )

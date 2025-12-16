@@ -1,5 +1,3 @@
-import { ObjectId } from 'mongodb'
-
 import { createServer } from '../../server.js'
 import { collections } from '../../../../test-helpers/constants.js'
 import { platformTeamFixture } from '../../../__fixtures__/teams.js'
@@ -58,11 +56,11 @@ describe('GET:/teams/{teamId}', () => {
         updatedAt: '2024-12-04T08:17:06.795Z',
         scopes: [
           {
-            scopeId: new ObjectId('67500e94922c4fe819dd8832'),
+            scopeId: 'externalTest',
             scopeName: 'externalTest'
           },
           {
-            scopeId: new ObjectId('7751e606a171ebffac3cc9dd'),
+            scopeId: 'admin',
             scopeName: 'admin'
           }
         ],

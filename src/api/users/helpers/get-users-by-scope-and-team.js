@@ -1,6 +1,4 @@
 import { userAggregation } from './aggregations/user.js'
-import { ObjectId } from 'mongodb'
-
 function getUsersByScopeAndTeam(db, scopeId, teamId) {
   const pipeline = [
     ...userAggregation,
@@ -9,7 +7,7 @@ function getUsersByScopeAndTeam(db, scopeId, teamId) {
         scopes: {
           $elemMatch: {
             teamId,
-            scopeId: new ObjectId(scopeId)
+            scopeId
           }
         }
       }

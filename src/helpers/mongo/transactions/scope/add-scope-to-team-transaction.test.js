@@ -40,7 +40,7 @@ describe('#addScopeToTeamTransaction', () => {
   test('Should add scope to team and team members', async () => {
     const { db } = request
     const userId = userTenantWithoutTeamFixture._id
-    const { _id: scopeId, value: scopeName } = testAsTenantScopeFixture
+    const { scopeId, value: scopeName } = testAsTenantScopeFixture
     const { _id: teamId, name: teamName } = teamWithoutUsers
 
     await replaceOneTestHelper(collections.user, userTenantWithoutTeamFixture)
@@ -63,16 +63,14 @@ describe('#addScopeToTeamTransaction', () => {
     const user = await db.collection(collections.user).findOne({ _id: userId })
     expect(user.scopes).toEqual([{ scopeId, scopeName }])
 
-    const scope = await db
-      .collection(collections.scope)
-      .findOne({ _id: scopeId })
+    const scope = await db.collection(collections.scope).findOne({ scopeId })
     expect(scope.teams).toEqual([{ teamId, teamName }])
   })
 
   test('Should rollback when a write fails within transaction', async () => {
     const { db } = request
     const userId = userTenantFixture._id
-    const { _id: scopeId, value: scopeName } = externalTestScopeFixture
+    const { scopeId, value: scopeName } = externalTestScopeFixture
     const { _id: teamId, name: teamName } = tenantTeamFixture
 
     await replaceOneTestHelper(collections.user, userTenantFixture)
@@ -108,15 +106,13 @@ describe('#addScopeToTeamTransaction', () => {
     const user = await db.collection(collections.user).findOne({ _id: userId })
     expect(user.scopes).toEqual(userTenantFixture.scopes)
 
-    const scope = await db
-      .collection(collections.scope)
-      .findOne({ _id: scopeId })
+    const scope = await db.collection(collections.scope).findOne({ scopeId })
     expect(scope.teams).toEqual(externalTestScopeFixture.teams)
   })
 
   test('Should add scopes to team, when team has no users', async () => {
     const { db } = request
-    const { _id: scopeId, value: scopeName } = postgresScopeFixture
+    const { scopeId, value: scopeName } = postgresScopeFixture
     const { _id: teamId, name: teamName } = teamWithoutUsers
 
     await replaceOneTestHelper(collections.scope, postgresScopeFixture)
@@ -133,9 +129,7 @@ describe('#addScopeToTeamTransaction', () => {
     const team = await db.collection(collections.team).findOne({ _id: teamId })
     expect(team.scopes).toEqual([{ scopeId, scopeName }])
 
-    const scope = await db
-      .collection(collections.scope)
-      .findOne({ _id: scopeId })
+    const scope = await db.collection(collections.scope).findOne({ scopeId })
     expect(scope.teams).toEqual([
       ...postgresScopeFixture.teams,
       { teamId, teamName }

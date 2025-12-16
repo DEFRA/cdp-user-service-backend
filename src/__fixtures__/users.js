@@ -1,5 +1,3 @@
-import { ObjectId } from 'mongodb'
-
 const userAdminFixture = {
   _id: '62bb35d2-d4f2-4cf6-abd3-262d99727677',
   name: 'Admin User',
@@ -10,11 +8,11 @@ const userAdminFixture = {
   teams: ['platform'],
   scopes: [
     {
-      scopeId: new ObjectId('6751e606a171ebffac3cc9dd'),
+      scopeId: 'breakGlass',
       scopeName: 'breakGlass'
     },
     {
-      scopeId: new ObjectId('7751e606a171ebffac3cc9dd'),
+      scopeId: 'admin',
       scopeName: 'admin'
     }
   ]
@@ -24,7 +22,7 @@ const userAdminWithTeamBreakGlassFixture = {
   ...userAdminFixture,
   scopes: [
     {
-      scopeId: new ObjectId('6751e606a171ebffac3cc9dd'),
+      scopeId: 'breakGlass',
       scopeName: 'breakGlass'
     }
   ]
@@ -51,15 +49,15 @@ const userAdminWithTestAsTenantFixture = {
   teams: ['platform'],
   scopes: [
     {
-      scopeId: new ObjectId('6751e606a171ebffac3cc9dd'),
+      scopeId: 'breakGlass',
       scopeName: 'breakGlass'
     },
     {
-      scopeId: new ObjectId('7751e606a171ebffac3cc9dd'),
+      scopeId: 'admin',
       scopeName: 'admin'
     },
     {
-      scopeId: new ObjectId('7751e606a171ebffac3cc9ff'),
+      scopeId: 'testAsTenant',
       scopeName: 'testAsTenant'
     }
   ]
@@ -75,7 +73,7 @@ const memberWithGranularScopesFixture = {
   teams: ['animalsandplants'],
   scopes: [
     {
-      scopeId: new ObjectId('6751e606a171ebffac3cc9dd'), // breakGlass for tenant team for 2 hours
+      scopeId: 'breakGlass', // breakGlass for tenant team for 2 hours
       scopeName: 'breakGlass',
       teamId: 'animalsandplants',
       teamName: 'AnimalsAndPlants',
@@ -83,7 +81,7 @@ const memberWithGranularScopesFixture = {
       endDate: new Date('2025-08-12T15:16:00.000Z')
     },
     {
-      scopeId: new ObjectId('689f152d37490a37b1bbf51f'), // canGrantBreakGlass for tenant team for 2 hours
+      scopeId: 'canGrantBreakGlass', // canGrantBreakGlass for tenant team for 2 hours
       scopeName: 'canGrantBreakGlass',
       teamId: 'animalsandplants',
       teamName: 'AnimalsAndPlants',
@@ -91,11 +89,11 @@ const memberWithGranularScopesFixture = {
       endDate: new Date('2025-08-12T15:16:00.000Z')
     },
     {
-      scopeId: new ObjectId('7751e606a171ebffac3cc9dd'),
+      scopeId: 'admin',
       scopeName: 'admin'
     },
     {
-      scopeId: new ObjectId('7751e606a171ebffac3cc9ff'),
+      scopeId: 'testAsTenant',
       scopeName: 'testAsTenant'
     }
   ]
@@ -111,7 +109,7 @@ const memberWithExpiredBreakGlassFixture = {
   teams: ['teamwithoutusers'],
   scopes: [
     {
-      scopeId: new ObjectId('6751e606a171ebffac3cc9dd'), // EXPIRED breakGlass for tenant team
+      scopeId: 'breakGlass', // EXPIRED breakGlass for tenant team
       scopeName: 'breakGlass',
       teamId: 'teamwithoutusers',
       teamName: 'TeamWithoutUsers',
@@ -119,7 +117,7 @@ const memberWithExpiredBreakGlassFixture = {
       endDate: new Date('2025-08-11T10:01:00.000Z')
     },
     {
-      scopeId: new ObjectId('689f152d37490a37b1bbf51f'), // canGrantBreakGlass for tenant team for 2 hours
+      scopeId: 'canGrantBreakGlass', // canGrantBreakGlass for tenant team for 2 hours
       scopeName: 'canGrantBreakGlass',
       teamId: 'teamwithoutusers',
       teamName: 'TeamWithoutUsers',
@@ -138,7 +136,7 @@ const userTenantFixture = {
   teams: ['animalsandplants'],
   scopes: [
     {
-      scopeId: new ObjectId('6751e5e9a171ebffac3cc9dc'),
+      scopeId: 'terminal',
       scopeName: 'terminal'
     }
   ]
@@ -153,7 +151,7 @@ const userPostgresFixture = {
   teams: ['animalsandplants'],
   scopes: [
     {
-      scopeId: new ObjectId('6751b8bcfd2ecb117d6277de'),
+      scopeId: 'postgres',
       scopeName: 'postgres'
     }
   ]

@@ -1,5 +1,3 @@
-import { ObjectId } from 'mongodb'
-
 import { withMongoTransaction } from '../with-mongo-transaction.js'
 
 async function removeScopeFromTeamTransaction({
@@ -36,7 +34,7 @@ async function removeScopeFromTeam({
     {
       $pull: {
         scopes: {
-          scopeId: new ObjectId(scopeId),
+          scopeId,
           scopeName
         }
       },
@@ -57,7 +55,7 @@ function removeScopeFromTeamUsers({ db, session, teamId, scopeId }) {
     { teams: teamId },
     {
       $pull: {
-        scopes: { scopeId: new ObjectId(scopeId) }
+        scopes: { scopeId }
       },
       $currentDate: { updatedAt: true }
     },
@@ -67,7 +65,7 @@ function removeScopeFromTeamUsers({ db, session, teamId, scopeId }) {
 
 function removeTeamFromScopeTeams({ db, session, teamId, teamName, scopeId }) {
   return db.collection('scopes').findOneAndUpdate(
-    { _id: new ObjectId(scopeId) },
+    { scopeId },
     {
       $pull: { teams: { teamId, teamName } },
       $currentDate: { updatedAt: true }

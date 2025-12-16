@@ -57,7 +57,7 @@ const addBreakGlassToMemberController = {
     const scope = await addScopeToMember({
       request,
       userId,
-      scopeId: breakGlassScope?.scopeId?.toHexString(),
+      scopeId: breakGlassScope?.scopeId,
       teamId,
       startDate: utcDateNow,
       endDate: utcDatePlusTwoHours,

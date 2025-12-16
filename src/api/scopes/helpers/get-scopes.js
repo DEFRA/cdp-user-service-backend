@@ -7,7 +7,7 @@ async function getScopes(db) {
         sort: { value: 1 },
         projection: {
           _id: 0,
-          scopeId: '$_id',
+          scopeId: 1,
           value: 1,
           description: 1,
           kind: 1,
