@@ -32,8 +32,4 @@ async function getTeams(db, queryParams) {
   return await db.collection('teams').aggregate(stages).toArray()
 }
 
-async function getTeamsCount(db, query) {
-  return await db.collection('teams').countDocuments(query)
-}
-
-export { getTeams, getTeamsCount }
+export { getTeams }
