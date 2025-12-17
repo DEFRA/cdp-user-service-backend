@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongodb'
+import { maybeObjectId } from '../../maybe-objectid.js'
 
 function removeTeamFromUser({ db, session, userId, teamId }) {
   return db.collection('users').findOneAndUpdate(
@@ -61,7 +61,7 @@ function removeScopeFromUser({ db, session, scopeId, userId }) {
     _id: userId,
     scopes: {
       $elemMatch: {
-        scopeId: new ObjectId(scopeId)
+        scopeId: maybeObjectId(scopeId)
       }
     }
   }
@@ -71,7 +71,7 @@ function removeScopeFromUser({ db, session, scopeId, userId }) {
     {
       $pull: {
         scopes: {
-          scopeId: new ObjectId(scopeId)
+          scopeId: maybeObjectId(scopeId)
         }
       },
       $currentDate: { updatedAt: true }
@@ -88,7 +88,7 @@ function removeUserFromScope({ db, session, scopeId, userId }) {
   return db
     .collection('scopes')
     .findOneAndUpdate(
-      { _id: new ObjectId(scopeId) },
+      { _id: maybeObjectId(scopeId) },
       { $pull: { users: { userId } }, $currentDate: { updatedAt: true } },
       { session }
     )
@@ -110,9 +110,9 @@ function removeTeamFromScopes({ db, session, teamId }) {
 
 function removeScopeFromUsers({ db, session, scopeId }) {
   return db.collection('users').updateMany(
-    { 'scopes.scopeId': new ObjectId(scopeId) },
+    { 'scopes.scopeId': maybeObjectId(scopeId) },
     {
-      $pull: { scopes: { scopeId: new ObjectId(scopeId) } },
+      $pull: { scopes: { scopeId: maybeObjectId(scopeId) } },
       $currentDate: { updatedAt: true }
     },
     { session }

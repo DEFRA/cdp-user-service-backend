@@ -1,11 +1,11 @@
 import Boom from '@hapi/boom'
+import Joi from 'joi'
 import {
   scopes,
   teamIdValidation,
   userIdValidation
 } from '@defra/cdp-validation-kit'
 
-import Joi from '../../../../helpers/extended-joi.js'
 import { addScopeToMember } from '../../helpers/add-scope-to-member.js'
 
 const adminAddScopeToMemberController = {
@@ -19,7 +19,7 @@ const adminAddScopeToMemberController = {
     validate: {
       params: Joi.object({
         userId: userIdValidation,
-        scopeId: Joi.objectId().required(),
+        scopeId: Joi.string().required(),
         teamId: teamIdValidation
       }),
       payload: Joi.object({

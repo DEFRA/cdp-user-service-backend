@@ -1,5 +1,4 @@
 import Boom from '@hapi/boom'
-import { ObjectId } from 'mongodb'
 
 import { getScope } from '../../../../api/scopes/helpers/get-scope.js'
 import { withMongoTransaction } from '../with-mongo-transaction.js'
@@ -8,6 +7,7 @@ import {
   removeScopeFromUser,
   removeScopeFromUsers
 } from '../remove-transaction-helpers.js'
+import { maybeObjectId } from '../../../maybe-objectid.js'
 
 async function deleteScopeTransaction({ request, scopeId }) {
   const scope = await getScope(request.db, scopeId)
@@ -50,7 +50,7 @@ async function deleteScopeTransaction({ request, scopeId }) {
 
     const { deletedCount } = await db
       .collection('scopes')
-      .deleteOne({ _id: new ObjectId(scopeId) }, { session })
+      .deleteOne({ _id: maybeObjectId(scopeId) }, { session })
 
     if (deletedCount === 1) {
       request.logger.info(`Scope ${scope.value} deleted from CDP`)

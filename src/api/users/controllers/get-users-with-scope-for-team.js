@@ -1,5 +1,5 @@
 import { statusCodes, teamIdValidation } from '@defra/cdp-validation-kit'
-import Joi from '../../../helpers/extended-joi.js'
+import Joi from 'joi'
 import { getUsersByScopeAndTeam } from '../helpers/get-users-by-scope-and-team.js'
 
 const getUsersWithScopeForTeamController = {
@@ -7,7 +7,7 @@ const getUsersWithScopeForTeamController = {
     validate: {
       params: Joi.object({
         teamId: teamIdValidation,
-        scopeId: Joi.objectId().required()
+        scopeId: Joi.string().required()
       })
     }
   },

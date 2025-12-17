@@ -1,6 +1,5 @@
-import { ObjectId } from 'mongodb'
-
 import { withMongoTransaction } from '../with-mongo-transaction.js'
+import { maybeObjectId } from '../../../maybe-objectid.js'
 
 function addScopeToUserTransaction({
   request,
@@ -17,7 +16,7 @@ function addScopeToUserTransaction({
       {
         $addToSet: {
           scopes: {
-            scopeId: new ObjectId(scopeId),
+            scopeId: maybeObjectId(scopeId),
             scopeName
           }
         },
@@ -41,7 +40,7 @@ function addScopeToUserTransaction({
 
 function addUserToScope({ db, session, values, scopeId }) {
   return db.collection('scopes').findOneAndUpdate(
-    { _id: new ObjectId(scopeId) },
+    { _id: maybeObjectId(scopeId) },
     {
       $addToSet: { users: values },
       $currentDate: { updatedAt: true }

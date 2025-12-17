@@ -1,10 +1,10 @@
-import { ObjectId } from 'mongodb'
+import { maybeObjectId } from '../../../helpers/maybe-objectid.js'
 
 async function getScope(db, scopeId) {
   const scopes = await db
     .collection('scopes')
     .aggregate([
-      { $match: { _id: new ObjectId(scopeId) } },
+      { $match: { _id: maybeObjectId(scopeId) } },
       {
         $lookup: {
           from: 'users',

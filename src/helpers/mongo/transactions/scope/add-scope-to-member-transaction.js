@@ -1,8 +1,8 @@
-import { ObjectId } from 'mongodb'
 import { UTCDate } from '@date-fns/utc'
 
 import { withMongoTransaction } from '../with-mongo-transaction.js'
 import { removeNil } from '../../../remove-nil.js'
+import { maybeObjectId } from '../../../maybe-objectid.js'
 
 function addScopeToMemberTransaction({
   request,
@@ -65,7 +65,7 @@ function addScopeToMember({ db, session, userId, scopeId, values }) {
     {
       $addToSet: {
         scopes: removeNil({
-          scopeId: new ObjectId(scopeId),
+          scopeId: maybeObjectId(scopeId),
           ...values
         })
       },
@@ -92,7 +92,7 @@ function removeOldScopesFromUser({ db, session, userId, scopeName }) {
 
 function addMemberToScope({ db, session, scopeId, values }) {
   return db.collection('scopes').findOneAndUpdate(
-    { _id: new ObjectId(scopeId) },
+    { _id: maybeObjectId(scopeId) },
     {
       $addToSet: { members: removeNil(values) },
       $currentDate: { updatedAt: true }
@@ -103,7 +103,7 @@ function addMemberToScope({ db, session, scopeId, values }) {
 
 function removeOldMembersFromScope({ db, session, scopeId, userId }) {
   return db.collection('scopes').updateOne(
-    { _id: new ObjectId(scopeId) },
+    { _id: maybeObjectId(scopeId) },
     {
       $pull: { members: { userId, endDate: { $lt: new UTCDate() } } },
       $currentDate: { updatedAt: true }
