@@ -1,7 +1,6 @@
-import { ObjectId } from 'mongodb'
-
 import { withMongoTransaction } from '../with-mongo-transaction.js'
 import { UTCDate } from '@date-fns/utc'
+import { maybeObjectId } from '../../../maybe-objectid.js'
 
 async function removeScopeFromMemberTransaction({
   request,
@@ -34,7 +33,7 @@ function removeMemberScopeFromUser({ db, session, scopeId, userId, teamId }) {
   const now = new UTCDate()
 
   const elemMatch = {
-    scopeId: new ObjectId(scopeId),
+    scopeId: maybeObjectId(scopeId),
     teamId,
     $and: [
       { $or: [{ startDate: { $exists: false } }, { startDate: { $lt: now } }] },
@@ -70,7 +69,7 @@ function removeMemberFromScopeMembers({
   teamId
 }) {
   return db.collection('scopes').findOneAndUpdate(
-    { _id: new ObjectId(scopeId) },
+    { _id: maybeObjectId(scopeId) },
     {
       $pull: { members: { userId, teamId } },
       $currentDate: { updatedAt: true }

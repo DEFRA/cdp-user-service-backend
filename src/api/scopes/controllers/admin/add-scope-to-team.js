@@ -1,11 +1,11 @@
 import Boom from '@hapi/boom'
+import Joi from 'joi'
 import {
   statusCodes,
   teamIdValidation,
   scopes
 } from '@defra/cdp-validation-kit'
 
-import Joi from '../../../../helpers/extended-joi.js'
 import { getTeam } from '../../../teams/helpers/get-team.js'
 import { getScope } from '../../helpers/get-scope.js'
 import { addScopeToTeamTransaction } from '../../../../helpers/mongo/transactions/scope/add-scope-to-team-transaction.js'
@@ -21,7 +21,7 @@ const adminAddScopeToTeamController = {
     validate: {
       params: Joi.object({
         teamId: teamIdValidation,
-        scopeId: Joi.objectId().required()
+        scopeId: Joi.string().required()
       }),
       failAction: () => Boom.boomify(Boom.badRequest())
     }

@@ -1,11 +1,11 @@
 import Boom from '@hapi/boom'
+import Joi from 'joi'
 import {
   statusCodes,
   userIdValidation,
   scopes
 } from '@defra/cdp-validation-kit'
 
-import Joi from '../../../../helpers/extended-joi.js'
 import { addScopeToUser } from '../../helpers/add-scope-to-user.js'
 
 const adminAddScopeToUserController = {
@@ -19,7 +19,7 @@ const adminAddScopeToUserController = {
     validate: {
       params: Joi.object({
         userId: userIdValidation,
-        scopeId: Joi.objectId().required()
+        scopeId: Joi.string().required()
       }),
       failAction: () => Boom.boomify(Boom.badRequest())
     }

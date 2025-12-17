@@ -1,12 +1,12 @@
-import Joi from '../../../../helpers/extended-joi.js'
 import { deleteScopeTransaction } from '../../../../helpers/mongo/transactions/scope/delete-scope-transaction.js'
 import { scopes, statusCodes } from '@defra/cdp-validation-kit'
+import Joi from 'joi'
 
 const adminDeleteScopeController = {
   options: {
     validate: {
       params: Joi.object({
-        scopeId: Joi.objectId().required()
+        scopeId: Joi.string().required()
       })
     },
     auth: {

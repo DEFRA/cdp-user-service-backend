@@ -1,6 +1,5 @@
-import { ObjectId } from 'mongodb'
-
 import { withMongoTransaction } from '../with-mongo-transaction.js'
+import { maybeObjectId } from '../../../maybe-objectid.js'
 
 async function addScopeToTeamTransaction({
   request,
@@ -22,7 +21,7 @@ function addScopeToTeam({ db, session, teamId, scopeId, scopeName }) {
   return db.collection('teams').findOneAndUpdate(
     { _id: teamId },
     {
-      $addToSet: { scopes: { scopeId: new ObjectId(scopeId), scopeName } },
+      $addToSet: { scopes: { scopeId: maybeObjectId(scopeId), scopeName } },
       $currentDate: { updatedAt: true }
     },
     {
@@ -35,7 +34,7 @@ function addScopeToTeam({ db, session, teamId, scopeId, scopeName }) {
 
 function addTeamToScope({ db, session, teamId, teamName, scopeId }) {
   return db.collection('scopes').findOneAndUpdate(
-    { _id: new ObjectId(scopeId) },
+    { _id: maybeObjectId(scopeId) },
     {
       $addToSet: { teams: { teamId, teamName } },
       $currentDate: { updatedAt: true }
@@ -50,7 +49,7 @@ function addScopeToTeamUsers({ db, session, teamId, scopeId, scopeName }) {
     {
       $addToSet: {
         scopes: {
-          scopeId: new ObjectId(scopeId),
+          scopeId: maybeObjectId(scopeId),
           scopeName
         }
       },

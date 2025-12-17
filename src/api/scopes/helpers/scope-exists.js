@@ -1,9 +1,9 @@
-import { ObjectId } from 'mongodb'
+import { maybeObjectId } from '../../../helpers/maybe-objectid.js'
 
 async function scopeExists(db, scopeId) {
   const scope = await db
     .collection('scopes')
-    .findOne({ _id: new ObjectId(scopeId) })
+    .findOne({ _id: maybeObjectId(scopeId) })
   return scope !== null
 }
 

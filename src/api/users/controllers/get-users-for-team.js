@@ -1,5 +1,5 @@
 import { statusCodes, teamIdValidation } from '@defra/cdp-validation-kit'
-import Joi from '../../../helpers/extended-joi.js'
+import Joi from 'joi'
 import { getUsersByTeam } from '../helpers/get-users-by-team.js'
 
 export const getUsersForTeamController = {

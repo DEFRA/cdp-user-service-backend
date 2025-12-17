@@ -1,11 +1,11 @@
 import Boom from '@hapi/boom'
+import Joi from 'joi'
 import {
   scopes,
   teamIdValidation,
   userIdValidation
 } from '@defra/cdp-validation-kit'
 
-import Joi from '../../../../helpers/extended-joi.js'
 import { removeScopeFromMemberTransaction } from '../../../../helpers/mongo/transactions/scope/remove-scope-from-member-transaction.js'
 
 const adminRemoveScopeFromMemberController = {
@@ -19,7 +19,7 @@ const adminRemoveScopeFromMemberController = {
     validate: {
       params: Joi.object({
         userId: userIdValidation,
-        scopeId: Joi.objectId().required(),
+        scopeId: Joi.string().required(),
         teamId: teamIdValidation
       }),
       failAction: () => Boom.boomify(Boom.badRequest())

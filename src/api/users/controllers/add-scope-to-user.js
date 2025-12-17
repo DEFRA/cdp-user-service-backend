@@ -5,7 +5,7 @@ import {
   userIdValidation
 } from '@defra/cdp-validation-kit'
 
-import Joi from '../../../helpers/extended-joi.js'
+import Joi from 'joi'
 import { addScopeToUser } from '../../scopes/helpers/add-scope-to-user.js'
 
 const addScopeToUserController = {
@@ -19,7 +19,7 @@ const addScopeToUserController = {
     validate: {
       params: Joi.object({
         userId: userIdValidation,
-        scopeId: Joi.objectId().required()
+        scopeId: Joi.string().required()
       }),
       failAction: () => Boom.boomify(Boom.badRequest())
     }
