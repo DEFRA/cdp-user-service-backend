@@ -56,14 +56,14 @@ export async function addScopeToMember({
     dbUser.scopes?.filter((scope) => {
       const utcDateNow = new UTCDate()
       const hasActiveDateBasedScope =
-        scope.scopeId.toHexString() === scopeId &&
+        scope.scopeName === dbScope.value &&
         teamId !== undefined &&
         scope.teamId === teamId &&
         scope.startDate <= utcDateNow &&
         scope.endDate >= utcDateNow
 
       const hasScope =
-        scope.scopeId.toHexString() === scopeId &&
+        scope.scopeName === dbScope.value &&
         teamId !== undefined &&
         scope.teamId === teamId &&
         scope.startDate === undefined &&
