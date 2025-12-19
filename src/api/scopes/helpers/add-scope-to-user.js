@@ -21,11 +21,9 @@ export async function addScopeToUser({ request, userId, scopeId }) {
   }
 
   if (
-    dbUser.scopes?.filter((userScope) => {
-      const userHasScope = userScope.scopeId?.toHexString() === scopeId
-
-      return userHasScope
-    }).length > 0
+    dbUser.scopes?.find((userScope) => {
+      return userScope.scopeName === dbScope.value
+    })
   ) {
     throw Boom.badRequest('User already has this scope assigned')
   }

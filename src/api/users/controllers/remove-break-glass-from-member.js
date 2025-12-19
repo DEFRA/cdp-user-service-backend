@@ -12,6 +12,7 @@ import { getUser } from '../helpers/get-user.js'
 import { recordAudit } from '../../../helpers/audit/record-audit.js'
 import { getScopeByName } from '../../scopes/helpers/get-scope-by-name.js'
 import { removeScopeFromMemberTransaction } from '../../../helpers/mongo/transactions/scope/remove-scope-from-member-transaction.js'
+import { maybeObjectId } from '../../../helpers/maybe-objectid.js'
 
 const removeBreakGlassFromMemberController = {
   options: {
@@ -47,7 +48,7 @@ const removeBreakGlassFromMemberController = {
     const scope = await removeScopeFromMemberTransaction({
       request,
       userId,
-      scopeId: breakGlassScope?.scopeId?.toHexString(),
+      scopeId: maybeObjectId(breakGlassScope?.scopeId),
       teamId
     })
 
