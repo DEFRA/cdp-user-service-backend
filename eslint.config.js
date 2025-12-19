@@ -6,7 +6,6 @@ import promise from 'eslint-plugin-promise'
 import jsdoc from 'eslint-plugin-jsdoc'
 import importPlugin from 'eslint-plugin-import'
 import prettier from 'eslint-plugin-prettier'
-import vitest from 'eslint-plugin-vitest'
 import globals from 'globals'
 
 const customIgnores = [
@@ -48,8 +47,7 @@ export default [
       jsdoc,
       n,
       promise,
-      prettier,
-      vitest
+      prettier
     },
     rules: {
       'prettier/prettier': [
@@ -124,7 +122,6 @@ export default [
       ]
     }
   },
-  vitest.configs.recommended,
   {
     files: [
       '.vite/**/*.js',
@@ -133,9 +130,6 @@ export default [
       '**/__fixtures__/**',
       'vitest.config.js'
     ],
-    plugins: {
-      vitest
-    },
     languageOptions: {
       parser: tsParser,
       parserOptions: {
@@ -144,11 +138,10 @@ export default [
         project: ['./tsconfig.json']
       },
       globals: {
-        ...vitest.environments.env.globals
+        ...globals.vitest
       }
     },
     rules: {
-      ...vitest.configs.recommended.rules,
       'n/no-unpublished-import': [
         'error',
         {
