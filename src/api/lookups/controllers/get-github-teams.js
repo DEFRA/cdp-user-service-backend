@@ -1,6 +1,6 @@
 import Joi from 'joi'
 
-import { searchGitHubTeams } from '../helpers/github/search-github-teams.js'
+import { searchGitHubTeams } from '../helpers/search-github-teams.js'
 import { statusCodes } from '@defra/cdp-validation-kit'
 
 const getGitHubTeamsController = {

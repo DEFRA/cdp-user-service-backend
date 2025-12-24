@@ -2,8 +2,8 @@ import Boom from '@hapi/boom'
 
 import { createUserValidationSchema } from '../helpers/create-user-validation-schema.js'
 import { MongoErrors } from '../../../helpers/mongodb-errors.js'
-import { aadUserIdExists } from '../helpers/aad-user-id-exists.js'
-import { gitHubUserExists } from '../helpers/github-user-exists.js'
+import { aadUserIdExists } from '../../lookups/helpers/aad-user-id-exists.js'
+import { gitHubUserExists } from '../../lookups/helpers/github-user-exists.js'
 import { createUser } from '../helpers/create-user.js'
 import { scopes } from '@defra/cdp-validation-kit'
 

@@ -1,4 +1,4 @@
-import { config } from '../../../../config/config.js'
+import { config } from '../../../config/config.js'
 
 async function searchGitHubTeams(octokit, query) {
   const org = config.get('github.org')
