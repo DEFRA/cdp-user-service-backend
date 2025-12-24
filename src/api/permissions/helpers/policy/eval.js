@@ -1,8 +1,12 @@
-import { checkDirect, checkPathAny, checkPathExact } from './permissions.js'
+import {
+  checkDirect,
+  checkPathAny,
+  checkPathExact
+} from '../relationships/relationships.js'
 
 /**
- * @typedef {{ direct: string, object: string }} Direct
- * @typedef {{ path: string[], object: string }} Indirect
+ * @typedef {{ direct: string, resource: string }} Direct
+ * @typedef {{ path: string[], resource: string }} Indirect
  * @param {any} db
  * @param {string} subject
  * @param  {any[]}  expr
@@ -43,7 +47,7 @@ async function evalRule(db, subject, expr) {
   if (expr.direct) {
     return checkDirect(db, subject, {
       relation: expr.direct,
-      object: expr.object
+      resource: expr.resource
     })
   }
 
@@ -51,9 +55,9 @@ async function evalRule(db, subject, expr) {
     if (expr.path.includes('*')) {
       // wildcard "any path ending with terminal relation"
       const terminalRel = expr.path[expr.path.length - 1]
-      return checkPathAny(db, subject, expr.object, terminalRel)
+      return checkPathAny(db, subject, expr.resource, terminalRel)
     } else {
-      return checkPathExact(db, subject, expr.object, expr.path)
+      return checkPathExact(db, subject, expr.resource, expr.path)
     }
   }
 

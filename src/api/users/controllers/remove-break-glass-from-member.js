@@ -54,7 +54,7 @@ const removeBreakGlassFromMemberController = {
 
     const user = await getUser(request.db, userId)
     const team = user?.teams.find((t) => t.teamId === teamId)
-
+    // TODO: handle this as an edge case?
     const now = new UTCDate()
     await recordAudit({
       category: scopeName,

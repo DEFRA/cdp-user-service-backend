@@ -54,6 +54,7 @@ const addBreakGlassToMemberController = {
     // breakGlass start date is UTC now and end date is 2 hours later
     const utcDateNow = new UTCDate()
     const utcDatePlusTwoHours = addHours(utcDateNow, 2)
+    // TODO: grant breakglass as a edge case.
     const scope = await addScopeToMember({
       request,
       userId,

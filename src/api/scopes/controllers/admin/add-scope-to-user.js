@@ -7,6 +7,7 @@ import {
 } from '@defra/cdp-validation-kit'
 
 import { addScopeToUser } from '../../helpers/add-scope-to-user.js'
+import { grantPermissionToUser } from '../../../permissions/helpers/relationships/relationships.js'
 
 const adminAddScopeToUserController = {
   options: {
@@ -28,6 +29,8 @@ const adminAddScopeToUserController = {
     const params = request.params
     const userId = params.userId
     const scopeId = params.scopeId
+
+    await grantPermissionToUser(request.db, userId, scopeId)
 
     const scope = await addScopeToUser({
       request,

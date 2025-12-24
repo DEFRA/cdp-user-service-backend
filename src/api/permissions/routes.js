@@ -1,10 +1,14 @@
 import { getScopesForUserController } from './controllers/get-scopes-for-user.js'
 import { getActiveBreakGlassScopeForUser } from './controllers/get-active-break-glass-scope-for-user.js'
+import { scopesForUser } from './helpers/scopes-for-user.js'
 
-import {backfill, drawPerms, getPerms} from './permissions.js'
-import { policyCanDeployService } from './policies.js'
-import { canAccess } from './eval.js'
-import { scopesForUser } from '../scopes/helpers/scopes-for-user.js'
+import { generateMermaidDiagram } from './helpers/relationships/mermaid-diagram.js'
+import {
+  checkScopeMigration,
+  compareScopesOverview
+} from './helpers/relationships/check-scope-migration.js'
+import { backfill } from './helpers/relationships/backfill.js'
+import { getLegacyScopesForUser } from './helpers/relationships/legacy-scopes-for-user.js'
 
 const permissions = {
   plugin: {
@@ -24,17 +28,12 @@ const permissions = {
         {
           method: 'GET',
           path: '/auth/perms',
-          ...perms
+          ...permsController
         },
         {
           method: 'GET',
           path: '/auth/graph',
-          ...graph
-        },
-        {
-          method: 'GET',
-          path: '/auth/debug',
-          ...debug
+          ...graphController
         },
         {
           method: 'GET',
@@ -54,49 +53,29 @@ const backfillController = {
   }
 }
 
-const debug = {
-  options: {},
-  handler: async (request, h) => {
-    const user = 'user:Phil.Hargreaves@defra.gov.uk'
-    const input = { service: 'service:cdp-portal-backend', env: 'dev' }
-    //await drawPerms(request.db, user)
-
-    const result = await canAccess(
-      request.db,
-      user,
-      policyCanDeployService,
-      input
-    )
-
-    return h
-      .response({
-        policy: policyCanDeployService.name,
-        input,
-        user,
-        allow: result
-      })
-      .code(200)
-  }
-}
-
-const perms = {
+const permsController = {
   options: {},
   handler: async (request, h) => {
     const user = request.query.user
 
-    const v2Perms = await getPerms(request.db, user)
-    const v1Perms = await scopesForUser({ id: user }, request.db)
-    return h.response({ v2: v2Perms, v1: v1Perms }).code(200)
+    if (user) {
+      const v2Perms = await getLegacyScopesForUser(request.db, user)
+      const v1Perms = await scopesForUser({ id: user }, request.db)
+      return h.response({ v2: v2Perms, v1: v1Perms }).code(200)
+    } else {
+      const allPerms = await compareScopesOverview(request.db)
+      return h.response(allPerms).code(200)
+    }
   }
 }
 
-const graph = {
+const graphController = {
   options: {},
   handler: async (request, h) => {
     const user = request.query.user
 
-    const mermaid = await drawPerms(request.db, `user:${user}`)
-    return h.response(mermaid).code(200)
+    const mermaid = await generateMermaidDiagram(request.db, user)
+    return h.response(mermaid).type('text/plain').code(200)
   }
 }
 

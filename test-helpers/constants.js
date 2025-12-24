@@ -2,7 +2,8 @@ const testDbName = 'test'
 const collections = {
   user: 'users',
   team: 'teams',
-  scope: 'scopes'
+  scope: 'scopes',
+  relationship: 'relationships'
 }
 
 export { testDbName, collections }

@@ -37,6 +37,8 @@ const adminAddScopeToMemberController = {
     const scopeId = params.scopeId
     const teamId = params.teamId
 
+    // TODO: do we handle this as relationship or just remove?
+
     const scope = await addScopeToMember({
       request,
       userId,

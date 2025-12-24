@@ -1,12 +1,12 @@
-import { connectToTestMongoDB } from '../../../test-helpers/connect-to-test-mongodb.js'
+import { connectToTestMongoDB } from '../../../../../test-helpers/connect-to-test-mongodb.js'
 import {
   addRelationship,
   createIndexes,
-  drawPerms,
   findMembersOfTeam
-} from './permissions.js'
-import { canAccess } from './eval.js'
-import { policyIsAdmin, policyCanDeployService } from './policies.js'
+} from './relationships.js'
+import { canAccess } from '../policy/eval.js'
+import { policyIsAdmin, policyCanDeployService } from '../policy/policies.js'
+import { generateMermaidDiagram } from './mermaid-diagram.js'
 
 describe('#permissions', () => {
   const request = {}
@@ -155,6 +155,6 @@ describe('#permissions', () => {
     })
 
     expect(result).toBe(true)
-    await drawPerms(request.db, 'user:jim', '', {})
+    await generateMermaidDiagram(request.db, 'user:jim', '', {})
   })
 })

@@ -9,6 +9,7 @@ import {
 import { getTeam } from '../../../teams/helpers/get-team.js'
 import { getScope } from '../../helpers/get-scope.js'
 import { addScopeToTeamTransaction } from '../../../../helpers/mongo/transactions/scope/add-scope-to-team-transaction.js'
+import { grantPermissionToTeam } from '../../../permissions/helpers/relationships/relationships.js'
 
 const adminAddScopeToTeamController = {
   options: {
@@ -45,6 +46,7 @@ const adminAddScopeToTeamController = {
       throw Boom.badRequest('Scope cannot be applied to a team')
     }
 
+    await grantPermissionToTeam(request.db, teamId, scopeId)
     const scope = await addScopeToTeamTransaction({
       request,
       teamId,

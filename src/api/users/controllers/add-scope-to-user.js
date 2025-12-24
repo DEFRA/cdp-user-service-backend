@@ -25,6 +25,7 @@ const addScopeToUserController = {
     }
   },
   handler: async (request, h) => {
+    // TODO: this seems to be unused, delete?
     const params = request.params
     const userId = params.userId
     const scopeId = params.scopeId

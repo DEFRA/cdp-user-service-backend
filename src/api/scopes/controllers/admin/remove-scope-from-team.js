@@ -9,6 +9,7 @@ import {
 import { getTeam } from '../../../teams/helpers/get-team.js'
 import { getScope } from '../../helpers/get-scope.js'
 import { removeScopeFromTeamTransaction } from '../../../../helpers/mongo/transactions/scope/remove-scope-from-team-transaction.js'
+import { revokePermissionFromTeam } from '../../../permissions/helpers/relationships/relationships.js'
 
 const adminRemoveScopeFromTeamController = {
   options: {
@@ -32,6 +33,8 @@ const adminRemoveScopeFromTeamController = {
 
     const dbTeam = await getTeam(request.db, teamId)
     const dbScope = await getScope(request.db, scopeId)
+
+    await revokePermissionFromTeam(request.db, teamId, scopeId)
 
     const scope = await removeScopeFromTeamTransaction({
       request,

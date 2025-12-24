@@ -7,6 +7,7 @@ import {
 } from '@defra/cdp-validation-kit'
 
 import { removeScopeFromMemberTransaction } from '../../../../helpers/mongo/transactions/scope/remove-scope-from-member-transaction.js'
+import { revokePermissionFromUser } from '../../../permissions/helpers/relationships/relationships.js'
 
 const adminRemoveScopeFromMemberController = {
   options: {
@@ -30,6 +31,8 @@ const adminRemoveScopeFromMemberController = {
     const userId = params.userId
     const scopeId = params.scopeId
     const teamId = params.teamId
+
+    // TODO: do we handle this as an edge case or just delete it?
 
     const scope = await removeScopeFromMemberTransaction({
       request,

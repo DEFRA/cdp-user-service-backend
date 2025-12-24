@@ -1,19 +1,19 @@
 import { environmentValidation } from '@defra/cdp-validation-kit'
 import Joi from 'joi'
-import { checkDirect, checkPathAny } from './permissions.js'
+import { checkDirect, checkPathAny } from './check-relationship.js'
 
 const OR = 'OR'
 const AND = 'AND'
 
 const isAdmin = {
   path: ['*', 'granted'],
-  object: 'perm:admin',
+  resource: 'perm:admin',
   desc: 'has admin permissions'
 }
 
 export const policyCanDeployService = {
   name: 'canDeployService',
-  context: Joi.object({
+  context: Joi.resource({
     service: Joi.string().required(),
     env: environmentValidation.required()
   }),
@@ -24,13 +24,13 @@ export const policyCanDeployService = {
       AND,
       {
         path: ['member', 'owner'],
-        object: ctx.service,
+        resource: ctx.service,
         desc: 'must own service'
       },
       {
         if: ctx.env === 'ext-test',
         path: ['*', 'granted'],
-        object: 'perm:ext-test',
+        resource: 'perm:ext-test',
         desc: 'needs ext-test permissions when deploying to ext-test'
       }
     ]
@@ -39,7 +39,7 @@ export const policyCanDeployService = {
 // - member>owner#service:foo AND >granted#perm:ext-test?env==ext-test
 // - granted#perm:admin
 //
-// [relationship]#[object]?[when]
+// [relationship]#[resource]?[when]
 // [relationship]: direct|reachable|exact
 // direct:       granted#obj
 // reachable: >granted#obj
@@ -47,13 +47,13 @@ export const policyCanDeployService = {
 
 export const policyIsAdmin = {
   name: 'isAdmin',
-  context: Joi.object({}),
+  context: Joi.resource({}),
   conditions: (ctx) => isAdmin
 }
 
 const ruleLaunchTerminal = {
   name: 'service:terminal',
-  context: Joi.object({
+  context: Joi.resource({
     service: Joi.string().required(),
     team: Joi.string().required(),
     environment: Joi.string().required()
@@ -64,7 +64,7 @@ const ruleLaunchTerminal = {
         isAdmin,
         {
           relation: 'breakglass',
-          object: `team:admin`,
+          resource: `team:admin`,
           if: ctx.environment === 'prod',
           desc: 'Must have break-glass for admin'
         }
@@ -72,12 +72,12 @@ const ruleLaunchTerminal = {
     },
     {
       and: [
-        { relation: 'owns', object: ctx.service, desc: 'must own service' },
+        { relation: 'owns', resource: ctx.service, desc: 'must own service' },
         {
           // for production, path to service must run via a break-glass relationship as well
           // user:id -->|breakglass| team:id -->|owns| service:id
           path: ['breakglass', 'owns', 'team:admin'],
-          object: `service:${ctx.service}`,
+          resource: `service:${ctx.service}`,
           if: ctx.environment === 'prod',
           desc: 'Must have break-glass for team'
         }
@@ -91,7 +91,7 @@ const codePolicy = {
   apply: async function (ctx) {
     const user = 'user:' + ctx.user
     const team = 'team:' + ctx.team
-    const env = ctd.environment
+    const env = ctx.environment
 
     const isAdmin = await checkPathAny(ctx.db, user, 'permission:admin')
     if (isAdmin) {
@@ -125,7 +125,7 @@ const codePolicy = {
 
     const isMember = await checkDirect(ctx.db, user, {
       relation: 'member',
-      object: team
+      resource: team
     })
 
     if (isMember) {
