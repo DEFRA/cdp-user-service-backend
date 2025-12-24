@@ -1,7 +1,6 @@
 import { addUserToTeamController } from './controllers/add-user-to-team.js'
 import { createTeamController } from './controllers/create-team.js'
 import { deleteTeamController } from './controllers/delete-team.js'
-import { getGitHubTeamsController } from '../lookups/controllers/get-github-teams.js'
 import { getTeamController } from './controllers/get-team.js'
 import { getTeamsController } from './controllers/get-teams.js'
 import { removeUserFromTeamController } from './controllers/remove-user-from-team.js'
@@ -47,11 +46,6 @@ const teams = {
           method: 'PATCH',
           path: '/teams/{teamId}/remove/{userId}',
           ...removeUserFromTeamController
-        },
-        {
-          method: 'GET',
-          path: '/github-teams',
-          ...getGitHubTeamsController
         },
         {
           method: 'POST',
