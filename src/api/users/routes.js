@@ -1,7 +1,5 @@
 import { createUserController } from './controllers/create-user.js'
 import { deleteUserController } from './controllers/delete-user.js'
-import { getAadUsersController } from './controllers/get-aad-users.js'
-import { getGitHubUsersController } from './controllers/get-github-users.js'
 import { getUserController } from './controllers/get-user.js'
 import { getUsersController } from './controllers/get-users.js'
 import { updateUserController } from './controllers/update-user.js'
@@ -50,16 +48,6 @@ const users = {
           method: 'DELETE',
           path: '/users/{userId}',
           ...deleteUserController
-        },
-        {
-          method: 'GET',
-          path: '/aad-users',
-          ...getAadUsersController
-        },
-        {
-          method: 'GET',
-          path: '/github-users',
-          ...getGitHubUsersController
         },
         {
           method: 'PATCH',
