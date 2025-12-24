@@ -2,7 +2,7 @@ import { getGitHubUsersController } from './controllers/get-github-users.js'
 import { getAadUsersController } from './controllers/get-aad-users.js'
 import { getGitHubTeamsController } from './controllers/get-github-teams.js'
 
-const permissions = {
+const lookups = {
   plugin: {
     name: 'lookups',
     register: (server) => {
@@ -27,4 +27,4 @@ const permissions = {
   }
 }
 
-export { permissions }
+export { lookups }
