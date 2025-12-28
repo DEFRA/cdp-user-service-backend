@@ -1,6 +1,7 @@
 async function getActiveBreakGlass(db, credentials) {
   const userId = credentials.id
 
+  // TODO: rewrite this to look at the relationships.
   const users = await db
     .collection('users')
     .aggregate([

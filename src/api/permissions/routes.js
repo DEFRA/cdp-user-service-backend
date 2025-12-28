@@ -3,10 +3,7 @@ import { getActiveBreakGlassScopeForUser } from './controllers/get-active-break-
 import { scopesForUser } from './helpers/scopes-for-user.js'
 
 import { generateMermaidDiagram } from './helpers/relationships/mermaid-diagram.js'
-import {
-  checkScopeMigration,
-  compareScopesOverview
-} from './helpers/relationships/check-scope-migration.js'
+import { compareScopesOverview } from './helpers/relationships/check-scope-migration.js'
 import { backfill } from './helpers/relationships/backfill.js'
 import { getLegacyScopesForUser } from './helpers/relationships/legacy-scopes-for-user.js'
 

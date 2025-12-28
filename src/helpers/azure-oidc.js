@@ -2,7 +2,7 @@ import jwt from '@hapi/jwt'
 
 import { config } from '../config/config.js'
 import { proxyFetch } from './proxy.js'
-import { scopesForUser } from '../api/permissions/helpers/scopes-for-user.js'
+import { getLegacyScopesForUser } from '../api/permissions/helpers/relationships/legacy-scopes-for-user.js'
 
 const azureOidc = {
   plugin: {
@@ -40,9 +40,9 @@ const azureOidc = {
             scope: [...payload.groups, payload.oid]
           }
 
-          const { scopes, scopeFlags } = await scopesForUser(
-            credentials,
-            server.db
+          const { scopes, scopeFlags } = await getLegacyScopesForUser(
+            server.db,
+            credentials.id
           )
 
           return {

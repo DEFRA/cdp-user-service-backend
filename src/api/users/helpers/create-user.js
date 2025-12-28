@@ -7,8 +7,6 @@ async function createUser(db, dbUser) {
   const utcDateNow = new UTCDate()
   const newUser = {
     ...removeNil(dbUser),
-    scopes: [],
-    teams: [],
     createdAt: utcDateNow,
     updatedAt: utcDateNow
   }

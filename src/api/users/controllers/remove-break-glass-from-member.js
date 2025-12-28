@@ -10,9 +10,8 @@ import {
 import Joi from 'joi'
 import { getUser } from '../helpers/get-user.js'
 import { recordAudit } from '../../../helpers/audit/record-audit.js'
-import { getScopeByName } from '../../scopes/helpers/get-scope-by-name.js'
-import { removeScopeFromMemberTransaction } from '../../../helpers/mongo/transactions/scope/remove-scope-from-member-transaction.js'
-import { maybeObjectId } from '../../../helpers/maybe-objectid.js'
+import { revokeBreakGlassForUser } from '../../permissions/helpers/relationships/relationships.js'
+import { scopeDefinitions } from '../../../config/scopes.js'
 
 const removeBreakGlassFromMemberController = {
   options: {
@@ -43,21 +42,13 @@ const removeBreakGlassFromMemberController = {
       displayName: request.auth.credentials.displayName
     }
 
-    const scopeName = 'breakGlass'
-    const breakGlassScope = await getScopeByName(request.db, scopeName)
-    const scope = await removeScopeFromMemberTransaction({
-      request,
-      userId,
-      scopeId: maybeObjectId(breakGlassScope?.scopeId),
-      teamId
-    })
+    const scope = await revokeBreakGlassForUser(request.db, userId)
 
     const user = await getUser(request.db, userId)
     const team = user?.teams.find((t) => t.teamId === teamId)
-    // TODO: handle this as an edge case?
     const now = new UTCDate()
     await recordAudit({
-      category: scopeName,
+      category: scopeDefinitions.breakGlass.scopeId,
       action: 'Removed',
       performedBy: requestor,
       performedAt: now,

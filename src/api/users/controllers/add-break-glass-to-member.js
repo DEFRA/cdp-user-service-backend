@@ -9,10 +9,10 @@ import {
 } from '@defra/cdp-validation-kit'
 
 import Joi from 'joi'
-import { addScopeToMember } from '../../scopes/helpers/add-scope-to-member.js'
-import { getScopeByName } from '../../scopes/helpers/get-scope-by-name.js'
 import { recordAudit } from '../../../helpers/audit/record-audit.js'
 import { getUser } from '../helpers/get-user.js'
+import { grantBreakGlassToUser } from '../../permissions/helpers/relationships/relationships.js'
+import { scopeDefinitions } from '../../../config/scopes.js'
 
 const addBreakGlassToMemberController = {
   options: {
@@ -48,29 +48,23 @@ const addBreakGlassToMemberController = {
       displayName: request.auth.credentials.displayName
     }
 
-    const scopeName = 'breakGlass'
-    const breakGlassScope = await getScopeByName(request.db, scopeName)
-
     // breakGlass start date is UTC now and end date is 2 hours later
     const utcDateNow = new UTCDate()
     const utcDatePlusTwoHours = addHours(utcDateNow, 2)
-    // TODO: grant breakglass as a edge case.
-    const scope = await addScopeToMember({
-      request,
+
+    const scope = await grantBreakGlassToUser(
+      request.db,
       userId,
-      scopeId: breakGlassScope?.scopeId,
       teamId,
-      startDate: utcDateNow,
-      endDate: utcDatePlusTwoHours,
-      requestor,
-      reason
-    })
+      utcDateNow,
+      utcDatePlusTwoHours
+    )
 
     const user = await getUser(request.db, userId)
     const team = user?.teams.find((t) => t.teamId === teamId)
 
     await recordAudit({
-      category: scopeName,
+      category: scopeDefinitions.breakGlass.scopeId,
       action: 'Granted',
       performedBy: requestor,
       performedAt: utcDateNow,

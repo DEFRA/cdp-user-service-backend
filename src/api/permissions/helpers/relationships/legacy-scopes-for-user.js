@@ -1,6 +1,27 @@
 import { scopes } from '@defra/cdp-validation-kit'
+import { scopeDefinitions } from '../../../../config/scopes.js'
 
 async function getLegacyScopesForUser(db, userId) {
+  const now = new Date()
+  const activeWindow = {
+    $and: [
+      {
+        $or: [
+          { start: { $lte: now } },
+          { start: null },
+          { start: { $exists: false } }
+        ]
+      },
+      {
+        $or: [
+          { end: { $gte: now } },
+          { end: null },
+          { end: { $exists: false } }
+        ]
+      }
+    ]
+  }
+
   const result = await db
     .collection('relationships')
     .aggregate([
@@ -8,26 +29,18 @@ async function getLegacyScopesForUser(db, userId) {
         $match: {
           subject: userId,
           subjectType: 'user',
-          $and: [
-            { $or: [{ start: { $gte: new Date() } }, { start: null }] },
-            { $or: [{ end: { $gt: new Date() } }, { end: null }] }
-          ]
+          ...activeWindow
         }
       },
       {
         $graphLookup: {
-          from: collection,
+          from: 'relationships',
           startWith: '$resource',
           connectFromField: 'resource',
           connectToField: 'subject',
           as: 'path',
           maxDepth: 5,
-          restrictSearchWithMatch: {
-            $and: [
-              { $or: [{ start: { $gte: new Date() } }, { start: null }] },
-              { $or: [{ end: { $gt: new Date() } }, { end: null }] }
-            ]
-          }
+          restrictSearchWithMatch: activeWindow
         }
       }
     ])
@@ -43,13 +56,17 @@ async function getLegacyScopesForUser(db, userId) {
   }
 
   for (const r of result) {
-    if (r.relation === 'breakglass') {
-      // TODO: check expiration?
-      perms.add(`${scopes.breakGlass}:${r.resource}`)
+    // TODO: we need to make change up how team scoped breakglass is granted
+    if (r.relation === scopeDefinitions.breakGlass.scopeId) {
+      // TODO: check expiration
+      perms.add(`permission:breakGlass:team:${r.resource}`)
       scopeFlags.hasBreakGlass = true
     } else if (r.relation === 'granted') {
       // Directly granted permissions
       perms.add(`${r.resourceType}:${r.resource}`)
+      if (r.resource === scopeDefinitions.breakGlass.scopeId) {
+        scopeFlags.hasBreakGlass = true
+      }
     } else if (r.relation === 'member') {
       perms.add(`team:${r.resource}`)
       perms.add(`permission:serviceOwner:team:${r.resource}`)

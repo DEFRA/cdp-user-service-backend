@@ -1,41 +1,46 @@
-import { maybeObjectId } from '../../../helpers/maybe-objectid.js'
+import { scopeDefinitions } from '../../../config/scopes.js'
 
 async function getScope(db, scopeId) {
-  const scopes = await db
-    .collection('scopes')
-    .aggregate([
-      { $match: { _id: maybeObjectId(scopeId) } },
-      {
-        $lookup: {
-          from: 'users',
-          localField: 'userId',
-          foreignField: '_id',
-          as: 'createdBy',
-          pipeline: [{ $project: { name: 1, userId: '$_id', _id: 0 } }]
-        }
-      },
-      {
-        $project: {
-          _id: 0,
-          scopeId: '$_id',
-          value: 1,
-          kind: 1,
-          description: 1,
-          users: 1,
-          members: 1,
-          createdAt: 1,
-          updatedAt: 1,
-          teams: 1,
-          createdBy: {
-            $first: '$createdBy'
-          }
-        }
-      },
-      { $set: { userId: '$_id' } },
-      { $unset: '_id' }
-    ])
+  const scope = scopeDefinitions[scopeId]
+
+  if (!scope) {
+    return null
+  }
+
+  const grantees = await db
+    .collection('relationships')
+    .find({
+      relation: 'granted',
+      resource: scopeId,
+      resourceType: 'permission'
+    })
     .toArray()
-  return scopes?.at(0) ?? null
+
+  const teamIds = new Set(
+    grantees.filter((g) => g.subjectType === 'team').map((g) => g.subject)
+  )
+  const userIds = new Set(
+    grantees.filter((g) => g.subjectType === 'user').map((g) => g.subject)
+  )
+
+  const teams = await db
+    .collection('teams')
+    .find({ _id: { $in: [...teamIds] } })
+    .project({ _id: 0, teamId: '$_id', teamName: '$name' })
+    .toArray()
+
+  const users = await db
+    .collection('users')
+    .find({ _id: { $in: [...userIds] } })
+    .project({ _id: 0, userId: '$_id', userName: '$name' })
+    .toArray()
+
+  return {
+    ...scope,
+    teams,
+    users,
+    members: []
+  }
 }
 
 export { getScope }

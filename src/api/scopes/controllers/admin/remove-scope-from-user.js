@@ -6,7 +6,6 @@ import {
   statusCodes
 } from '@defra/cdp-validation-kit'
 
-import { removeScopeFromUserTransaction } from '../../../../helpers/mongo/transactions/scope/remove-scope-from-user-transaction.js'
 import { revokePermissionFromUser } from '../../../permissions/helpers/relationships/relationships.js'
 
 const adminRemoveScopeFromUserController = {
@@ -28,14 +27,7 @@ const adminRemoveScopeFromUserController = {
   handler: async (request, h) => {
     const userId = request.params.userId
     const scopeId = request.params.scopeId
-
-    await revokePermissionFromUser(request.db, userId, scopeId)
-    const scope = await removeScopeFromUserTransaction({
-      request,
-      userId,
-      scopeId
-    })
-
+    const scope = await revokePermissionFromUser(request.db, userId, scopeId)
     return h.response(scope).code(statusCodes.ok)
   }
 }

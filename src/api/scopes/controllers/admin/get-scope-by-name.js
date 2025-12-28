@@ -1,6 +1,6 @@
-import { getScopeByName } from '../../helpers/get-scope-by-name.js'
 import Joi from 'joi'
 import { statusCodes, scopes } from '@defra/cdp-validation-kit'
+import { getScope } from '../../helpers/get-scope.js'
 
 const adminGetScopeByNameController = {
   options: {
@@ -17,7 +17,7 @@ const adminGetScopeByNameController = {
     }
   },
   handler: async (request, h) => {
-    const scope = await getScopeByName(request.db, request.params.scopeName)
+    const scope = await getScope(request.db, request.params.scopeName)
 
     if (!scope) {
       return h

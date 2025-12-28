@@ -6,7 +6,10 @@ import {
   userIdValidation
 } from '@defra/cdp-validation-kit'
 
-import { addScopeToMember } from '../../helpers/add-scope-to-member.js'
+import {
+  grantPermissionToUser,
+  grantTemporaryPermissionToUser
+} from '../../../permissions/helpers/relationships/relationships.js'
 
 const adminAddScopeToMemberController = {
   options: {
@@ -37,18 +40,26 @@ const adminAddScopeToMemberController = {
     const scopeId = params.scopeId
     const teamId = params.teamId
 
-    // TODO: do we handle this as relationship or just remove?
+    const memberScope = `${scopeId}:team:${teamId}`
 
-    const scope = await addScopeToMember({
-      request,
-      userId,
-      scopeId,
-      teamId,
-      startDate: payload.startAt,
-      endDate: payload.endAt
-    })
+    const start = payload.startAt
+    const end = payload.endAt
 
-    return h.response(scope).code(200)
+    if (start || end) {
+      const scope = await grantTemporaryPermissionToUser(
+        request.db,
+        userId,
+        memberScope,
+        start,
+        end
+      )
+      return h.response(scope).code(200)
+    }
+
+    {
+      const scope = await grantPermissionToUser(request.db, userId, memberScope)
+      return h.response(scope).code(200)
+    }
   }
 }
 

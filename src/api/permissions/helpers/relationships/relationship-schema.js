@@ -12,7 +12,7 @@ const relationshipSchema = Joi.object({
   subjectType: validResourceTypes.required(),
   relation: Joi.string().required(),
   resource: Joi.string().required(),
-  resourceType: validResourceTypes.valid(),
+  resourceType: validResourceTypes.required(),
   start: Joi.date(),
   end: Joi.date()
 })

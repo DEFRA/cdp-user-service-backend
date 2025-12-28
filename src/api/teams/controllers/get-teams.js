@@ -3,6 +3,32 @@ import Joi from 'joi'
 import { getTeams } from '../helpers/get-teams.js'
 import { statusCodes } from '@defra/cdp-validation-kit'
 
+/**
+ * [
+ *   {
+ *     "name": string,
+ *     "description": string,
+ *     "github": string,
+ *     "serviceCodes": [string],
+ *     "createdAt": date,
+ *     "updatedAt": date,
+ *     "scopes": [
+ *       {
+ *         "scopeId": "67d298c20bac2c4a0dc553ac",
+ *         "scopeName": "restrictedTechPython"
+ *       }
+ *     ],
+ *     "teamId": string,
+ *     "users": [
+ *       {
+ *         "userId": string,
+ *         "name": string,
+ *         "hasBreakGlass": boolean
+ *       }
+ *     ]
+ *   },...]
+ * @type {{options: {validate: {query: *|Joi.ObjectSchema<any>}}, handler: function(*, *): Promise<*>}}
+ */
 const getTeamsController = {
   options: {
     validate: {

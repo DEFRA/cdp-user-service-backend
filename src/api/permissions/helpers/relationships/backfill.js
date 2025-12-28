@@ -1,13 +1,13 @@
-import { addRelationship } from './relationships.js'
-
 async function backfill(db) {
   await db.collection('relationships').drop()
   const users = await db.collection('users').find().toArray()
   const scopes = await db.collection('scopes').find().toArray()
 
+  const bulkInsert = []
+
   for (const user of users) {
     for (const team of user.teams) {
-      await addRelationship(db, {
+      bulkInsert.push({
         subject: user._id,
         subjectType: 'user',
         relation: 'member',
@@ -19,7 +19,7 @@ async function backfill(db) {
 
   for (const scope of scopes) {
     for (const user of scope.users) {
-      await addRelationship(db, {
+      bulkInsert.push({
         subject: user.userId,
         subjectType: 'user',
         relation: 'granted',
@@ -29,7 +29,7 @@ async function backfill(db) {
     }
 
     for (const team of scope.teams) {
-      await addRelationship(db, {
+      bulkInsert.push({
         subject: team.teamId,
         subjectType: 'team',
         relation: 'granted',
@@ -39,7 +39,7 @@ async function backfill(db) {
     }
 
     for (const member of scope.members) {
-      await addRelationship(db, {
+      bulkInsert.push({
         subject: member.userId,
         subjectType: 'user',
         relation: scope.value,
@@ -48,6 +48,8 @@ async function backfill(db) {
       })
     }
   }
+
+  await db.collection('relationships').insertMany(bulkInsert)
 }
 
 export { backfill }

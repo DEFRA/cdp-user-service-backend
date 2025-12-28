@@ -6,9 +6,6 @@ import {
   statusCodes
 } from '@defra/cdp-validation-kit'
 
-import { getTeam } from '../../../teams/helpers/get-team.js'
-import { getScope } from '../../helpers/get-scope.js'
-import { removeScopeFromTeamTransaction } from '../../../../helpers/mongo/transactions/scope/remove-scope-from-team-transaction.js'
 import { revokePermissionFromTeam } from '../../../permissions/helpers/relationships/relationships.js'
 
 const adminRemoveScopeFromTeamController = {
@@ -30,19 +27,7 @@ const adminRemoveScopeFromTeamController = {
   handler: async (request, h) => {
     const teamId = request.params.teamId
     const scopeId = request.params.scopeId
-
-    const dbTeam = await getTeam(request.db, teamId)
-    const dbScope = await getScope(request.db, scopeId)
-
-    await revokePermissionFromTeam(request.db, teamId, scopeId)
-
-    const scope = await removeScopeFromTeamTransaction({
-      request,
-      teamId,
-      teamName: dbTeam.name,
-      scopeId,
-      scopeName: dbScope.value
-    })
+    const scope = await revokePermissionFromTeam(request.db, teamId, scopeId)
     return h.response(scope).code(statusCodes.ok)
   }
 }

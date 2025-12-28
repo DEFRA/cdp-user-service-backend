@@ -1,5 +1,5 @@
 import isNil from 'lodash/isNil.js'
-import { teamAggregation } from './aggregations/team.js'
+import { teamWithUserAggregation } from './aggregations/team-with-users.js'
 
 async function getTeams(db, queryParams) {
   const stages = []
@@ -33,13 +33,9 @@ async function getTeams(db, queryParams) {
     })
   }
 
-  stages.push(...teamAggregation, { $sort: { name: 1 } })
+  stages.push(...teamWithUserAggregation, { $sort: { name: 1 } })
 
   return await db.collection('teams').aggregate(stages).toArray()
 }
 
-async function getTeamsCount(db, query) {
-  return await db.collection('teams').countDocuments(query)
-}
-
-export { getTeams, getTeamsCount }
+export { getTeams }

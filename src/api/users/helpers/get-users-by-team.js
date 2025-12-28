@@ -1,8 +1,8 @@
-import { userAggregation } from './aggregations/user.js'
+import { userWithTeamsAggregation } from './aggregations/user-with-teams.js'
 
 function getUsersByTeam(db, teamId) {
   const pipeline = [
-    ...userAggregation,
+    ...userWithTeamsAggregation,
     {
       $match: {
         'teams.teamId': teamId

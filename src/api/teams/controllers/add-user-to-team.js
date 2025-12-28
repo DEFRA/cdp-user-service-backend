@@ -3,9 +3,10 @@ import { statusCodes, scopes } from '@defra/cdp-validation-kit'
 
 import { getTeam } from '../helpers/get-team.js'
 import { getUser } from '../../users/helpers/get-user.js'
-import { teamHasUser } from '../helpers/team-has-user.js'
-import { addUserToTeamTransaction } from '../../../helpers/mongo/transactions/team/add-user-to-team-transaction.js'
-import { addUserToTeam } from '../../permissions/helpers/relationships/relationships.js'
+import {
+  addUserToTeam,
+  userIsMemberOfTeam
+} from '../../permissions/helpers/relationships/relationships.js'
 
 const addUserToTeamController = {
   options: {
@@ -29,12 +30,12 @@ const addUserToTeamController = {
       throw Boom.notFound('User not found')
     }
 
-    if (teamHasUser(dbTeam, dbUser)) {
+    if (await userIsMemberOfTeam(request.db, userId, teamId)) {
       return h.response(dbTeam).code(statusCodes.ok)
     }
 
     await addUserToTeam(request.db, userId, teamId)
-    const team = await addUserToTeamTransaction(request, userId, teamId)
+    const team = await getTeam(request.db, teamId)
 
     return h.response(team).code(statusCodes.ok)
   }

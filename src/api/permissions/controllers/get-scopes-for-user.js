@@ -1,5 +1,5 @@
-import { scopesForUser } from '../helpers/scopes-for-user.js'
 import { statusCodes } from '@defra/cdp-validation-kit'
+import { getLegacyScopesForUser } from '../helpers/relationships/legacy-scopes-for-user.js'
 
 const getScopesForUserController = {
   options: {
@@ -9,8 +9,7 @@ const getScopesForUserController = {
   },
   handler: async (request, h) => {
     const credentials = request.auth.credentials
-    const scope = await scopesForUser(credentials, request.db)
-
+    const scope = await getLegacyScopesForUser(request.db, credentials?.id)
     return h.response(scope).code(statusCodes.ok)
   }
 }

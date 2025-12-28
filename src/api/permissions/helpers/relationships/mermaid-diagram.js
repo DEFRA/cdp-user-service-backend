@@ -44,8 +44,6 @@ async function generateMermaidDiagram(db, subject) {
     })
   }
 
-  console.log(ids)
-
   let mermaid = 'flowchart TD\n'
   mermaid += 'subgraph team\n'
   ids.team.forEach((id) => {

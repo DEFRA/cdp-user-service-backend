@@ -1,7 +1,7 @@
 import { isPast, isFuture } from 'date-fns'
 import { scopes } from '@defra/cdp-validation-kit'
 
-import { getUser } from '../../users/helpers/get-user.js'
+import { originalGetUser } from '../../users/helpers/get-user.js'
 
 function includeValidScopes({ startDate, endDate }) {
   const withoutDates = startDate === undefined && endDate === undefined
@@ -14,7 +14,7 @@ async function scopesForUser(credentials, db) {
   const scopeList = new Set()
 
   const userId = credentials.id
-  const user = await getUser(db, userId)
+  const user = await originalGetUser(db, userId)
 
   // user assigned scopes
   if (user) {
