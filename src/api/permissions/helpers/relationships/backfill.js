@@ -1,3 +1,6 @@
+import Joi from 'joi'
+import { strictRelationshipSchema } from './relationship-schema.js'
+
 async function backfill(db) {
   await db.collection('relationships').drop()
   const users = await db.collection('users').find().toArray()
@@ -44,10 +47,13 @@ async function backfill(db) {
         subjectType: 'user',
         relation: scope.value,
         resource: member.teamId,
-        resourceType: 'team'
+        resourceType: 'team',
+        start: member.startDate,
+        end: member.endDate
       })
     }
   }
+  Joi.assert(bulkInsert, Joi.array().items(strictRelationshipSchema))
 
   await db.collection('relationships').insertMany(bulkInsert)
 }

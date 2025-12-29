@@ -1,9 +1,13 @@
+import { activePermissionFilter } from './active-permission-filter.js'
+
 async function generateMermaidDiagram(db, subject) {
+  const activeWindow = activePermissionFilter()
+
   const result = await db
     .collection('relationships')
     .aggregate([
       {
-        $match: { subject }
+        $match: { subject, ...activeWindow }
       },
       {
         $graphLookup: {
@@ -13,12 +17,7 @@ async function generateMermaidDiagram(db, subject) {
           connectToField: 'subject',
           as: 'path',
           maxDepth: 5,
-          restrictSearchWithMatch: {
-            $and: [
-              { $or: [{ start: { $gte: new Date() } }, { start: null }] },
-              { $or: [{ end: { $gt: new Date() } }, { end: null }] }
-            ]
-          }
+          restrictSearchWithMatch: activeWindow
         }
       }
     ])

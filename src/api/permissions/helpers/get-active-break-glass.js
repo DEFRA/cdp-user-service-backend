@@ -1,76 +1,28 @@
 async function getActiveBreakGlass(db, credentials) {
   const userId = credentials.id
 
-  // TODO: rewrite this to look at the relationships.
-  const users = await db
-    .collection('users')
-    .aggregate([
-      { $match: { _id: userId } },
-      {
-        $project: {
-          _id: 0,
-          activeBreakGlass: {
-            $let: {
-              vars: {
-                arr: {
-                  $filter: {
-                    input: { $ifNull: ['$scopes', []] },
-                    as: 's',
-                    cond: {
-                      $and: [
-                        { $eq: ['$$s.scopeName', 'breakGlass'] },
-                        {
-                          $or: [
-                            {
-                              $and: [
-                                { $not: ['$$s.startDate'] },
-                                { $not: ['$$s.endDate'] }
-                              ]
-                            },
-                            {
-                              $and: [
-                                { $lte: ['$$s.startDate', '$$NOW'] },
-                                {
-                                  $or: [
-                                    { $gte: ['$$s.endDate', '$$NOW'] },
-                                    { $not: ['$$s.endDate'] }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  }
-                }
-              },
-              in: {
-                $cond: [
-                  { $gt: [{ $size: '$$arr' }, 0] },
-                  {
-                    $let: {
-                      vars: { s0: { $arrayElemAt: ['$$arr', 0] } },
-                      in: {
-                        scopeId: '$$s0.scopeId',
-                        scopeName: '$$s0.scopeName',
-                        teamId: '$$s0.teamId',
-                        teamName: '$$s0.teamName',
-                        startAt: '$$s0.startDate',
-                        endAt: '$$s0.endDate'
-                      }
-                    }
-                  },
-                  null
-                ]
-              }
-            }
-          }
-        }
-      }
-    ])
+  const teamScopedBreakglass = await db
+    .collection('relationships')
+    .find({
+      subject: userId,
+      subjectType: 'user',
+      relation: 'breakGlass'
+    })
     .toArray()
-  return users?.at(0) ?? {}
+
+  return {
+    activeBreakGlass:
+      teamScopedBreakglass
+        .map((s) => ({
+          scopeId: 'breakGlass',
+          scopeName: 'breakGlass',
+          teamId: s.resource,
+          teamName: s.resource,
+          startAt: s.start,
+          endAt: s.end
+        }))
+        .at(0) ?? null
+  }
 }
 
 export { getActiveBreakGlass }

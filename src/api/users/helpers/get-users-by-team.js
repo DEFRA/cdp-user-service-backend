@@ -2,7 +2,7 @@ import { userWithTeamsAggregation } from './aggregations/user-with-teams.js'
 
 function getUsersByTeam(db, teamId) {
   const pipeline = [
-    ...userWithTeamsAggregation,
+    ...userWithTeamsAggregation(),
     {
       $match: {
         'teams.teamId': teamId

@@ -42,7 +42,7 @@ const removeBreakGlassFromMemberController = {
       displayName: request.auth.credentials.displayName
     }
 
-    const scope = await revokeBreakGlassForUser(request.db, userId)
+    const scope = await revokeBreakGlassForUser(request.db, userId, teamId)
 
     const user = await getUser(request.db, userId)
     const team = user?.teams.find((t) => t.teamId === teamId)

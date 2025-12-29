@@ -10,7 +10,9 @@ import {
   grantPermissionToUser,
   revokePermissionFromUser,
   deleteTeamRelationships,
-  deleteUserRelationships
+  deleteUserRelationships,
+  grantBreakGlassToUser,
+  userIsMemberOfTeam
 } from './relationships.js'
 
 describe('#relationships', () => {
@@ -177,6 +179,13 @@ describe('#relationships', () => {
     await grantPermissionToUser(request.db, 'user1', 'externalTest')
     await addUserToTeam(request.db, 'user1', 'team3')
     await addUserToTeam(request.db, 'user2', 'team3')
+    await grantBreakGlassToUser(
+      request.db,
+      'user1',
+      'team1',
+      new Date(),
+      new Date()
+    )
 
     const membersBefore = await findMembersOfTeam(request.db, 'team3')
     const teamsBefore = await findTeamsOfUser(request.db, 'user1')
@@ -198,14 +207,26 @@ describe('#relationships', () => {
 
     const membersAfter = await findMembersOfTeam(request.db, 'team3')
     const teamsAfter = await findTeamsOfUser(request.db, 'user1')
-    const permissionOfUserAfter = await request.db
+    const anyRelationsOfUserAfter = await request.db
       .collection('relationships')
-      .find({ subject: 'user1', relation: 'granted' })
+      .find({ subject: 'user1' })
       .project({ _id: 0, resource: 1 })
       .toArray()
 
-    expect(membersAfter).toEqual([])
+    expect(membersAfter).toEqual(['user2'])
     expect(teamsAfter).toEqual([])
-    expect(permissionOfUserAfter.map((p) => p.resource)).toEqual([])
+    expect(anyRelationsOfUserAfter).toEqual([])
+  })
+
+  test('#userIsMemberOfTeam should return true if user is member', async () => {
+    await addUserToTeam(request.db, 'user1', 'team1')
+    await addUserToTeam(request.db, 'user1', 'team2')
+    await addUserToTeam(request.db, 'user2', 'team2')
+
+    expect(await userIsMemberOfTeam(request.db, 'user1', 'team1')).toBe(true)
+    expect(await userIsMemberOfTeam(request.db, 'user1', 'team2')).toBe(true)
+    expect(await userIsMemberOfTeam(request.db, 'user1', 'team3')).toBe(false)
+    expect(await userIsMemberOfTeam(request.db, 'user2', 'team1')).toBe(false)
+    expect(await userIsMemberOfTeam(request.db, 'user2', 'team2')).toBe(true)
   })
 })

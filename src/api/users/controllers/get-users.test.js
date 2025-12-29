@@ -12,17 +12,10 @@ import {
   userTenantFixture
 } from '../../../__fixtures__/users.js'
 import {
-  adminScopeFixture,
-  breakGlassScopeFixture,
-  externalTestScopeFixture,
-  postgresScopeFixture,
-  terminalScopeFixture,
-  testAsTenantScopeFixture
-} from '../../../__fixtures__/scopes.js'
-import {
   platformTeamFixture,
   tenantTeamFixture
 } from '../../../__fixtures__/teams.js'
+import { scopeDefinitions } from '../../../config/scopes.js'
 
 describe('GET:/users', () => {
   let server
@@ -55,14 +48,6 @@ describe('GET:/users', () => {
       await replaceManyTestHelper(collections.team, [
         platformTeamFixture,
         tenantTeamFixture
-      ])
-      await replaceManyTestHelper(collections.scope, [
-        externalTestScopeFixture,
-        postgresScopeFixture,
-        terminalScopeFixture,
-        breakGlassScopeFixture,
-        adminScopeFixture,
-        testAsTenantScopeFixture
       ])
     })
 
@@ -110,8 +95,8 @@ describe('GET:/users', () => {
           updatedAt: '2024-07-15T09:56:32.809Z',
           scopes: [
             {
-              scopeId: new ObjectId('6751e5e9a171ebffac3cc9dc'),
-              scopeName: 'terminal'
+              scopeId: scopeDefinitions.externalTest.scopeId,
+              scopeName: scopeDefinitions.externalTest.scopeId
             }
           ],
           teams: [

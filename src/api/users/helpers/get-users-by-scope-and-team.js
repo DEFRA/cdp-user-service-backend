@@ -2,7 +2,7 @@ import { userWithTeamsAggregation } from './aggregations/user-with-teams.js'
 
 function getUsersByScopeAndTeam(db, scopeId, teamId) {
   const pipeline = [
-    ...userWithTeamsAggregation,
+    ...userWithTeamsAggregation(),
     {
       $match: {
         scopes: {

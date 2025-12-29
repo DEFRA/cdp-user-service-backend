@@ -4,9 +4,26 @@ import isNil from 'lodash/isNil.js'
 const collection = 'relationships'
 
 async function createIndexes(db) {
-  await db.collection(collection).createIndex({ subject: 1, subjectType: 1 })
-  await db.collection(collection).createIndex({ resource: 1, resourceType: 1 })
-  await db.collection(collection).createIndex({ relation: 1 })
+  await db
+    .collection(collection)
+    .createIndex({ subject: 1, relation: 1, subjectType: 1 })
+  await db
+    .collection(collection)
+    .createIndex({ resource: 1, relation: 1, resourceType: 1 })
+
+  // Unique constraints
+  await db.collection(collection).createIndex(
+    {
+      subject: 1,
+      subjectType: 1,
+      relation: 1,
+      resource: 1,
+      resourceType: 1,
+      start: 1,
+      end: 1
+    },
+    { unique: true }
+  )
 
   // Automatically clean up expired permissions.
   await db
@@ -25,7 +42,15 @@ async function addRelationship(db, relationship) {
   if (error) {
     throw error
   }
-  return db.collection(collection).insertOne(value)
+  try {
+    return await db.collection(collection).insertOne(value)
+  } catch (err) {
+    if (err.code === 11000) {
+      // Duplicate key, ignore
+      return {}
+    }
+    throw err
+  }
 }
 
 /**
@@ -35,7 +60,7 @@ async function addRelationship(db, relationship) {
  * @returns {Promise<{}>}
  */
 async function removeRelationship(db, relationship) {
-  await db.collection(collection).deleteMany(relationship)
+  return await db.collection(collection).deleteMany(relationship)
 }
 
 async function addUserToTeam(db, userId, teamId) {
@@ -87,8 +112,8 @@ async function grantTemporaryPermissionToUser(
 }
 
 /**
- * Creates a short-lived, team-scoped breakglass, relationship for a given user to a given team.
- * @param db
+ * Creates a short-lived, team-scoped breakGlass, relationship for a given user to a given team.
+ * @param {{}} db
  * @param {string} userId
  * @param {string} teamId
  * @param {Date} start

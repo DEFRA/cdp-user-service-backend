@@ -1,21 +1,18 @@
 import { scopes } from '@defra/cdp-validation-kit'
 
-import { createTestServer } from '../../../../test-helpers/create-test-server.js'
+import { createServer } from '../../server.js'
+import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
 import { collections } from '../../../../test-helpers/constants.js'
-import { withTestDb } from '../../../../test-helpers/with-test-db.js'
+import {
+  deleteMany,
+  replaceMany
+} from '../../../../test-helpers/mongo-helpers.js'
 import {
   platformTeamFixture,
   teamWithoutUsers,
   tenantTeamFixture
 } from '../../../__fixtures__/teams.js'
-import {
-  adminScopeFixture,
-  breakGlassScopeFixture,
-  externalTestScopeFixture,
-  postgresScopeFixture,
-  terminalScopeFixture,
-  testAsTenantScopeFixture
-} from '../../../__fixtures__/scopes.js'
+
 import {
   userAdminFixture,
   userAdminWithTestAsTenantFixture,
@@ -24,28 +21,24 @@ import {
   memberWithGranularScopesFixture,
   memberWithExpiredBreakGlassFixture
 } from '../../../__fixtures__/users.js'
-import { getScopesForUserController } from './get-scopes-for-user.js'
 
-describe('GET /scopes endpoint', () => {
-  let server
-  let replaceMany
-  let deleteMany
+describe('GET:/scopes', () => {
+  let server, replaceManyTestHelper, deleteManyTestHelper
 
   beforeAll(async () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2025-08-12T14:16:00.000Z'))
+    mockWellKnown()
 
-    const testDb = await withTestDb()
-    replaceMany = testDb.replaceMany
-    deleteMany = testDb.deleteMany
+    server = await createServer()
+    await server.initialize()
 
-    server = await createTestServer({
-      routes: { method: 'GET', path: '/scopes', ...getScopesForUserController }
-    })
+    replaceManyTestHelper = replaceMany(server.db)
+    deleteManyTestHelper = deleteMany(server.db)
   })
 
   beforeEach(async () => {
-    await replaceMany(collections.user, [
+    await replaceManyTestHelper(collections.user, [
       userAdminFixture,
       userTenantFixture,
       userPostgresFixture,
@@ -53,23 +46,19 @@ describe('GET /scopes endpoint', () => {
       memberWithGranularScopesFixture,
       memberWithExpiredBreakGlassFixture
     ])
-    await replaceMany(collections.team, [
+    await replaceManyTestHelper(collections.team, [
       platformTeamFixture,
       tenantTeamFixture,
       teamWithoutUsers
     ])
-    await replaceMany(collections.scope, [
-      externalTestScopeFixture,
-      postgresScopeFixture,
-      terminalScopeFixture,
-      breakGlassScopeFixture,
-      adminScopeFixture,
-      testAsTenantScopeFixture
-    ])
   })
 
   afterEach(async () => {
-    await deleteMany([collections.user, collections.team, collections.scope])
+    await deleteManyTestHelper([
+      collections.user,
+      collections.team,
+      collections.scope
+    ])
   })
 
   afterAll(() => {
