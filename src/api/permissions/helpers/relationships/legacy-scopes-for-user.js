@@ -43,13 +43,9 @@ async function getLegacyScopesForUser(db, userId) {
       // Handles break-glass and other member level scopes,
       // as these emit a different permission string to normal perms
       perms.add(`permission:${r.relation}:team:${r.resource}`)
-      scopeFlags.hasBreakGlass = true
     } else if (r.relation === 'granted') {
       // Permissions granted directly to the user
       perms.add(`${r.resourceType}:${r.resource}`)
-      if (r.resource === scopeDefinitions.breakGlass.scopeId) {
-        scopeFlags.hasBreakGlass = true
-      }
     } else if (r.relation === 'member') {
       // Team membership/owner scopes.
       perms.add(`team:${r.resource}`)
@@ -58,13 +54,29 @@ async function getLegacyScopesForUser(db, userId) {
 
       // Add any scopes that the team has to the user.
       r.path.forEach((p) => {
-        if (p.relation === 'granted') {
+        if (
+          p.relation === 'granted' &&
+          p.subjectType === 'team' &&
+          p.resourceType === 'permission'
+        ) {
           perms.add(`${p.resourceType}:${p.resource}`)
         }
       })
     }
   }
 
+  // Set break glass flag
+  for (const perm of perms) {
+    if (
+      perm === scopeDefinitions.breakGlass.scopeId ||
+      perm.startsWith(`permission:${scopeDefinitions.breakGlass.scopeId}:team:`)
+    ) {
+      scopeFlags.hasBreakGlass = true
+      break
+    }
+  }
+
+  // Handle the test-as-tenant flag
   if (perms.has(scopes.testAsTenant)) {
     perms.delete(scopes.admin)
   }

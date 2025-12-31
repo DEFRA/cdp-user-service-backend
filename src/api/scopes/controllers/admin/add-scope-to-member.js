@@ -38,14 +38,13 @@ const adminAddScopeToMemberController = {
     const start = request.payload.startAt
     const end = request.payload.startAt
 
-    const dateRange = start || end ? { start, end } : {}
-
     const scope = await grantTeamScopedPermissionToUser(
       request.db,
       userId,
       teamId,
       scopeId,
-      ...dateRange
+      start,
+      end
     )
     return h.response(scope).code(200)
   }
