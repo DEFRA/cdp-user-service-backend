@@ -10,6 +10,13 @@ function includeValidScopes({ startDate, endDate }) {
   return withoutDates || isActive
 }
 
+/**
+ * DEPRECATED! This is only here so we can compare the output of the new permission generator
+ * to the old one.
+ * @param {{id: string}} credentials
+ * @param {{}} db
+ * @returns {Promise<{scopes: any[], scopeFlags: {isAdmin: boolean, isTenant: *, hasBreakGlass: *}}>}
+ */
 async function scopesForUser(credentials, db) {
   const scopeList = new Set()
 

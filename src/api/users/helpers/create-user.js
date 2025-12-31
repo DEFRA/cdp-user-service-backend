@@ -3,6 +3,12 @@ import { UTCDate } from '@date-fns/utc'
 import { getUser } from './get-user.js'
 import { removeNil } from '../../../helpers/remove-nil.js'
 
+/**
+ *
+ * @param {{}} db
+ * @param { _id: string, name: string, email: string|null, github: string|null } dbUser
+ * @returns {Promise<*|null>}
+ */
 async function createUser(db, dbUser) {
   const utcDateNow = new UTCDate()
   const newUser = {

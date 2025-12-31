@@ -1,7 +1,9 @@
-import { scopeDefinitions } from '../../../config/scopes.js'
+import { memberScopeIds, scopeDefinitions } from '../../../config/scopes.js'
+import { activePermissionFilter } from '../../permissions/helpers/relationships/active-permission-filter.js'
 
 async function getScope(db, scopeId) {
   const scope = scopeDefinitions[scopeId]
+  const memberScopes = [...memberScopeIds]
 
   if (!scope) {
     return null
@@ -14,6 +16,28 @@ async function getScope(db, scopeId) {
       resource: scopeId,
       resourceType: 'permission'
     })
+    .toArray()
+
+  const memberGrantees = await db
+    .collection('relationships')
+    .aggregate([
+      {
+        $match: {
+          relation: { $in: memberScopes },
+          subjectType: 'user',
+          ...activePermissionFilter()
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'subject',
+          foreignField: '_id',
+          as: 'user'
+        }
+      },
+      { $unwind: '$user' }
+    ])
     .toArray()
 
   const teamIds = new Set(
@@ -35,11 +59,18 @@ async function getScope(db, scopeId) {
     .project({ _id: 0, userId: '$_id', userName: '$name' })
     .toArray()
 
+  const members = memberGrantees.map((g) => ({
+    userId: g.subject,
+    userName: g.user.name,
+    teamId: g.resource,
+    teamName: g.resource
+  }))
+
   return {
     ...scope,
     teams,
     users,
-    members: []
+    members
   }
 }
 

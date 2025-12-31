@@ -6,10 +6,7 @@ import {
   userIdValidation
 } from '@defra/cdp-validation-kit'
 
-import {
-  grantPermissionToUser,
-  grantTemporaryPermissionToUser
-} from '../../../permissions/helpers/relationships/relationships.js'
+import { grantTeamScopedPermissionToUser } from '../../../permissions/helpers/relationships/relationships.js'
 
 const adminAddScopeToMemberController = {
   options: {
@@ -34,32 +31,17 @@ const adminAddScopeToMemberController = {
   },
   handler: async (request, h) => {
     const params = request.params
-    const payload = request.payload
-
     const userId = params.userId
     const scopeId = params.scopeId
     const teamId = params.teamId
 
-    const memberScope = `${scopeId}:team:${teamId}`
-
-    const start = payload.startAt
-    const end = payload.endAt
-
-    if (start || end) {
-      const scope = await grantTemporaryPermissionToUser(
-        request.db,
-        userId,
-        memberScope,
-        start,
-        end
-      )
-      return h.response(scope).code(200)
-    }
-
-    {
-      const scope = await grantPermissionToUser(request.db, userId, memberScope)
-      return h.response(scope).code(200)
-    }
+    const scope = await grantTeamScopedPermissionToUser(
+      request.db,
+      userId,
+      teamId,
+      scopeId
+    )
+    return h.response(scope).code(200)
   }
 }
 

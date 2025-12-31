@@ -1,5 +1,4 @@
-import { ObjectId } from 'mongodb'
-
+import { addHours, subHours } from 'date-fns'
 import { createServer } from '../../server.js'
 import { userAdminFixture } from '../../../__fixtures__/users.js'
 import { collections } from '../../../../test-helpers/constants.js'
@@ -9,6 +8,12 @@ import {
   deleteMany,
   replaceOne
 } from '../../../../test-helpers/mongo-helpers.js'
+import {
+  addUserToTeam,
+  grantTeamScopedPermissionToUser,
+  grantPermissionToUser
+} from '../../permissions/helpers/relationships/relationships.js'
+import { scopeDefinitions } from '../../../config/scopes.js'
 
 describe('GET:/users/{userId}', () => {
   let server
@@ -36,10 +41,32 @@ describe('GET:/users/{userId}', () => {
     beforeEach(async () => {
       await replaceOneTestHelper(collections.user, userAdminFixture)
       await replaceOneTestHelper(collections.team, platformTeamFixture)
+
+      await addUserToTeam(
+        server.db,
+        userAdminFixture._id,
+        platformTeamFixture._id
+      )
+      await grantPermissionToUser(
+        server.db,
+        userAdminFixture._id,
+        scopeDefinitions.externalTest.scopeId
+      )
+
+      await grantTeamScopedPermissionToUser(
+        server.db,
+        userAdminFixture._id,
+        platformTeamFixture._id,
+        scopeDefinitions.breakGlass.scopeId,
+        subHours(new Date(), 1),
+        addHours(new Date(), 1)
+      )
     })
 
     afterEach(async () => {
       await deleteManyTestHelper([collections.user])
+      await deleteManyTestHelper([collections.team])
+      await deleteManyTestHelper([collections.relationship])
     })
 
     test('Should provide expected response', async () => {
@@ -58,22 +85,18 @@ describe('GET:/users/{userId}', () => {
         github: 'AdminUser',
         scopes: [
           {
-            scopeId: new ObjectId('6751e606a171ebffac3cc9dd'),
-            scopeName: 'breakGlass'
-          },
-          {
-            scopeId: new ObjectId('7751e606a171ebffac3cc9dd'),
-            scopeName: 'admin'
+            scopeId: scopeDefinitions.externalTest.scopeId,
+            scopeName: scopeDefinitions.externalTest.scopeId
           }
         ],
         teams: [
           {
+            description: 'The team that runs the platform',
             teamId: 'platform',
             name: 'Platform'
           }
         ],
-        userId: '62bb35d2-d4f2-4cf6-abd3-262d99727677',
-        hasBreakGlass: true
+        userId: userAdminFixture._id
       })
     })
   })
@@ -81,7 +104,7 @@ describe('GET:/users/{userId}', () => {
   describe('When a user does not exist in the DB', () => {
     test('Should provide expected not found error response', async () => {
       const { result, statusCode, statusMessage } = await getUserEndpoint(
-        '/users/8469dcf7-846d-43fd-899a-9850bc43298b'
+        '/users/this-user-doesnt-exist'
       )
 
       expect(statusCode).toBe(404)

@@ -6,7 +6,7 @@ import {
   userIdValidation
 } from '@defra/cdp-validation-kit'
 
-import { revokePermissionFromUser } from '../../../permissions/helpers/relationships/relationships.js'
+import { revokeTeamScopedPermissionFromUser } from '../../../permissions/helpers/relationships/relationships.js'
 
 const adminRemoveScopeFromMemberController = {
   options: {
@@ -31,14 +31,11 @@ const adminRemoveScopeFromMemberController = {
     const scopeId = params.scopeId
     const teamId = params.teamId
 
-    const memberScope = `${scopeId}:team:${teamId}`
-
-    // TODO: do we handle this as an edge case or just delete it?
-
-    const scope = await revokePermissionFromUser(
+    const scope = await revokeTeamScopedPermissionFromUser(
       request.db,
       userId,
-      memberScope
+      teamId,
+      scopeId
     )
     return h.response(scope).code(200)
   }

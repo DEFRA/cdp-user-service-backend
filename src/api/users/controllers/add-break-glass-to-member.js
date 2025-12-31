@@ -11,7 +11,7 @@ import {
 import Joi from 'joi'
 import { recordAudit } from '../../../helpers/audit/record-audit.js'
 import { getUser } from '../helpers/get-user.js'
-import { grantBreakGlassToUser } from '../../permissions/helpers/relationships/relationships.js'
+import { grantTeamScopedPermissionToUser } from '../../permissions/helpers/relationships/relationships.js'
 import { scopeDefinitions } from '../../../config/scopes.js'
 
 const addBreakGlassToMemberController = {
@@ -52,10 +52,11 @@ const addBreakGlassToMemberController = {
     const utcDateNow = new UTCDate()
     const utcDatePlusTwoHours = addHours(utcDateNow, 2)
 
-    const scope = await grantBreakGlassToUser(
+    const scope = await grantTeamScopedPermissionToUser(
       request.db,
       userId,
       teamId,
+      scopeDefinitions.breakGlass.scopeId,
       utcDateNow,
       utcDatePlusTwoHours
     )

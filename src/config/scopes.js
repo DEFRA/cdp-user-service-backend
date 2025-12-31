@@ -48,3 +48,13 @@ export const scopeDefinitions = {
       "Allow a member of a team to grant the 'breakGlass' permission to team members"
   }
 }
+
+/**
+ * Provides a list of all scopes that can be applied to team members
+ * @type {Set<string>}
+ */
+export const memberScopeIds = new Set(
+  Object.values(scopeDefinitions)
+    .filter((s) => s.kind.includes('member'))
+    .map((s) => s.scopeId)
+)

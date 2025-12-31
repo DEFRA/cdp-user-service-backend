@@ -3,6 +3,11 @@ import { UTCDate } from '@date-fns/utc'
 import { getTeam } from './get-team.js'
 import { removeNil } from '../../../helpers/remove-nil.js'
 
+/**
+ * @param {{}} db
+ * @param {{ name: string, description: string, github: string|null, serviceCodes: string[]|null, alertEmailAddresses: string[]|null, alertEnvironments: string[]|null }} dbTeam
+ * @returns {Promise<null|*>}
+ */
 async function createTeam(db, dbTeam) {
   const utcDateNow = new UTCDate()
   const newTeam = {

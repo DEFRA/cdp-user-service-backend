@@ -26,8 +26,11 @@ const deleteUserController = {
   handler: async (request, h) => {
     try {
       const userId = request.params?.userId
-      await deleteUser(request.db, userId)
+      const deleted = await deleteUser(request.db, userId)
       await deleteUserRelationships(request.db, userId)
+      if (!deleted) {
+        return Boom.notFound('User not found')
+      }
       return h.response().code(statusCodes.ok)
     } catch (error) {
       if (error.isBoom) {

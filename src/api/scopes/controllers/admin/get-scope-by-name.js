@@ -1,5 +1,5 @@
 import Joi from 'joi'
-import { statusCodes, scopes } from '@defra/cdp-validation-kit'
+import { statusCodes } from '@defra/cdp-validation-kit'
 import { getScope } from '../../helpers/get-scope.js'
 
 const adminGetScopeByNameController = {
@@ -8,12 +8,6 @@ const adminGetScopeByNameController = {
       params: Joi.object({
         scopeName: Joi.string().required()
       })
-    },
-    auth: {
-      strategy: 'azure-oidc',
-      access: {
-        scope: [scopes.admin, scopes.testAsTenant]
-      }
     }
   },
   handler: async (request, h) => {

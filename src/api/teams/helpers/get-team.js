@@ -1,20 +1,5 @@
 import { teamWithUserAggregation } from './aggregations/team-with-users.js'
-
-const now = new Date()
-const activeWindow = {
-  $and: [
-    {
-      $or: [
-        { start: { $lte: now } },
-        { start: null },
-        { start: { $exists: false } }
-      ]
-    },
-    {
-      $or: [{ end: { $gte: now } }, { end: null }, { end: { $exists: false } }]
-    }
-  ]
-}
+import { activePermissionFilter } from '../../permissions/helpers/relationships/active-permission-filter.js'
 
 async function getTeam(db, teamId) {
   const teams = await db
@@ -26,22 +11,25 @@ async function getTeam(db, teamId) {
   if (!team) {
     return null
   }
-  // enrich team users with breakglass status.
-  const usersWithBreakglass = await db
-    .collection('relationships')
-    .find({
-      relation: 'breakGlass',
-      resource: teamId,
-      resourceType: 'team',
-      ...activeWindow
-    })
-    .project({ _id: 0, subject: 1 })
-    .toArray()
+  // enrich team users with break glass status.
+  const usersWithBreakGlass = new Set(
+    (
+      await db
+        .collection('relationships')
+        .find({
+          relation: 'breakGlass',
+          resource: teamId,
+          resourceType: 'team',
+          ...activePermissionFilter()
+        })
+        .project({ _id: 0, subject: 1 })
+        .toArray()
+    ).map((u) => u.subject)
+  )
 
-  usersWithBreakglass.forEach((user) => {
-    const idx = team.users.findIndex((u) => u.userId === user.subject)
-    if (idx > -1) {
-      team.users[idx].hasBreakGlass = true
+  team.users.forEach((user) => {
+    if (usersWithBreakGlass.has(user.userId)) {
+      user.hasBreakGlass = true
     }
   })
 

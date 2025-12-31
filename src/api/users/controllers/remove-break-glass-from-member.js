@@ -10,7 +10,7 @@ import {
 import Joi from 'joi'
 import { getUser } from '../helpers/get-user.js'
 import { recordAudit } from '../../../helpers/audit/record-audit.js'
-import { revokeBreakGlassForUser } from '../../permissions/helpers/relationships/relationships.js'
+import { revokeTeamScopedPermissionFromUser } from '../../permissions/helpers/relationships/relationships.js'
 import { scopeDefinitions } from '../../../config/scopes.js'
 
 const removeBreakGlassFromMemberController = {
@@ -42,7 +42,12 @@ const removeBreakGlassFromMemberController = {
       displayName: request.auth.credentials.displayName
     }
 
-    const scope = await revokeBreakGlassForUser(request.db, userId, teamId)
+    const scope = await revokeTeamScopedPermissionFromUser(
+      request.db,
+      userId,
+      teamId,
+      scopeDefinitions.breakGlass.scopeId
+    )
 
     const user = await getUser(request.db, userId)
     const team = user?.teams.find((t) => t.teamId === teamId)

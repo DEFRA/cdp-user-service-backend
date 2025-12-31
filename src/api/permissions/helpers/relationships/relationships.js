@@ -1,8 +1,17 @@
-import { relationshipSchema } from './relationship-schema.js'
+import { strictRelationshipSchema } from './relationship-schema.js'
 import isNil from 'lodash/isNil.js'
 
 const collection = 'relationships'
 
+/**
+ * Creates the indexes for the relationship collection.
+ * - Two composite indexes for searching by subject or resource.
+ * - A unique index to prevent duplicates.
+ * - A TLL based on end date to clean up expired relationships.
+ *
+ * @param {{}} db
+ * @returns {Promise<void>}
+ */
 async function createIndexes(db) {
   await db
     .collection(collection)
@@ -25,20 +34,20 @@ async function createIndexes(db) {
     { unique: true }
   )
 
-  // Automatically clean up expired permissions.
+  // Automatically clean up expired relationships.
   await db
     .collection(collection)
     .createIndex({ end: 1 }, { expireAfterSeconds: 0 })
 }
 
 /**
- *
+ * Helper to first validate and then save a relationship.
  * @param {{}} db
  * @param {{ subject: string, subjectType: user|team|permission|entity, relation: string, resource: string, resourceType: user|team|permission|entity }} relationship
  * @returns {Promise<{}>}
  */
 async function addRelationship(db, relationship) {
-  const { value, error } = relationshipSchema.validate(relationship)
+  const { value, error } = strictRelationshipSchema.validate(relationship)
   if (error) {
     throw error
   }
@@ -63,6 +72,13 @@ async function removeRelationship(db, relationship) {
   return await db.collection(collection).deleteMany(relationship)
 }
 
+/**
+ * Makes a user a member of a team.
+ * @param {{}} db
+ * @param {string} userId
+ * @param {string} teamId
+ * @returns {Promise<{}>}
+ */
 async function addUserToTeam(db, userId, teamId) {
   return addRelationship(db, {
     subject: userId,
@@ -73,6 +89,13 @@ async function addUserToTeam(db, userId, teamId) {
   })
 }
 
+/**
+ * Removes a user from a team.
+ * @param {{}} db
+ * @param {string} userId
+ * @param {string} teamId
+ * @returns {Promise<{}>}
+ */
 async function removeUserFromTeam(db, userId, teamId) {
   return removeRelationship(db, {
     subject: userId,
@@ -93,9 +116,20 @@ async function grantPermissionToUser(db, userId, permission) {
   })
 }
 
-async function grantTemporaryPermissionToUser(
+/**
+ * Creates a short-lived, team-scoped breakGlass, relationship for a given user to a given team.
+ * @param {{}} db
+ * @param {string} userId
+ * @param {string} teamId
+ * @param {string} permission
+ * @param {Date|null} start
+ * @param {Date|null} end
+ * @returns {Promise<{}>}
+ */
+async function grantTeamScopedPermissionToUser(
   db,
   userId,
+  teamId,
   permission,
   start,
   end
@@ -103,53 +137,45 @@ async function grantTemporaryPermissionToUser(
   return addRelationship(db, {
     subject: userId,
     subjectType: 'user',
-    relation: 'granted',
-    resource: permission,
-    resourceType: 'permission',
-    start,
-    end
-  })
-}
-
-/**
- * Creates a short-lived, team-scoped breakGlass, relationship for a given user to a given team.
- * @param {{}} db
- * @param {string} userId
- * @param {string} teamId
- * @param {Date} start
- * @param {Date} end
- * @returns {Promise<{}>}
- */
-async function grantBreakGlassToUser(db, userId, teamId, start, end) {
-  return addRelationship(db, {
-    subject: userId,
-    subjectType: 'user',
-    relation: 'breakGlass',
+    relation: permission,
     resource: teamId,
     resourceType: 'team',
-    start,
-    end
+    ...(start || end ? { start, end } : {})
   })
 }
 
 /**
- * Revokes ALL breakGlass relationships for a given user against a given team
+ * Revokes ALL team-scoped relationships of that type for a given user against a given team.
  *
  * @param {{}} db
  * @param {string} userId
  * @param {string} teamId
+ * @param {string} permission
  * @returns {Promise<{}>}
  */
-async function revokeBreakGlassForUser(db, userId, teamId) {
+async function revokeTeamScopedPermissionFromUser(
+  db,
+  userId,
+  teamId,
+  permission
+) {
   return removeRelationship(db, {
     subject: userId,
     subjectType: 'user',
-    relation: 'breakGlass',
+    relation: permission,
     resourceType: 'team',
     resource: teamId
   })
 }
 
+/**
+ * Removes a given permission granted to a user. Does change permissions inherited from their teams.
+ * Also does not remove team scoped permissions, for that you'll need to call removeTeamScopedPermissionForUser.
+ * @param {{}} db
+ * @param {string} userId
+ * @param {string} permission
+ * @returns {Promise<{}>}
+ */
 async function revokePermissionFromUser(db, userId, permission) {
   return removeRelationship(db, {
     subject: userId,
@@ -160,24 +186,13 @@ async function revokePermissionFromUser(db, userId, permission) {
   })
 }
 
-async function revokeTemporaryPermissionFromUser(
-  db,
-  userId,
-  permission,
-  start,
-  end
-) {
-  return removeRelationship(db, {
-    subject: userId,
-    subjectType: 'user',
-    relation: 'granted',
-    resource: permission,
-    resourceType: 'permission',
-    start,
-    end
-  })
-}
-
+/**
+ * Grants a permission to all members of a team
+ * @param {{}} db
+ * @param {string} teamId
+ * @param {string} permission
+ * @returns {Promise<{}>}
+ */
 async function grantPermissionToTeam(db, teamId, permission) {
   return addRelationship(db, {
     subject: teamId,
@@ -188,6 +203,13 @@ async function grantPermissionToTeam(db, teamId, permission) {
   })
 }
 
+/**
+ * Removes a permission from a team (and any member of that team).
+ * @param {{}} db
+ * @param {string} teamId
+ * @param {string} permission
+ * @returns {Promise<{}>}
+ */
 async function revokePermissionFromTeam(db, teamId, permission) {
   return removeRelationship(db, {
     subject: teamId,
@@ -199,17 +221,17 @@ async function revokePermissionFromTeam(db, teamId, permission) {
 }
 
 /**
- *
+ * Returns a list of userIds that are members of that team.
  * @param {{}} db
- * @param {string} team
+ * @param {string} teamId
  * @returns {Promise<string[]>}
  */
-async function findMembersOfTeam(db, team) {
+async function findMembersOfTeam(db, teamId) {
   const result = await db
     .collection(collection)
     .find(
       {
-        resource: team,
+        resource: teamId,
         resourceType: 'team',
         relation: 'member',
         subjectType: 'user'
@@ -221,6 +243,12 @@ async function findMembersOfTeam(db, team) {
   return result.map((t) => t.subject)
 }
 
+/**
+ * Returns a list of teamIds for teams a user is a member of.
+ * @param {{}} db
+ * @param {string} userId
+ * @returns {Promise<*>}
+ */
 async function findTeamsOfUser(db, userId) {
   const result = await db
     .collection(collection)
@@ -238,6 +266,13 @@ async function findTeamsOfUser(db, userId) {
   return result.map((t) => t.resource)
 }
 
+/**
+ * Helper, returns true if user is a member of a given team
+ * @param {{}} db
+ * @param {string} userId
+ * @param {string} teamId
+ * @returns {Promise<boolean>}
+ */
 async function userIsMemberOfTeam(db, userId, teamId) {
   const result = await db.collection(collection).findOne({
     subject: userId,
@@ -250,6 +285,13 @@ async function userIsMemberOfTeam(db, userId, teamId) {
   return !isNil(result)
 }
 
+/**
+ * Deletes ALL relationships associated to a given team, including permissions & user membership.
+ * To be called when deleting a team.
+ * @param {{}} db
+ * @param {string} teamId
+ * @returns {Promise<void>}
+ */
 async function deleteTeamRelationships(db, teamId) {
   await db
     .collection(collection)
@@ -259,6 +301,13 @@ async function deleteTeamRelationships(db, teamId) {
     .deleteMany({ resource: teamId, resourceType: 'team' })
 }
 
+/**
+ * Deletes ALL relationships for a user, including permissions, breakglasses & team membership.
+ * To be called when deleting a user.
+ * @param {{}} db
+ * @param {string} userId
+ * @returns {Promise<void>}
+ */
 async function deleteUserRelationships(db, userId) {
   await db
     .collection(collection)
@@ -273,12 +322,10 @@ export {
   removeUserFromTeam,
   grantPermissionToTeam,
   grantPermissionToUser,
-  grantTemporaryPermissionToUser,
-  grantBreakGlassToUser,
+  grantTeamScopedPermissionToUser,
   revokePermissionFromTeam,
   revokePermissionFromUser,
-  revokeTemporaryPermissionFromUser,
-  revokeBreakGlassForUser,
+  revokeTeamScopedPermissionFromUser,
   deleteTeamRelationships,
   deleteUserRelationships,
   findMembersOfTeam,

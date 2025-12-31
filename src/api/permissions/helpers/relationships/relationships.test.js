@@ -11,9 +11,11 @@ import {
   revokePermissionFromUser,
   deleteTeamRelationships,
   deleteUserRelationships,
-  grantBreakGlassToUser,
-  userIsMemberOfTeam
+  userIsMemberOfTeam,
+  grantTeamScopedPermissionToUser,
+  revokeTeamScopedPermissionFromUser
 } from './relationships.js'
+import { scopeDefinitions } from '../../../../config/scopes.js'
 
 describe('#relationships', () => {
   const request = {}
@@ -179,10 +181,11 @@ describe('#relationships', () => {
     await grantPermissionToUser(request.db, 'user1', 'externalTest')
     await addUserToTeam(request.db, 'user1', 'team3')
     await addUserToTeam(request.db, 'user2', 'team3')
-    await grantBreakGlassToUser(
+    await grantTeamScopedPermissionToUser(
       request.db,
       'user1',
       'team1',
+      scopeDefinitions.breakGlass.scopeId,
       new Date(),
       new Date()
     )
@@ -228,5 +231,51 @@ describe('#relationships', () => {
     expect(await userIsMemberOfTeam(request.db, 'user1', 'team3')).toBe(false)
     expect(await userIsMemberOfTeam(request.db, 'user2', 'team1')).toBe(false)
     expect(await userIsMemberOfTeam(request.db, 'user2', 'team2')).toBe(true)
+  })
+
+  test('#grantTeamScopedPermssionToUser should grant a permission to a user scoped to the team', async () => {
+    await grantTeamScopedPermissionToUser(
+      request.db,
+      'user1',
+      'team1',
+      'breakGlass'
+    )
+
+    const result = await request.db
+      .collection('relationships')
+      .find({ subject: 'user1' })
+      .project({ _id: 0 })
+      .toArray()
+    expect(result).toEqual([
+      {
+        subject: 'user1',
+        subjectType: 'user',
+        relation: 'breakGlass',
+        resource: 'team1',
+        resourceType: 'team'
+      }
+    ])
+  })
+
+  test('#grantTeamScopedPermssionToUser should grant a permission to a user scoped to the team', async () => {
+    await grantTeamScopedPermissionToUser(
+      request.db,
+      'user1',
+      'team1',
+      'breakGlass'
+    )
+    await revokeTeamScopedPermissionFromUser(
+      request.db,
+      'user1',
+      'team1',
+      'breakGlass'
+    )
+
+    const result = await request.db
+      .collection('relationships')
+      .find({ subject: 'user1' })
+      .project({ _id: 0 })
+      .toArray()
+    expect(result).toEqual([])
   })
 })

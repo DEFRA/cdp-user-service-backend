@@ -1,9 +1,10 @@
 import { scopes } from '@defra/cdp-validation-kit'
-import { scopeDefinitions } from '../../../../config/scopes.js'
+import { memberScopeIds, scopeDefinitions } from '../../../../config/scopes.js'
 import { activePermissionFilter } from './active-permission-filter.js'
 
 async function getLegacyScopesForUser(db, userId) {
   const activeWindow = activePermissionFilter()
+
   const result = await db
     .collection('relationships')
     .aggregate([
@@ -38,21 +39,24 @@ async function getLegacyScopesForUser(db, userId) {
   }
 
   for (const r of result) {
-    if (r.relation === scopeDefinitions.breakGlass.scopeId) {
-      perms.add(`permission:breakGlass:team:${r.resource}`)
+    if (memberScopeIds.has(r.relation)) {
+      // Handles break-glass and other member level scopes,
+      // as these emit a different permission string to normal perms
+      perms.add(`permission:${r.relation}:team:${r.resource}`)
       scopeFlags.hasBreakGlass = true
     } else if (r.relation === 'granted') {
-      // Directly granted permissions
+      // Permissions granted directly to the user
       perms.add(`${r.resourceType}:${r.resource}`)
       if (r.resource === scopeDefinitions.breakGlass.scopeId) {
         scopeFlags.hasBreakGlass = true
       }
     } else if (r.relation === 'member') {
+      // Team membership/owner scopes.
       perms.add(`team:${r.resource}`)
       perms.add(`permission:serviceOwner:team:${r.resource}`)
       perms.add(scopes.tenant)
 
-      // Inherit the teams permissions
+      // Add any scopes that the team has to the user.
       r.path.forEach((p) => {
         if (p.relation === 'granted') {
           perms.add(`${p.resourceType}:${p.resource}`)
@@ -60,6 +64,11 @@ async function getLegacyScopesForUser(db, userId) {
       })
     }
   }
+
+  if (perms.has(scopes.testAsTenant)) {
+    perms.delete(scopes.admin)
+  }
+
   // If the user is an admin, remove the tenant permission
   // Since this is a display concern, maybe move the logs to PFE?
   if (perms.has(scopes.admin)) {

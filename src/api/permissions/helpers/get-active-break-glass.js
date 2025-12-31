@@ -1,12 +1,15 @@
+import { activePermissionFilter } from './relationships/active-permission-filter.js'
+
 async function getActiveBreakGlass(db, credentials) {
   const userId = credentials.id
-
+  const activeWindow = activePermissionFilter()
   const teamScopedBreakglass = await db
     .collection('relationships')
     .find({
       subject: userId,
       subjectType: 'user',
-      relation: 'breakGlass'
+      relation: 'breakGlass',
+      ...activeWindow
     })
     .toArray()
 

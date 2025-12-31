@@ -1,19 +1,16 @@
 import { getScope } from '../../helpers/get-scope.js'
 import Joi from 'joi'
-import { scopes, statusCodes } from '@defra/cdp-validation-kit'
+import { statusCodes } from '@defra/cdp-validation-kit'
+import { scopeDefinitions } from '../../../../config/scopes.js'
 
 const adminGetScopeController = {
   options: {
     validate: {
       params: Joi.object({
-        scopeId: Joi.string().required()
+        scopeId: Joi.string()
+          .valid(...Object.keys(scopeDefinitions))
+          .required()
       })
-    },
-    auth: {
-      strategy: 'azure-oidc',
-      access: {
-        scope: [scopes.admin]
-      }
     }
   },
   handler: async (request, h) => {

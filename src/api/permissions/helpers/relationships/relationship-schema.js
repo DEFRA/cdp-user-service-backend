@@ -1,22 +1,5 @@
 import Joi from 'joi'
 
-const validResourceTypes = Joi.string().valid(
-  'user',
-  'team',
-  'permission',
-  'entity'
-)
-
-const relationshipSchema = Joi.object({
-  subject: Joi.string().required(),
-  subjectType: validResourceTypes.required(),
-  relation: Joi.string().required(),
-  resource: Joi.string().required(),
-  resourceType: validResourceTypes.required(),
-  start: Joi.date().optional(),
-  end: Joi.date().optional()
-})
-
 const memberSchema = Joi.object({
   subject: Joi.string().required(),
   subjectType: Joi.string().valid('user').required(),
@@ -51,4 +34,4 @@ const strictRelationshipSchema = Joi.alternatives([
   breakGlassSchema
 ])
 
-export { relationshipSchema, strictRelationshipSchema }
+export { strictRelationshipSchema }

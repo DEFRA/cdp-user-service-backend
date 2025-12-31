@@ -1,5 +1,5 @@
-function activePermissionFilter() {
-  const now = Date.now()
+function activePermissionFilter(currentDate = null) {
+  const now = currentDate ?? new Date()
   return {
     $and: [
       {

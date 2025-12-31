@@ -62,12 +62,6 @@ async function generateMermaidDiagram(db, subject) {
   })
   mermaid += 'end\n'
 
-  /*mermaid += 'subgraph service\n'
-  ids.forEach((id) => {
-    if (id.startsWith('service:')) mermaid += '    ' + id + '\n'
-  })
-  mermaid += 'end\n'
-*/
   seen.forEach((p) => {
     mermaid += p.replaceAll('@', '_') + '\n'
   })

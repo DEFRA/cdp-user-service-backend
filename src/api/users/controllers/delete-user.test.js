@@ -60,7 +60,7 @@ describe('DELETE:/users/{userId}', () => {
   describe('When user id does not exist in the db', () => {
     test('Should provide expected error response', async () => {
       const { result, statusCode, statusMessage } = await deleteUserEndpoint(
-        '/users/8469dcf7-846d-43fd-899a-9850bc43298b'
+        `/users/user-doesnt-exist`
       )
 
       expect(statusCode).toBe(404)
