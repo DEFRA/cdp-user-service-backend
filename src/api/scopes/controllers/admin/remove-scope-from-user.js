@@ -13,7 +13,7 @@ const adminRemoveScopeFromUserController = {
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: [scopes.admin, scopes.testAsTenant]
+        scope: [scopes.admin]
       }
     },
     validate: {

@@ -100,7 +100,6 @@ async function removeUserFromTeam(db, userId, teamId) {
   return removeRelationship(db, {
     subject: userId,
     subjectType: 'user',
-    relation: 'member',
     resource: teamId,
     resourceType: 'team'
   })

@@ -1,4 +1,5 @@
 import Joi from 'joi'
+import { memberScopeIds } from '../../../../config/scopes.js'
 
 const memberSchema = Joi.object({
   subject: Joi.string().required(),
@@ -18,10 +19,12 @@ const grantedSchema = Joi.object({
   end: Joi.date().optional()
 }).and('start', 'end')
 
-const breakGlassSchema = Joi.object({
+const teamScopedGrantsSchema = Joi.object({
   subject: Joi.string().required(),
   subjectType: Joi.string().valid('user').required(),
-  relation: Joi.string().valid('breakGlass').required(),
+  relation: Joi.string()
+    .valid(...[...memberScopeIds])
+    .required(),
   resource: Joi.string().required(),
   resourceType: Joi.string().valid('team').required(),
   start: Joi.date().optional(),
@@ -31,7 +34,7 @@ const breakGlassSchema = Joi.object({
 const strictRelationshipSchema = Joi.alternatives([
   memberSchema,
   grantedSchema,
-  breakGlassSchema
+  teamScopedGrantsSchema
 ])
 
 export { strictRelationshipSchema }

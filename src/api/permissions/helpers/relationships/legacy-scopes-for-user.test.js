@@ -5,6 +5,7 @@ import {
   grantPermissionToTeam,
   grantPermissionToUser,
   grantTeamScopedPermissionToUser,
+  removeUserFromTeam,
   revokePermissionFromTeam,
   revokePermissionFromUser,
   revokeTeamScopedPermissionFromUser
@@ -213,7 +214,7 @@ describe('#legacyScopesForUser', () => {
     })
   })
 
-  test('removing a user from a team revokes any permissions they had', async () => {
+  test('removing a permission from a user revokes just that permission', async () => {
     const userid = 'user1'
     await grantPermissionToUser(
       request.db,
@@ -291,6 +292,27 @@ describe('#legacyScopesForUser', () => {
           `user:${userid}`
         ],
         scopeFlags: { isAdmin: false, isTenant: true, hasBreakGlass: false }
+      })
+    }
+  })
+
+  test('removing a user from a team stops them inheriting the teams permissions', async () => {
+    const userid = 'user2'
+    const teamId = 'platform'
+    await grantPermissionToTeam(
+      request.db,
+      teamId,
+      scopeDefinitions.externalTest.scopeId
+    )
+    await addUserToTeam(request.db, userid, teamId)
+
+    await removeUserFromTeam(request.db, userid, teamId)
+
+    {
+      const result = await getLegacyScopesForUser(request.db, userid)
+      expect(result).toEqual({
+        scopes: [`user:${userid}`],
+        scopeFlags: { isAdmin: false, isTenant: false, hasBreakGlass: false }
       })
     }
   })
