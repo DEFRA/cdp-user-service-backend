@@ -1,11 +1,11 @@
 import { getScopesForUserController } from './controllers/get-scopes-for-user.js'
 import { getActiveBreakGlassScopeForUser } from './controllers/get-active-break-glass-scope-for-user.js'
-import { scopesForUser } from './helpers/scopes-for-user.js'
+import { originalScopesForUser } from './helpers/original-scopes-for-user.js'
 
 import { generateMermaidDiagram } from './helpers/relationships/mermaid-diagram.js'
 import { compareScopesOverview } from './helpers/relationships/check-scope-migration.js'
 import { backfill } from './helpers/relationships/backfill.js'
-import { getLegacyScopesForUser } from './helpers/relationships/legacy-scopes-for-user.js'
+import { scopesForUser } from './helpers/relationships/legacy-scopes-for-user.js'
 
 const permissions = {
   plugin: {
@@ -56,8 +56,8 @@ const permsController = {
     const user = request.query.user
 
     if (user) {
-      const v2Perms = await getLegacyScopesForUser(request.db, user)
-      const v1Perms = await scopesForUser({ id: user }, request.db)
+      const v2Perms = await scopesForUser(request.db, user)
+      const v1Perms = await originalScopesForUser({ id: user }, request.db)
       return h.response({ v2: v2Perms, v1: v1Perms }).code(200)
     } else {
       const allPerms = await compareScopesOverview(request.db)

@@ -1,7 +1,21 @@
 import { strictRelationshipSchema } from './relationship-schema.js'
 import isNil from 'lodash/isNil.js'
+import { activePermissionFilter } from './active-permission-filter.js'
 
 const collection = 'relationships'
+
+/**
+ * @typedef {Object} Relationship
+ * @param {string} subject
+ * @param {string} subjectType
+ * @param {string} relation
+ * @param {string} resource
+ * @param {string} resourceType
+ * @param {Date|null} start
+ * @param {Date|null} end
+ *
+ * @exports Relationship
+ */
 
 /**
  * Creates the indexes for the relationship collection.
@@ -246,7 +260,7 @@ async function findMembersOfTeam(db, teamId) {
  * Returns a list of teamIds for teams a user is a member of.
  * @param {{}} db
  * @param {string} userId
- * @returns {Promise<*>}
+ * @returns {Promise<string[]>}
  */
 async function findTeamsOfUser(db, userId) {
   const result = await db
@@ -263,6 +277,25 @@ async function findTeamsOfUser(db, userId) {
     .toArray()
 
   return result.map((t) => t.resource)
+}
+
+/**
+ * Returns a list of active break-glass relationships for a user.
+ * @param {{}} db
+ * @param {string} userId
+ * @returns {Promise<Relationship[]>}
+ */
+async function findActiveBreakGlassForUser(db, userId) {
+  const activeWindow = activePermissionFilter()
+  return await db
+    .collection('relationships')
+    .find({
+      subject: userId,
+      subjectType: 'user',
+      relation: 'breakGlass',
+      ...activeWindow
+    })
+    .toArray()
 }
 
 /**
@@ -327,6 +360,7 @@ export {
   revokeTeamScopedPermissionFromUser,
   deleteTeamRelationships,
   deleteUserRelationships,
+  findActiveBreakGlassForUser,
   findMembersOfTeam,
   findTeamsOfUser,
   userIsMemberOfTeam,

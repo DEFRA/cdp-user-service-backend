@@ -13,71 +13,66 @@ import {
   deleteUserRelationships,
   userIsMemberOfTeam,
   grantTeamScopedPermissionToUser,
-  revokeTeamScopedPermissionFromUser
+  revokeTeamScopedPermissionFromUser,
+  findActiveBreakGlassForUser
 } from './relationships.js'
 import { scopeDefinitions } from '../../../../config/scopes.js'
+import { subHours, addHours } from 'date-fns'
 
 describe('#relationships', () => {
-  const request = {}
+  let db = null
 
   beforeAll(async () => {
-    const { db, mongoClient } = await connectToTestMongoDB()
-    request.db = db
-    request.mongoClient = mongoClient
+    const mongo = await connectToTestMongoDB()
+    db = mongo.db
   })
 
   beforeEach(async () => {
-    await request.db.collection('relationships').drop()
-    await createIndexes(request.db)
+    await db.collection('relationships').drop()
+    await createIndexes(db)
   })
 
   test('#addUserToTeam creates a member relationship', async () => {
-    const resultBeforeAddingUser = await findMembersOfTeam(
-      request.db,
-      'platform'
-    )
+    const resultBeforeAddingUser = await findMembersOfTeam(db, 'platform')
     expect(resultBeforeAddingUser.length).toBe(0)
 
-    await addUserToTeam(request.db, 'jim', 'platform')
+    await addUserToTeam(db, 'jim', 'platform')
 
-    const membersOfTeam = await findMembersOfTeam(request.db, 'platform')
+    const membersOfTeam = await findMembersOfTeam(db, 'platform')
     expect(membersOfTeam.length).toBe(1)
     expect(membersOfTeam.sort()).toEqual(['jim'])
 
-    const teamsOfUser = await findTeamsOfUser(request.db, 'jim')
+    const teamsOfUser = await findTeamsOfUser(db, 'jim')
     expect(teamsOfUser.length).toBe(1)
     expect(teamsOfUser).toEqual(['platform'])
   })
 
   test('#addUserToTeam doesnt create duplicates', async () => {
-    const resultBeforeAddingUser = await findMembersOfTeam(
-      request.db,
-      'platform'
-    )
+    const resultBeforeAddingUser = await findMembersOfTeam(db, 'platform')
     expect(resultBeforeAddingUser.length).toBe(0)
 
-    await addUserToTeam(request.db, 'jim', 'platform')
-    await addUserToTeam(request.db, 'jim', 'platform')
+    await addUserToTeam(db, 'jim', 'platform')
+    await addUserToTeam(db, 'jim', 'platform')
 
-    const result = await findMembersOfTeam(request.db, 'platform')
+    const result = await findMembersOfTeam(db, 'platform')
     expect(result.length).toBe(1)
     expect(result.sort()).toEqual(['jim'])
   })
 
   test('#removeUserFromTeam', async () => {
-    await addUserToTeam(request.db, 'jim', 'platform')
-    const resultBeforeRemoval = await findMembersOfTeam(request.db, 'platform')
+    await addUserToTeam(db, 'jim', 'platform')
+    const resultBeforeRemoval = await findMembersOfTeam(db, 'platform')
     expect(resultBeforeRemoval.length).toBe(1)
 
-    await removeUserFromTeam(request.db, 'jim', 'platform')
-    const result = await findMembersOfTeam(request.db, 'platform')
+    await removeUserFromTeam(db, 'jim', 'platform')
+    const result = await findMembersOfTeam(db, 'platform')
     expect(result).toEqual([])
   })
 
   test('#grantPermissionToTeam should grant a permission to a team', async () => {
-    await grantPermissionToTeam(request.db, 'team1', 'admin')
+    await grantPermissionToTeam(db, 'team1', 'admin')
 
-    const result = await request.db
+    const result = await db
       .collection('relationships')
       .find({ subject: 'team1' })
       .project({ _id: 0 })
@@ -94,12 +89,12 @@ describe('#relationships', () => {
   })
 
   test('#revoketPermissionFromTeam should remove a permission to a team', async () => {
-    await grantPermissionToTeam(request.db, 'team1', 'admin')
-    await grantPermissionToTeam(request.db, 'team1', 'externalTest')
+    await grantPermissionToTeam(db, 'team1', 'admin')
+    await grantPermissionToTeam(db, 'team1', 'externalTest')
 
-    await revokePermissionFromTeam(request.db, 'team1', 'externalTest')
+    await revokePermissionFromTeam(db, 'team1', 'externalTest')
 
-    const result = await request.db
+    const result = await db
       .collection('relationships')
       .find({ subject: 'team1' })
       .project({ _id: 0 })
@@ -116,11 +111,11 @@ describe('#relationships', () => {
   })
 
   test('#revokePermissionFromUser should remove a permission to a user', async () => {
-    await grantPermissionToUser(request.db, 'jim', 'admin')
-    await grantPermissionToUser(request.db, 'jim', 'externalTest')
-    await revokePermissionFromUser(request.db, 'jim', 'externalTest')
+    await grantPermissionToUser(db, 'jim', 'admin')
+    await grantPermissionToUser(db, 'jim', 'externalTest')
+    await revokePermissionFromUser(db, 'jim', 'externalTest')
 
-    const result = await request.db
+    const result = await db
       .collection('relationships')
       .find({ subject: 'jim' })
       .project({ _id: 0 })
@@ -137,15 +132,15 @@ describe('#relationships', () => {
   })
 
   test('#deleteTeamRelationships should remove all permissions and users from the team', async () => {
-    await grantPermissionToTeam(request.db, 'team2', 'admin')
-    await grantPermissionToTeam(request.db, 'team2', 'externalTest')
-    await addUserToTeam(request.db, 'bob', 'team2')
-    await addUserToTeam(request.db, 'tony', 'team2')
+    await grantPermissionToTeam(db, 'team2', 'admin')
+    await grantPermissionToTeam(db, 'team2', 'externalTest')
+    await addUserToTeam(db, 'bob', 'team2')
+    await addUserToTeam(db, 'tony', 'team2')
 
-    const membersBefore = await findMembersOfTeam(request.db, 'team2')
-    const teamOfBobBefore = await findTeamsOfUser(request.db, 'bob')
-    const teamOfTonyBefore = await findTeamsOfUser(request.db, 'tony')
-    const permissionOfTeamBefore = await request.db
+    const membersBefore = await findMembersOfTeam(db, 'team2')
+    const teamOfBobBefore = await findTeamsOfUser(db, 'bob')
+    const teamOfTonyBefore = await findTeamsOfUser(db, 'tony')
+    const permissionOfTeamBefore = await db
       .collection('relationships')
       .find({ subject: 'team2', relation: 'granted' })
       .project({ _id: 0, resource: 1 })
@@ -159,12 +154,12 @@ describe('#relationships', () => {
       'externalTest'
     ])
 
-    await deleteTeamRelationships(request.db, 'team2')
+    await deleteTeamRelationships(db, 'team2')
 
-    const membersAfter = await findMembersOfTeam(request.db, 'team2')
-    const teamOfBobAfter = await findTeamsOfUser(request.db, 'bob')
-    const teamOfTonyAfter = await findTeamsOfUser(request.db, 'tony')
-    const permissionOfTeamAfter = await request.db
+    const membersAfter = await findMembersOfTeam(db, 'team2')
+    const teamOfBobAfter = await findTeamsOfUser(db, 'bob')
+    const teamOfTonyAfter = await findTeamsOfUser(db, 'tony')
+    const permissionOfTeamAfter = await db
       .collection('relationships')
       .find({ subject: 'team2', relation: 'granted' })
       .project({ _id: 0, resource: 1 })
@@ -177,12 +172,12 @@ describe('#relationships', () => {
   })
 
   test('#deleteUserRelationships should remove all permissions and team members for that user', async () => {
-    await grantPermissionToUser(request.db, 'user1', 'admin')
-    await grantPermissionToUser(request.db, 'user1', 'externalTest')
-    await addUserToTeam(request.db, 'user1', 'team3')
-    await addUserToTeam(request.db, 'user2', 'team3')
+    await grantPermissionToUser(db, 'user1', 'admin')
+    await grantPermissionToUser(db, 'user1', 'externalTest')
+    await addUserToTeam(db, 'user1', 'team3')
+    await addUserToTeam(db, 'user2', 'team3')
     await grantTeamScopedPermissionToUser(
-      request.db,
+      db,
       'user1',
       'team1',
       scopeDefinitions.breakGlass.scopeId,
@@ -190,10 +185,10 @@ describe('#relationships', () => {
       new Date()
     )
 
-    const membersBefore = await findMembersOfTeam(request.db, 'team3')
-    const teamsBefore = await findTeamsOfUser(request.db, 'user1')
+    const membersBefore = await findMembersOfTeam(db, 'team3')
+    const teamsBefore = await findTeamsOfUser(db, 'user1')
 
-    const permissionOfUserBefore = await request.db
+    const permissionOfUserBefore = await db
       .collection('relationships')
       .find({ subject: 'user1', relation: 'granted' })
       .project({ _id: 0, resource: 1 })
@@ -206,11 +201,11 @@ describe('#relationships', () => {
       'externalTest'
     ])
 
-    await deleteUserRelationships(request.db, 'user1')
+    await deleteUserRelationships(db, 'user1')
 
-    const membersAfter = await findMembersOfTeam(request.db, 'team3')
-    const teamsAfter = await findTeamsOfUser(request.db, 'user1')
-    const anyRelationsOfUserAfter = await request.db
+    const membersAfter = await findMembersOfTeam(db, 'team3')
+    const teamsAfter = await findTeamsOfUser(db, 'user1')
+    const anyRelationsOfUserAfter = await db
       .collection('relationships')
       .find({ subject: 'user1' })
       .project({ _id: 0, resource: 1 })
@@ -222,26 +217,21 @@ describe('#relationships', () => {
   })
 
   test('#userIsMemberOfTeam should return true if user is member', async () => {
-    await addUserToTeam(request.db, 'user1', 'team1')
-    await addUserToTeam(request.db, 'user1', 'team2')
-    await addUserToTeam(request.db, 'user2', 'team2')
+    await addUserToTeam(db, 'user1', 'team1')
+    await addUserToTeam(db, 'user1', 'team2')
+    await addUserToTeam(db, 'user2', 'team2')
 
-    expect(await userIsMemberOfTeam(request.db, 'user1', 'team1')).toBe(true)
-    expect(await userIsMemberOfTeam(request.db, 'user1', 'team2')).toBe(true)
-    expect(await userIsMemberOfTeam(request.db, 'user1', 'team3')).toBe(false)
-    expect(await userIsMemberOfTeam(request.db, 'user2', 'team1')).toBe(false)
-    expect(await userIsMemberOfTeam(request.db, 'user2', 'team2')).toBe(true)
+    expect(await userIsMemberOfTeam(db, 'user1', 'team1')).toBe(true)
+    expect(await userIsMemberOfTeam(db, 'user1', 'team2')).toBe(true)
+    expect(await userIsMemberOfTeam(db, 'user1', 'team3')).toBe(false)
+    expect(await userIsMemberOfTeam(db, 'user2', 'team1')).toBe(false)
+    expect(await userIsMemberOfTeam(db, 'user2', 'team2')).toBe(true)
   })
 
   test('#grantTeamScopedPermssionToUser should grant a permission to a user scoped to the team', async () => {
-    await grantTeamScopedPermissionToUser(
-      request.db,
-      'user1',
-      'team1',
-      'breakGlass'
-    )
+    await grantTeamScopedPermissionToUser(db, 'user1', 'team1', 'breakGlass')
 
-    const result = await request.db
+    const result = await db
       .collection('relationships')
       .find({ subject: 'user1' })
       .project({ _id: 0 })
@@ -258,24 +248,47 @@ describe('#relationships', () => {
   })
 
   test('#grantTeamScopedPermssionToUser should grant a permission to a user scoped to the team', async () => {
-    await grantTeamScopedPermissionToUser(
-      request.db,
-      'user1',
-      'team1',
-      'breakGlass'
-    )
-    await revokeTeamScopedPermissionFromUser(
-      request.db,
-      'user1',
-      'team1',
-      'breakGlass'
-    )
+    await grantTeamScopedPermissionToUser(db, 'user1', 'team1', 'breakGlass')
+    await revokeTeamScopedPermissionFromUser(db, 'user1', 'team1', 'breakGlass')
 
-    const result = await request.db
+    const result = await db
       .collection('relationships')
       .find({ subject: 'user1' })
       .project({ _id: 0 })
       .toArray()
     expect(result).toEqual([])
+  })
+
+  test('#findActiveBreakGlassForUser', async () => {
+    // Active for user 1
+    await grantTeamScopedPermissionToUser(
+      db,
+      'user1',
+      'team1',
+      scopeDefinitions.breakGlass.scopeId,
+      subHours(new Date(), 1),
+      addHours(new Date(), 1)
+    )
+    // Expired for user 1
+    await grantTeamScopedPermissionToUser(
+      db,
+      'user1',
+      'team1',
+      scopeDefinitions.breakGlass.scopeId,
+      subHours(new Date(), 3),
+      subHours(new Date(), 1)
+    )
+    // Active for user 2
+    await grantTeamScopedPermissionToUser(
+      db,
+      'user2',
+      'team1',
+      scopeDefinitions.breakGlass.scopeId,
+      subHours(new Date(), 1),
+      addHours(new Date(), 1)
+    )
+
+    const result = await findActiveBreakGlassForUser(db, 'user1')
+    expect(result.length).toEqual(1)
   })
 })

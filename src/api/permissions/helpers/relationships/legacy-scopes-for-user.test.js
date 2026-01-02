@@ -12,7 +12,7 @@ import {
 } from './relationships.js'
 import { connectToTestMongoDB } from '../../../../../test-helpers/connect-to-test-mongodb.js'
 import { scopeDefinitions } from '../../../../config/scopes.js'
-import { getLegacyScopesForUser } from './legacy-scopes-for-user.js'
+import { scopesForUser } from './legacy-scopes-for-user.js'
 import { scopes } from '@defra/cdp-validation-kit'
 
 describe('#legacyScopesForUser', () => {
@@ -36,7 +36,7 @@ describe('#legacyScopesForUser', () => {
       userid,
       scopeDefinitions.externalTest.scopeId
     )
-    const result = await getLegacyScopesForUser(request.db, userid)
+    const result = await scopesForUser(request.db, userid)
     expect(result).toEqual({
       scopes: [scopes.externalTest, `user:${userid}`],
       scopeFlags: { isAdmin: false, isTenant: false, hasBreakGlass: false }
@@ -58,7 +58,7 @@ describe('#legacyScopesForUser', () => {
     )
     await addUserToTeam(request.db, userid, teamId)
 
-    const result = await getLegacyScopesForUser(request.db, userid)
+    const result = await scopesForUser(request.db, userid)
     expect(result).toEqual({
       scopes: [
         scopes.externalTest,
@@ -79,7 +79,7 @@ describe('#legacyScopesForUser', () => {
       userid,
       scopeDefinitions.admin.scopeId
     )
-    const result = await getLegacyScopesForUser(request.db, userid)
+    const result = await scopesForUser(request.db, userid)
     expect(result).toEqual({
       scopes: [scopes.admin, `user:${userid}`],
       scopeFlags: { isAdmin: true, isTenant: false, hasBreakGlass: false }
@@ -96,7 +96,7 @@ describe('#legacyScopesForUser', () => {
     )
     await addUserToTeam(request.db, userid, teamId)
 
-    const result = await getLegacyScopesForUser(request.db, userid)
+    const result = await scopesForUser(request.db, userid)
     expect(result).toEqual({
       scopes: [
         scopes.admin,
@@ -113,7 +113,7 @@ describe('#legacyScopesForUser', () => {
     const teamId = 'foo-team'
     await addUserToTeam(request.db, userid, teamId)
 
-    const result = await getLegacyScopesForUser(request.db, userid)
+    const result = await scopesForUser(request.db, userid)
     expect(result).toEqual({
       scopes: [
         `${scopes.serviceOwner}:team:${teamId}`,
@@ -140,7 +140,7 @@ describe('#legacyScopesForUser', () => {
       subHours(now, 2)
     )
 
-    const result = await getLegacyScopesForUser(request.db, userid)
+    const result = await scopesForUser(request.db, userid)
     expect(result).toEqual({
       scopes: [
         `${scopes.serviceOwner}:team:${teamId}`,
@@ -167,7 +167,7 @@ describe('#legacyScopesForUser', () => {
       addHours(now, 1)
     )
 
-    const result = await getLegacyScopesForUser(request.db, userid)
+    const result = await scopesForUser(request.db, userid)
     expect(result).toEqual({
       scopes: [
         `permission:breakGlass:team:${teamId}`,
@@ -202,7 +202,7 @@ describe('#legacyScopesForUser', () => {
       scopeDefinitions.breakGlass.scopeId
     )
 
-    const result = await getLegacyScopesForUser(request.db, userid)
+    const result = await scopesForUser(request.db, userid)
     expect(result).toEqual({
       scopes: [
         `${scopes.serviceOwner}:team:${teamId}`,
@@ -223,7 +223,7 @@ describe('#legacyScopesForUser', () => {
     )
 
     {
-      const result = await getLegacyScopesForUser(request.db, userid)
+      const result = await scopesForUser(request.db, userid)
       expect(result).toEqual({
         scopes: [scopes.externalTest, `user:${userid}`],
         scopeFlags: { isAdmin: false, isTenant: false, hasBreakGlass: false }
@@ -237,7 +237,7 @@ describe('#legacyScopesForUser', () => {
     )
 
     {
-      const result = await getLegacyScopesForUser(request.db, userid)
+      const result = await scopesForUser(request.db, userid)
       expect(result).toEqual({
         scopes: [`user:${userid}`],
         scopeFlags: { isAdmin: false, isTenant: false, hasBreakGlass: false }
@@ -261,7 +261,7 @@ describe('#legacyScopesForUser', () => {
     await addUserToTeam(request.db, userid, teamId)
 
     {
-      const result = await getLegacyScopesForUser(request.db, userid)
+      const result = await scopesForUser(request.db, userid)
       expect(result).toEqual({
         scopes: [
           scopes.externalTest,
@@ -282,7 +282,7 @@ describe('#legacyScopesForUser', () => {
     )
 
     {
-      const result = await getLegacyScopesForUser(request.db, userid)
+      const result = await scopesForUser(request.db, userid)
       expect(result).toEqual({
         scopes: [
           scopes.restrictedTechPython,
@@ -309,7 +309,7 @@ describe('#legacyScopesForUser', () => {
     await removeUserFromTeam(request.db, userid, teamId)
 
     {
-      const result = await getLegacyScopesForUser(request.db, userid)
+      const result = await scopesForUser(request.db, userid)
       expect(result).toEqual({
         scopes: [`user:${userid}`],
         scopeFlags: { isAdmin: false, isTenant: false, hasBreakGlass: false }
@@ -332,7 +332,7 @@ describe('#legacyScopesForUser', () => {
       scopeDefinitions.testAsTenant.scopeId
     )
 
-    const result = await getLegacyScopesForUser(request.db, userid)
+    const result = await scopesForUser(request.db, userid)
     expect(result).toEqual({
       scopes: [
         'permission:serviceOwner:team:team-admin-3',

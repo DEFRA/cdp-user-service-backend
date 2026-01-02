@@ -7,6 +7,8 @@ import {
 } from '@defra/cdp-validation-kit'
 
 import { grantPermissionToUser } from '../../../permissions/helpers/relationships/relationships.js'
+import { userScopeIdValidation } from '../../helpers/schemas.js'
+import { getUser } from '../../../users/helpers/get-user.js'
 
 const adminAddScopeToUserController = {
   options: {
@@ -19,7 +21,7 @@ const adminAddScopeToUserController = {
     validate: {
       params: Joi.object({
         userId: userIdValidation,
-        scopeId: Joi.string().required()
+        scopeId: userScopeIdValidation.required()
       }),
       failAction: () => Boom.boomify(Boom.badRequest())
     }
@@ -28,6 +30,11 @@ const adminAddScopeToUserController = {
     const params = request.params
     const userId = params.userId
     const scopeId = params.scopeId
+
+    const dbUser = await getUser(request.db, userId)
+    if (!dbUser) {
+      throw Boom.notFound('User not found')
+    }
 
     const scope = await grantPermissionToUser(request.db, userId, scopeId)
     return h.response(scope).code(statusCodes.ok)

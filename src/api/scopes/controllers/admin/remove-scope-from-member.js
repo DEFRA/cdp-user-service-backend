@@ -7,6 +7,7 @@ import {
 } from '@defra/cdp-validation-kit'
 
 import { revokeTeamScopedPermissionFromUser } from '../../../permissions/helpers/relationships/relationships.js'
+import { memberOnlyScopeIdValidation } from '../../helpers/schemas.js'
 
 const adminRemoveScopeFromMemberController = {
   options: {
@@ -19,7 +20,7 @@ const adminRemoveScopeFromMemberController = {
     validate: {
       params: Joi.object({
         userId: userIdValidation,
-        scopeId: Joi.string().required(),
+        scopeId: memberOnlyScopeIdValidation.required(),
         teamId: teamIdValidation
       }),
       failAction: () => Boom.boomify(Boom.badRequest())

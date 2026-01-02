@@ -1,5 +1,5 @@
 import { statusCodes } from '@defra/cdp-validation-kit'
-import { getActiveBreakGlass } from '../helpers/get-active-break-glass.js'
+import { findActiveBreakGlassForUser } from '../helpers/relationships/relationships.js'
 
 const getActiveBreakGlassScopeForUser = {
   options: {
@@ -8,14 +8,23 @@ const getActiveBreakGlassScopeForUser = {
     }
   },
   handler: async (request, h) => {
-    const scope = await getActiveBreakGlass(
+    const breakGlass = await findActiveBreakGlassForUser(
       request.db,
       request.auth.credentials
     )
 
+    const breakGlassStatus = breakGlass.map((s) => ({
+      scopeId: 'breakGlass',
+      scopeName: 'breakGlass',
+      teamId: s.resource,
+      teamName: s.resource,
+      startAt: s.start,
+      endAt: s.end
+    }))
+
     return h
       .response({
-        activeBreakGlass: scope?.activeBreakGlass ?? null
+        activeBreakGlass: breakGlassStatus.at(0) ?? null
       })
       .code(statusCodes.ok)
   }

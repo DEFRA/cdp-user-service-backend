@@ -2,7 +2,7 @@ import { scopes } from '@defra/cdp-validation-kit'
 import { memberScopeIds, scopeDefinitions } from '../../../../config/scopes.js'
 import { activePermissionFilter } from './active-permission-filter.js'
 
-async function getLegacyScopesForUser(db, userId) {
+async function scopesForUser(db, userId) {
   const activeWindow = activePermissionFilter()
 
   const result = await db
@@ -98,4 +98,4 @@ async function getLegacyScopesForUser(db, userId) {
   }
 }
 
-export { getLegacyScopesForUser }
+export { scopesForUser }

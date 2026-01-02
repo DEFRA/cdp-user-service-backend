@@ -1,15 +1,13 @@
 import { getScope } from '../../helpers/get-scope.js'
 import Joi from 'joi'
 import { statusCodes } from '@defra/cdp-validation-kit'
-import { scopeDefinitions } from '../../../../config/scopes.js'
+import { scopeIdValidation } from '../../helpers/schemas.js'
 
 const adminGetScopeController = {
   options: {
     validate: {
       params: Joi.object({
-        scopeId: Joi.string()
-          .valid(...Object.keys(scopeDefinitions))
-          .required()
+        scopeId: scopeIdValidation.required()
       })
     }
   },

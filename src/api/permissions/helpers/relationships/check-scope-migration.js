@@ -1,7 +1,7 @@
 import { deepStrictEqual } from 'assert'
-import { scopesForUser } from '../scopes-for-user.js'
+import { originalScopesForUser } from '../original-scopes-for-user.js'
 
-import { getLegacyScopesForUser } from './legacy-scopes-for-user.js'
+import { scopesForUser } from './legacy-scopes-for-user.js'
 
 async function checkScopeMigration(db) {
   const userIds = await db
@@ -13,8 +13,8 @@ async function checkScopeMigration(db) {
   const output = []
 
   for (const user of userIds) {
-    const v2Perms = await getLegacyScopesForUser(db, user._id)
-    const v1Perms = await scopesForUser({ id: user._id }, db)
+    const v2Perms = await scopesForUser(db, user._id)
+    const v1Perms = await originalScopesForUser({ id: user._id }, db)
 
     v2Perms.scopes.sort()
     v1Perms.scopes.sort()

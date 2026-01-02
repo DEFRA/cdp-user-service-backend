@@ -17,7 +17,7 @@ function includeValidScopes({ startDate, endDate }) {
  * @param {{}} db
  * @returns {Promise<{scopes: any[], scopeFlags: {isAdmin: boolean, isTenant: *, hasBreakGlass: *}}>}
  */
-async function scopesForUser(credentials, db) {
+async function originalScopesForUser(credentials, db) {
   const scopeList = new Set()
 
   const userId = credentials.id
@@ -69,4 +69,4 @@ async function scopesForUser(credentials, db) {
   }
 }
 
-export { scopesForUser }
+export { originalScopesForUser }

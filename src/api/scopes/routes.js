@@ -3,7 +3,6 @@ import { adminGetScopeController } from './controllers/admin/get-scope.js'
 import { adminGetScopesController } from './controllers/admin/get-scopes.js'
 import { adminRemoveScopeFromTeamController } from './controllers/admin/remove-scope-from-team.js'
 import { adminRemoveScopeFromUserController } from './controllers/admin/remove-scope-from-user.js'
-import { adminGetScopeByNameController } from './controllers/admin/get-scope-by-name.js'
 import { adminAddScopeToMemberController } from './controllers/admin/add-scope-to-member.js'
 import { adminRemoveScopeFromMemberController } from './controllers/admin/remove-scope-from-member.js'
 import { adminAddScopeToUserController } from './controllers/admin/add-scope-to-user.js'
@@ -25,8 +24,8 @@ const scopes = {
         },
         {
           method: 'GET',
-          path: '/scopes/admin/name/{scopeName}',
-          ...adminGetScopeByNameController
+          path: '/scopes/admin/name/{scopeId}',
+          ...adminGetScopeController
         },
         {
           method: 'PATCH',

@@ -7,6 +7,9 @@ import {
 } from '@defra/cdp-validation-kit'
 
 import { grantTeamScopedPermissionToUser } from '../../../permissions/helpers/relationships/relationships.js'
+import { memberOnlyScopeIdValidation } from '../../helpers/schemas.js'
+import { getTeam } from '../../../teams/helpers/get-team.js'
+import { getUser } from '../../../users/helpers/get-user.js'
 
 const adminAddScopeToMemberController = {
   options: {
@@ -19,7 +22,7 @@ const adminAddScopeToMemberController = {
     validate: {
       params: Joi.object({
         userId: userIdValidation,
-        scopeId: Joi.string().required(),
+        scopeId: memberOnlyScopeIdValidation.required(),
         teamId: teamIdValidation
       }),
       payload: Joi.object({
@@ -35,8 +38,18 @@ const adminAddScopeToMemberController = {
     const scopeId = params.scopeId
     const teamId = params.teamId
 
-    const start = request.payload.startAt
-    const end = request.payload.startAt
+    const start = request.payload?.startAt
+    const end = request.payload?.endAt
+
+    const dbTeam = await getTeam(request.db, teamId)
+    if (!dbTeam) {
+      throw Boom.notFound('Team not found')
+    }
+
+    const dbUser = await getUser(request.db, userId)
+    if (!dbUser) {
+      throw Boom.notFound('User not found')
+    }
 
     const scope = await grantTeamScopedPermissionToUser(
       request.db,

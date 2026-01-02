@@ -1,9 +1,8 @@
-import { memberScopeIds, scopeDefinitions } from '../../../config/scopes.js'
+import { scopeDefinitions } from '../../../config/scopes.js'
 import { activePermissionFilter } from '../../permissions/helpers/relationships/active-permission-filter.js'
 
 async function getScope(db, scopeId) {
   const scope = scopeDefinitions[scopeId]
-  const memberScopes = [...memberScopeIds]
 
   if (!scope) {
     return null
@@ -23,7 +22,7 @@ async function getScope(db, scopeId) {
     .aggregate([
       {
         $match: {
-          relation: { $in: memberScopes },
+          relation: scopeId,
           subjectType: 'user',
           ...activePermissionFilter()
         }
