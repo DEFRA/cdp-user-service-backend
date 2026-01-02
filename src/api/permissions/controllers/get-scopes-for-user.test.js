@@ -1,12 +1,8 @@
 import { scopes } from '@defra/cdp-validation-kit'
 
-import { createServer } from '../../server.js'
-import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
+import { createTestServer } from '../../../../test-helpers/create-test-server.js'
 import { collections } from '../../../../test-helpers/constants.js'
-import {
-  deleteMany,
-  replaceMany
-} from '../../../../test-helpers/mongo-helpers.js'
+import { withTestDb } from '../../../../test-helpers/with-test-db.js'
 import {
   platformTeamFixture,
   teamWithoutUsers,
@@ -20,7 +16,6 @@ import {
   terminalScopeFixture,
   testAsTenantScopeFixture
 } from '../../../__fixtures__/scopes.js'
-
 import {
   userAdminFixture,
   userAdminWithTestAsTenantFixture,
@@ -29,24 +24,28 @@ import {
   memberWithGranularScopesFixture,
   memberWithExpiredBreakGlassFixture
 } from '../../../__fixtures__/users.js'
+import { getScopesForUserController } from './get-scopes-for-user.js'
 
-describe('GET:/scopes', () => {
-  let server, replaceManyTestHelper, deleteManyTestHelper
+describe('GET /scopes endpoint', () => {
+  let server
+  let replaceMany
+  let deleteMany
 
   beforeAll(async () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2025-08-12T14:16:00.000Z'))
-    mockWellKnown()
 
-    server = await createServer()
-    await server.initialize()
+    const testDb = await withTestDb()
+    replaceMany = testDb.replaceMany
+    deleteMany = testDb.deleteMany
 
-    replaceManyTestHelper = replaceMany(server.db)
-    deleteManyTestHelper = deleteMany(server.db)
+    server = await createTestServer({
+      routes: { method: 'GET', path: '/scopes', ...getScopesForUserController }
+    })
   })
 
   beforeEach(async () => {
-    await replaceManyTestHelper(collections.user, [
+    await replaceMany(collections.user, [
       userAdminFixture,
       userTenantFixture,
       userPostgresFixture,
@@ -54,12 +53,12 @@ describe('GET:/scopes', () => {
       memberWithGranularScopesFixture,
       memberWithExpiredBreakGlassFixture
     ])
-    await replaceManyTestHelper(collections.team, [
+    await replaceMany(collections.team, [
       platformTeamFixture,
       tenantTeamFixture,
       teamWithoutUsers
     ])
-    await replaceManyTestHelper(collections.scope, [
+    await replaceMany(collections.scope, [
       externalTestScopeFixture,
       postgresScopeFixture,
       terminalScopeFixture,
@@ -70,11 +69,7 @@ describe('GET:/scopes', () => {
   })
 
   afterEach(async () => {
-    await deleteManyTestHelper([
-      collections.user,
-      collections.team,
-      collections.scope
-    ])
+    await deleteMany([collections.user, collections.team, collections.scope])
   })
 
   afterAll(() => {

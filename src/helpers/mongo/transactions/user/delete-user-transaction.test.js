@@ -1,4 +1,5 @@
 import { addHours } from 'date-fns'
+import { scopes } from '@defra/cdp-validation-kit'
 
 import { addUserToTeamTransaction } from '../team/add-user-to-team-transaction.js'
 import { addScopeToUserTransaction } from '../scope/add-scope-to-user-transaction.js'
@@ -6,9 +7,16 @@ import { addScopeToTeamTransaction } from '../scope/add-scope-to-team-transactio
 import { addScopeToMemberTransaction } from '../scope/add-scope-to-member-transaction.js'
 import { deleteUserTransaction } from './delete-user-transaction.js'
 import { connectToTestMongoDB } from '../../../../../test-helpers/connect-to-test-mongodb.js'
-import { userTenantWithoutTeamFixture } from '../../../../__fixtures__/users.js'
+import { createTestServer } from '../../../../../test-helpers/create-test-server.js'
+import {
+  userTenantFixture,
+  userTenantWithoutTeamFixture
+} from '../../../../__fixtures__/users.js'
 import { collections } from '../../../../../test-helpers/constants.js'
-import { teamWithoutUsers } from '../../../../__fixtures__/teams.js'
+import {
+  teamWithoutUsers,
+  tenantTeamFixture
+} from '../../../../__fixtures__/teams.js'
 import {
   canGrantBreakGlassScopeFixture,
   externalTestScopeFixture,
@@ -19,6 +27,9 @@ import {
   replaceMany,
   replaceOne
 } from '../../../../../test-helpers/mongo-helpers.js'
+import { deleteUserController } from '../../../../api/users/controllers/delete-user.js'
+import { getUserController } from '../../../../api/users/controllers/get-user.js'
+import { getTeamController } from '../../../../api/teams/controllers/get-team.js'
 
 const request = {}
 const mockInfoLogger = vi.fn()
@@ -402,5 +413,116 @@ describe('#deleteUserTransaction', () => {
         userId: userTenantWithoutTeamFixture._id
       })
     ).rejects.toThrow(/User not found/)
+  })
+})
+
+describe('DELETE /users/{userId} endpoint', () => {
+  let server
+  let replaceOneHelper
+  let deleteManyHelper
+
+  beforeAll(async () => {
+    const { db } = await connectToTestMongoDB()
+    replaceOneHelper = replaceOne(db)
+    deleteManyHelper = deleteMany(db)
+
+    server = await createTestServer({
+      routes: [
+        { method: 'DELETE', path: '/users/{userId}', ...deleteUserController },
+        { method: 'GET', path: '/users/{userId}', ...getUserController },
+        { method: 'GET', path: '/teams/{teamId}', ...getTeamController }
+      ],
+      defaultAuthScopes: [scopes.admin]
+    })
+  })
+
+  afterEach(async () => {
+    await deleteManyHelper([collections.user, collections.team])
+  })
+
+  test('Should return 404 when user does not exist', async () => {
+    const { result, statusCode } = await server.inject({
+      method: 'DELETE',
+      url: '/users/8469dcf7-846d-43fd-899a-9850bc43298b',
+      auth: {
+        strategy: 'azure-oidc',
+        credentials: { scope: [scopes.admin] }
+      }
+    })
+
+    expect(statusCode).toBe(404)
+    expect(result).toMatchObject({
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'User not found'
+    })
+  })
+
+  test('Should return 200 and delete user', async () => {
+    await replaceOneHelper(collections.user, userTenantWithoutTeamFixture)
+
+    const { statusCode } = await server.inject({
+      method: 'DELETE',
+      url: `/users/${userTenantWithoutTeamFixture._id}`,
+      auth: {
+        strategy: 'azure-oidc',
+        credentials: { scope: [scopes.admin] }
+      }
+    })
+
+    expect(statusCode).toBe(200)
+
+    // Verify user was deleted via GET endpoint
+    const { statusCode: getStatusCode } = await server.inject({
+      method: 'GET',
+      url: `/users/${userTenantWithoutTeamFixture._id}`
+    })
+    expect(getStatusCode).toBe(404)
+  })
+
+  test('Should remove user from team when deleted', async () => {
+    await replaceOneHelper(collections.user, userTenantFixture)
+    await replaceOneHelper(collections.team, tenantTeamFixture)
+
+    await server.inject({
+      method: 'DELETE',
+      url: `/users/${userTenantFixture._id}`,
+      auth: {
+        strategy: 'azure-oidc',
+        credentials: { scope: [scopes.admin] }
+      }
+    })
+
+    // Verify team no longer has user via GET endpoint
+    const { result: teamResult } = await server.inject({
+      method: 'GET',
+      url: `/teams/${tenantTeamFixture._id}`
+    })
+    expect(teamResult.users).toEqual([])
+  })
+
+  test('Should return 401 without authentication', async () => {
+    const { statusCode, result } = await server.inject({
+      method: 'DELETE',
+      url: `/users/${userTenantFixture._id}`
+    })
+
+    expect(statusCode).toBe(401)
+    expect(result).toMatchObject({
+      message: 'Missing authentication'
+    })
+  })
+
+  test('Should return 403 without admin scope', async () => {
+    const { statusCode } = await server.inject({
+      method: 'DELETE',
+      url: `/users/${userTenantFixture._id}`,
+      auth: {
+        strategy: 'azure-oidc',
+        credentials: { scope: [] } // No scopes
+      }
+    })
+
+    expect(statusCode).toBe(403)
   })
 })
