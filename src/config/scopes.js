@@ -43,7 +43,7 @@ export const scopeDefinitions = {
   canGrantBreakGlass: {
     scopeId: 'canGrantBreakGlass',
     value: 'canGrantBreakGlass',
-    kind: ['user'],
+    kind: ['user', 'member'],
     description:
       "Allow a member of a team to grant the 'breakGlass' permission to team members"
   }

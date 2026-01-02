@@ -1,5 +1,3 @@
-import { ObjectId } from 'mongodb'
-
 import { collections } from '../../../../test-helpers/constants.js'
 import { createTestServer } from '../../../../test-helpers/create-test-server.js'
 import { withTestDb } from '../../../../test-helpers/with-test-db.js'
@@ -7,14 +5,6 @@ import {
   userAdminFixture,
   userTenantFixture
 } from '../../../__fixtures__/users.js'
-import {
-  adminScopeFixture,
-  breakGlassScopeFixture,
-  externalTestScopeFixture,
-  postgresScopeFixture,
-  terminalScopeFixture,
-  testAsTenantScopeFixture
-} from '../../../__fixtures__/scopes.js'
 import {
   platformTeamFixture,
   tenantTeamFixture
@@ -29,19 +19,9 @@ const adminUserResult = {
   createdAt: '2023-09-28T13:53:44.948Z',
   updatedAt: '2024-12-03T12:26:28.965Z',
   github: 'AdminUser',
-  scopes: [
-    {
-      scopeId: new ObjectId('6751e606a171ebffac3cc9dd'),
-      scopeName: 'breakGlass'
-    },
-    {
-      scopeId: new ObjectId('7751e606a171ebffac3cc9dd'),
-      scopeName: 'admin'
-    }
-  ],
-  teams: [{ teamId: 'platform', name: 'Platform' }],
-  userId: '62bb35d2-d4f2-4cf6-abd3-262d99727677',
-  hasBreakGlass: true
+  scopes: [],
+  teams: [],
+  userId: userAdminFixture._id
 }
 
 const tenantUserResult = {
@@ -49,15 +29,9 @@ const tenantUserResult = {
   email: 'tenant.user@defra.onmicrosoft.com',
   createdAt: '2023-09-28T13:55:42.049Z',
   updatedAt: '2024-07-15T09:56:32.809Z',
-  scopes: [
-    {
-      scopeId: new ObjectId('6751e5e9a171ebffac3cc9dc'),
-      scopeName: 'terminal'
-    }
-  ],
-  teams: [{ teamId: 'animalsandplants', name: 'AnimalsAndPlants' }],
-  userId: 'b7606810-f0c6-4db7-b067-ba730ef706e8',
-  hasBreakGlass: false
+  scopes: [],
+  teams: [],
+  userId: userTenantFixture._id
 }
 
 describe('getUsers', () => {
@@ -74,14 +48,6 @@ describe('getUsers', () => {
     await replaceMany(collections.team, [
       platformTeamFixture,
       tenantTeamFixture
-    ])
-    await replaceMany(collections.scope, [
-      externalTestScopeFixture,
-      postgresScopeFixture,
-      terminalScopeFixture,
-      breakGlassScopeFixture,
-      adminScopeFixture,
-      testAsTenantScopeFixture
     ])
   }
 

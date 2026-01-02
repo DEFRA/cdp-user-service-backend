@@ -1,5 +1,3 @@
-import { ObjectId } from 'mongodb'
-
 import { collections } from '../../../../test-helpers/constants.js'
 import { createTestServer } from '../../../../test-helpers/create-test-server.js'
 import { withTestDb } from '../../../../test-helpers/with-test-db.js'
@@ -16,16 +14,7 @@ const platformTeamResult = {
   alertEnvironments: ['infra-dev', 'management'],
   createdAt: '2023-09-28T13:52:01.906Z',
   updatedAt: '2024-12-04T08:17:06.795Z',
-  scopes: [
-    {
-      scopeId: new ObjectId('67500e94922c4fe819dd8832'),
-      scopeName: 'externalTest'
-    },
-    {
-      scopeId: new ObjectId('7751e606a171ebffac3cc9dd'),
-      scopeName: 'admin'
-    }
-  ],
+  scopes: [],
   teamId: 'platform',
   users: []
 }
