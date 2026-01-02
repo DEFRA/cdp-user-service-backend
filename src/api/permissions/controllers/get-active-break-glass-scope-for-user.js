@@ -10,22 +10,28 @@ const getActiveBreakGlassScopeForUser = {
   handler: async (request, h) => {
     const breakGlass = await findActiveBreakGlassForUser(
       request.db,
-      request.auth.credentials
+      request.auth.credentials.id
     )
 
-    const breakGlassStatus = breakGlass.map((s) => ({
-      scopeId: 'breakGlass',
-      scopeName: 'breakGlass',
-      teamId: s.resource,
-      teamName: s.resource,
-      startAt: s.start,
-      endAt: s.end
-    }))
+    const activeBreakGlass = breakGlass
+      .map((s) => ({
+        scopeId: 'breakGlass',
+        scopeName: 'breakGlass',
+        teamId: s.resource,
+        teamName: s.resource,
+        startAt: s.start,
+        endAt: s.end
+      }))
+      .at(0)
 
     return h
-      .response({
-        activeBreakGlass: breakGlassStatus.at(0) ?? null
-      })
+      .response(
+        activeBreakGlass
+          ? {
+              activeBreakGlass
+            }
+          : null
+      )
       .code(statusCodes.ok)
   }
 }
