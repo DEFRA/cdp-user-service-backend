@@ -5,18 +5,11 @@ import { createUser } from '../../../users/helpers/create-user.js'
 import { createTeam } from '../../../teams/helpers/create-team.js'
 import { scopeDefinitions } from '../../../../config/scopes.js'
 import { collections } from '../../../../../test-helpers/constants.js'
+import { grantTeamScopedPermissionToUser } from '../../../permissions/helpers/relationships/relationships.js'
 
-describe('#/scopes/admin/{scopeId}/member/add/{userId}/team/{teamId}', () => {
+describe('#/scopes/admin/{scopeId}/member/remove/{userId}/team/{teamId}', () => {
   let server
   let db
-
-  const team1 = { name: 'team1', description: 'team 1' }
-  const user1 = { _id: 'user1', name: 'User 1', email: 'u1@email.com' }
-  const scopeId = scopeDefinitions.breakGlass.scopeId
-  const payload = {
-    startAt: new Date(2025, 1, 1, 12, 0),
-    endAt: new Date(2025, 1, 1, 14, 0)
-  }
 
   async function callWithAuth(url, method = 'GET') {
     return await server.inject({
@@ -27,8 +20,7 @@ describe('#/scopes/admin/{scopeId}/member/add/{userId}/team/{teamId}', () => {
         credentials: {
           scope: [scopes.admin]
         }
-      },
-      payload
+      }
     })
   }
 
@@ -38,6 +30,10 @@ describe('#/scopes/admin/{scopeId}/member/add/{userId}/team/{teamId}', () => {
     await server.initialize()
     db = server.db
   })
+
+  const team1 = { name: 'team1', description: 'team 1' }
+  const user1 = { _id: 'user1', name: 'User 1', email: 'u1@email.com' }
+  const scopeId = scopeDefinitions.breakGlass.scopeId
 
   beforeEach(async () => {
     await createTeam(db, team1)
@@ -50,9 +46,11 @@ describe('#/scopes/admin/{scopeId}/member/add/{userId}/team/{teamId}', () => {
     await db.collection(collections.relationship).drop()
   })
 
-  it('should add a permission to a member', async () => {
+  it('should remove a permission from a member', async () => {
+    await grantTeamScopedPermissionToUser(db, user1._id, team1.name, scopeId)
+
     const { statusCode } = await callWithAuth(
-      `/scopes/admin/${scopeId}/member/add/${user1._id}/team/${team1.name}`,
+      `/scopes/admin/${scopeId}/member/remove/${user1._id}/team/${team1.name}`,
       'PATCH'
     )
 
@@ -64,47 +62,24 @@ describe('#/scopes/admin/{scopeId}/member/add/{userId}/team/{teamId}', () => {
       resource: team1.name
     })
 
-    expect(relationship).toMatchObject({
-      subject: user1._id,
-      subjectType: 'user',
-      relation: scopeId,
-      resource: team1.name,
-      resourceType: 'team',
-      start: payload.startAt,
-      end: payload.endAt
-    })
-  })
-
-  it('should 404 when applied to a non-existing team', async () => {
-    const { statusCode } = await callWithAuth(
-      `/scopes/admin/${scopeId}/member/add/${user1._id}/team/wrongteam`,
-      'PATCH'
-    )
-
-    expect(statusCode).toBe(404)
-  })
-
-  it('should 404 when applied to a non-existing user', async () => {
-    const { statusCode } = await callWithAuth(
-      `/scopes/admin/${scopeId}/member/add/wronguser/team/${team1.name}`,
-      'PATCH'
-    )
-    expect(statusCode).toBe(404)
+    expect(relationship).toBeNull()
   })
 
   it('should 400 when applied to a invalid scope', async () => {
     const { statusCode } = await callWithAuth(
-      `/scopes/admin/invalid/member/add/${user1._id}/team/${team1.name}`,
+      `/scopes/admin/invalid/member/remove/${user1._id}/team/${team1.name}`,
       'PATCH'
     )
+
     expect(statusCode).toBe(400)
   })
 
-  it('should 400 when applied to a non-team scope', async () => {
+  it('should 400 when applied to a non-member scope', async () => {
     const { statusCode } = await callWithAuth(
-      `/scopes/admin/admin/member/add/${user1._id}/team/wrongteam`,
+      `/scopes/admin/admin/member/remove/${user1._id}/team/${team1.name}`,
       'PATCH'
     )
+
     expect(statusCode).toBe(400)
   })
 })
