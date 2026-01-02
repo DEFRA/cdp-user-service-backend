@@ -1,4 +1,5 @@
 import { addHours } from 'date-fns'
+import { scopes } from '@defra/cdp-validation-kit'
 
 import { deleteTeamTransaction } from './delete-team-transaction.js'
 import { addUserToTeamTransaction } from './add-user-to-team-transaction.js'
@@ -6,6 +7,7 @@ import { addScopeToUserTransaction } from '../scope/add-scope-to-user-transactio
 import { addScopeToTeamTransaction } from '../scope/add-scope-to-team-transaction.js'
 import { addScopeToMemberTransaction } from '../scope/add-scope-to-member-transaction.js'
 import { connectToTestMongoDB } from '../../../../../test-helpers/connect-to-test-mongodb.js'
+import { createTestServer } from '../../../../../test-helpers/create-test-server.js'
 import { userTenantWithoutTeamFixture } from '../../../../__fixtures__/users.js'
 import { collections } from '../../../../../test-helpers/constants.js'
 import { teamWithoutUsers } from '../../../../__fixtures__/teams.js'
@@ -19,6 +21,9 @@ import {
   replaceMany,
   replaceOne
 } from '../../../../../test-helpers/mongo-helpers.js'
+import { deleteTeamController } from '../../../../api/teams/controllers/delete-team.js'
+import { getTeamController } from '../../../../api/teams/controllers/get-team.js'
+import { getUserController } from '../../../../api/users/controllers/get-user.js'
 
 const request = {}
 const mockInfoLogger = vi.fn()
@@ -389,5 +394,107 @@ describe('#deleteTeamTransaction', () => {
         teamId: teamWithoutUsers._id
       })
     ).rejects.toThrow(/Team not found/)
+  })
+})
+
+describe('DELETE /teams/{teamId} endpoint', () => {
+  let server
+  let replaceOneHelper
+  let deleteManyHelper
+
+  beforeAll(async () => {
+    const { db } = await connectToTestMongoDB()
+    replaceOneHelper = replaceOne(db)
+    deleteManyHelper = deleteMany(db)
+
+    server = await createTestServer({
+      routes: [
+        {
+          method: 'DELETE',
+          path: '/teams/{teamId}',
+          ...deleteTeamController
+        },
+        { method: 'GET', path: '/teams/{teamId}', ...getTeamController },
+        { method: 'GET', path: '/users/{userId}', ...getUserController }
+      ],
+      defaultAuthScopes: [scopes.admin]
+    })
+  })
+
+  afterEach(async () => {
+    await deleteManyHelper([collections.user, collections.team])
+  })
+
+  test('Should return 404 when team does not exist', async () => {
+    const { result, statusCode } = await server.inject({
+      method: 'DELETE',
+      url: '/teams/non-existent-team',
+      auth: {
+        strategy: 'azure-oidc',
+        credentials: { id: 'admin-user', scope: [scopes.admin] }
+      }
+    })
+
+    expect(statusCode).toBe(404)
+    expect(result).toMatchObject({
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'Team not found'
+    })
+  })
+
+  test('Should return 200 and delete team', async () => {
+    await replaceOneHelper(collections.user, userTenantWithoutTeamFixture)
+    await replaceOneHelper(collections.team, teamWithoutUsers)
+
+    const { statusCode } = await server.inject({
+      method: 'DELETE',
+      url: `/teams/${teamWithoutUsers._id}`,
+      auth: {
+        strategy: 'azure-oidc',
+        credentials: { scope: [scopes.admin] }
+      }
+    })
+
+    expect(statusCode).toBe(200)
+
+    // Verify team is deleted via GET endpoint
+    const { statusCode: getStatusCode } = await server.inject({
+      method: 'GET',
+      url: `/teams/${teamWithoutUsers._id}`
+    })
+    expect(getStatusCode).toBe(404)
+  })
+
+  test('Should return 401 without authentication', async () => {
+    const { result, statusCode } = await server.inject({
+      method: 'DELETE',
+      url: `/teams/${teamWithoutUsers._id}`
+    })
+
+    expect(statusCode).toBe(401)
+    expect(result).toMatchObject({
+      statusCode: 401,
+      error: 'Unauthorized',
+      message: 'Missing authentication'
+    })
+  })
+
+  test('Should return 403 without admin scope', async () => {
+    const { result, statusCode } = await server.inject({
+      method: 'DELETE',
+      url: `/teams/${teamWithoutUsers._id}`,
+      auth: {
+        strategy: 'azure-oidc',
+        credentials: { id: 'tenant-user', scope: ['permission:tenant'] }
+      }
+    })
+
+    expect(statusCode).toBe(403)
+    expect(result).toMatchObject({
+      statusCode: 403,
+      error: 'Forbidden',
+      message: 'Insufficient scope'
+    })
   })
 })
