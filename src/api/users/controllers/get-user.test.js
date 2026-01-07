@@ -1,5 +1,4 @@
 import { addHours, subHours } from 'date-fns'
-import { createServer } from '../../server.js'
 import { userAdminFixture } from '../../../__fixtures__/users.js'
 import { collections } from '../../../../test-helpers/constants.js'
 import { platformTeamFixture } from '../../../__fixtures__/teams.js'
@@ -14,6 +13,8 @@ import {
   grantPermissionToUser
 } from '../../permissions/helpers/relationships/relationships.js'
 import { scopeDefinitions } from '../../../config/scopes.js'
+import { createTestServer } from '../../../../test-helpers/create-test-server.js'
+import { users } from '../routes.js'
 
 describe('GET:/users/{userId}', () => {
   let server
@@ -23,7 +24,7 @@ describe('GET:/users/{userId}', () => {
   beforeAll(async () => {
     mockWellKnown()
 
-    server = await createServer()
+    server = await createTestServer({ plugins: [users] })
     await server.initialize()
 
     replaceOneTestHelper = replaceOne(server.db)

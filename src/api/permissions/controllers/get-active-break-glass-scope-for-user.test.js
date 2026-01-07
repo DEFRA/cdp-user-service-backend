@@ -11,10 +11,10 @@ import {
   userAdminFixture,
   userTenantFixture
 } from '../../../__fixtures__/users.js'
-import { getActiveBreakGlassScopeForUser } from './get-active-break-glass-scope-for-user.js'
 import { grantTeamScopedPermissionToUser } from '../helpers/relationships/relationships.js'
 import { scopeDefinitions } from '../../../config/scopes.js'
 import { addHours, subHours } from 'date-fns'
+import { permissions } from '../routes.js'
 
 describe('GET /scopes endpoint', () => {
   let server
@@ -29,11 +29,7 @@ describe('GET /scopes endpoint', () => {
     deleteMany = testDb.deleteMany
 
     server = await createTestServer({
-      routes: {
-        method: 'GET',
-        path: '/scopes/active-break-glass',
-        ...getActiveBreakGlassScopeForUser
-      }
+      plugins: [permissions]
     })
   })
 

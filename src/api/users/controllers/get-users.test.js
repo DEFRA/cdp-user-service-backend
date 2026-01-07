@@ -1,4 +1,3 @@
-import { createServer } from '../../server.js'
 import { collections } from '../../../../test-helpers/constants.js'
 import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
 import {
@@ -18,6 +17,8 @@ import {
   addUserToTeam,
   grantPermissionToUser
 } from '../../permissions/helpers/relationships/relationships.js'
+import { createTestServer } from '../../../../test-helpers/create-test-server.js'
+import { users } from '../routes.js'
 
 const adminUser = {
   name: 'Admin User',
@@ -68,7 +69,7 @@ describe('GET:/users', () => {
   beforeAll(async () => {
     mockWellKnown()
 
-    server = await createServer()
+    server = await createTestServer({ plugins: [users] })
     await server.initialize()
 
     replaceManyTestHelper = replaceMany(server.db)

@@ -1,7 +1,7 @@
 import { health } from './health/routes.js'
 import { users } from './users/routes.js'
 import { teams } from './teams/routes.js'
-import { scopes } from './scopes/routes.js'
+import { scopesAdmin } from './scopes/routes.js'
 import { permissions } from './permissions/routes.js'
 import { lookups } from './lookups/routes.js'
 
@@ -13,7 +13,7 @@ const router = {
         health,
         users,
         teams,
-        scopes,
+        scopesAdmin,
         permissions,
         lookups
       ])

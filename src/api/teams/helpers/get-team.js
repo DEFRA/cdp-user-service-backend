@@ -36,4 +36,8 @@ async function getTeam(db, teamId) {
   return team
 }
 
-export { getTeam }
+async function getTeamOnly(db, teamId) {
+  return db.collection('teams').findOne({ _id: teamId })
+}
+
+export { getTeam, getTeamOnly }

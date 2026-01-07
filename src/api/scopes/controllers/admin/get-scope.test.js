@@ -1,5 +1,4 @@
 import { mockWellKnown } from '../../../../../test-helpers/mock-well-known.js'
-import { createServer } from '../../../server.js'
 import { scopes } from '@defra/cdp-validation-kit'
 import { scopeDefinitions } from '../../../../config/scopes.js'
 import { createUser } from '../../../users/helpers/create-user.js'
@@ -10,6 +9,8 @@ import {
   grantTeamScopedPermissionToUser
 } from '../../../permissions/helpers/relationships/relationships.js'
 import { collections } from '../../../../../test-helpers/constants.js'
+import { scopesAdmin } from '../../routes.js'
+import { createTestServer } from '../../../../../test-helpers/create-test-server.js'
 
 describe("#'/scopes/admin/{scopeId}'", () => {
   let server
@@ -38,7 +39,7 @@ describe("#'/scopes/admin/{scopeId}'", () => {
 
   beforeAll(async () => {
     mockWellKnown()
-    server = await createServer()
+    server = await createTestServer({ plugins: [scopesAdmin] })
     await server.initialize()
     db = server.db
   })

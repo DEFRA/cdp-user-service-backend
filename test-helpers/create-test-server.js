@@ -28,7 +28,11 @@ import { connectToTestMongoDB } from './connect-to-test-mongodb.js'
  *   defaultAuthScopes: ['admin']
  * })
  */
-async function createTestServer({ routes, defaultAuthScopes = [] }) {
+async function createTestServer({
+  routes = [],
+  defaultAuthScopes = [],
+  plugins = []
+}) {
   const routeArray = Array.isArray(routes) ? routes : [routes]
 
   const server = hapi.server({
@@ -66,36 +70,30 @@ async function createTestServer({ routes, defaultAuthScopes = [] }) {
   server.decorate('request', 'octokit', noopOctokit)
   server.decorate('server', 'octokit', noopOctokit)
 
-  // Check if any route requires auth
-  const hasAuthRoute = routeArray.some((r) => r.options?.auth)
+  server.auth.scheme('mock-oidc', () => ({
+    authenticate: (request, h) => {
+      // Check if auth credentials were provided via server.inject({ auth: { credentials } })
+      // When no auth is provided, request.auth.credentials will be undefined
+      const providedCredentials = request.auth?.credentials
 
-  if (hasAuthRoute) {
-    // Register mock auth scheme that respects auth requirements
-    server.auth.scheme('mock-auth', () => ({
-      authenticate: (request, h) => {
-        // Check if auth credentials were provided via server.inject({ auth: { credentials } })
-        // When no auth is provided, request.auth.credentials will be undefined
-        const providedCredentials = request.auth?.credentials
-
-        if (!providedCredentials) {
-          throw Boom.unauthorized('Missing authentication')
-        }
-
-        // Use provided credentials, merging with defaults
-        const credentials = {
-          id: 'test-user-id',
-          displayName: 'Test User',
-          email: 'test@example.com',
-          scope: defaultAuthScopes,
-          ...providedCredentials
-        }
-
-        return h.authenticated({ credentials })
+      if (!providedCredentials) {
+        throw Boom.unauthorized('Missing authentication')
       }
-    }))
 
-    server.auth.strategy('azure-oidc', 'mock-auth')
-  }
+      // Use provided credentials, merging with defaults
+      const credentials = {
+        id: 'test-user-id',
+        displayName: 'Test User',
+        email: 'test@example.com',
+        scope: defaultAuthScopes,
+        ...providedCredentials
+      }
+
+      return h.authenticated({ credentials })
+    }
+  }))
+
+  server.auth.strategy('azure-oidc', 'mock-oidc')
 
   // Register all routes
   for (const route of routeArray) {
@@ -105,6 +103,10 @@ async function createTestServer({ routes, defaultAuthScopes = [] }) {
       options: route.options,
       handler: route.handler
     })
+  }
+
+  for (const plugin of plugins) {
+    await server.register(plugin)
   }
 
   await server.initialize()

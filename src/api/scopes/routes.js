@@ -7,7 +7,7 @@ import { adminAddScopeToMemberController } from './controllers/admin/add-scope-t
 import { adminRemoveScopeFromMemberController } from './controllers/admin/remove-scope-from-member.js'
 import { adminAddScopeToUserController } from './controllers/admin/add-scope-to-user.js'
 
-const scopes = {
+const scopesAdmin = {
   plugin: {
     name: 'scopes',
     register: (server) => {
@@ -62,4 +62,4 @@ const scopes = {
   }
 }
 
-export { scopes }
+export { scopesAdmin }

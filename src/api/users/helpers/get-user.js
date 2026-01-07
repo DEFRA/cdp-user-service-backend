@@ -16,6 +16,10 @@ async function getUser(db, userId) {
   return users?.at(0) ?? null
 }
 
+async function getUserOnly(db, userId) {
+  return db.collection('users').findOne({ _id: userId })
+}
+
 /**
  * This is only here to support the permission comparison endpoint to check
  * the new perms match the old ones.
@@ -31,4 +35,4 @@ async function originalGetUser(db, userId) {
   return users?.at(0) ?? null
 }
 
-export { getUser, originalGetUser }
+export { getUser, originalGetUser, getUserOnly }

@@ -10,9 +10,10 @@ import {
 
 import Joi from 'joi'
 import { recordAudit } from '../../../helpers/audit/record-audit.js'
-import { getUser } from '../helpers/get-user.js'
+import { getUserOnly } from '../helpers/get-user.js'
 import { grantTeamScopedPermissionToUser } from '../../permissions/helpers/relationships/relationships.js'
 import { scopeDefinitions } from '../../../config/scopes.js'
+import { getTeamOnly } from '../../teams/helpers/get-team.js'
 
 const addBreakGlassToMemberController = {
   options: {
@@ -42,6 +43,7 @@ const addBreakGlassToMemberController = {
     const teamId = params.teamId
     const payload = request.payload
     const reason = payload.reason
+    const scopeId = scopeDefinitions.breakGlass.scopeId
 
     const requestor = {
       id: request.auth.credentials.id,
@@ -52,20 +54,30 @@ const addBreakGlassToMemberController = {
     const utcDateNow = new UTCDate()
     const utcDatePlusTwoHours = addHours(utcDateNow, 2)
 
-    const scope = await grantTeamScopedPermissionToUser(
+    const team = await getTeamOnly(request.db, teamId)
+    const user = await getUserOnly(request.db, userId)
+
+    if (!team) {
+      return Boom.badRequest(`Invalid Team ID ${teamId}`)
+    }
+
+    if (!user) {
+      return Boom.badRequest(`Invalid User ID ${userId}`)
+    }
+
+    request.logger.info(`granting breakGlass to ${teamId}/${userId}`)
+    await grantTeamScopedPermissionToUser(
       request.db,
       userId,
       teamId,
-      scopeDefinitions.breakGlass.scopeId,
+      scopeId,
       utcDateNow,
       utcDatePlusTwoHours
     )
 
-    const user = await getUser(request.db, userId)
-    const team = user?.teams.find((t) => t.teamId === teamId)
-
+    request.logger.info(`auditing breakGlass of ${teamId}/${userId}`)
     await recordAudit({
-      category: scopeDefinitions.breakGlass.scopeId,
+      category: scopeId,
       action: 'Granted',
       performedBy: requestor,
       performedAt: utcDateNow,
@@ -81,7 +93,14 @@ const addBreakGlassToMemberController = {
       }
     })
 
-    return h.response(scope).code(statusCodes.ok)
+    request.logger.info(`break glass flow complete`)
+    return h
+      .response({
+        scopeId,
+        userId,
+        teamId
+      })
+      .code(statusCodes.ok)
   }
 }
 
