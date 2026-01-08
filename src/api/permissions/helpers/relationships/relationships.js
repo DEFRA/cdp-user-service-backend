@@ -58,8 +58,8 @@ async function createIndexes(db) {
 /**
  * Helper to first validate and then save a relationship.
  * @param {{}} db
- * @param {{ subject: string, subjectType: user|team|permission|entity, relation: string, resource: string, resourceType: user|team|permission|entity }} relationship
- * @returns {Promise<{}>}
+ * @param {Relationship} relationship
+ * @returns {Promise<Relationship>}
  */
 async function addRelationship(db, relationship) {
   const { value, error } = strictRelationshipSchema.validate(relationship)
