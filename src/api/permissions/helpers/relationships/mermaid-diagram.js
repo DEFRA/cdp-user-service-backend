@@ -1,38 +1,20 @@
-import { activePermissionFilter } from './active-permission-filter.js'
+import { findRelationshipGraphForUser } from './relationships.js'
 
 async function generateMermaidDiagram(db, subject) {
-  const activeWindow = activePermissionFilter()
+  const result = await findRelationshipGraphForUser(db, subject)
+  return relationshipsToMermaidFlowChart(result)
+}
 
-  const result = await db
-    .collection('relationships')
-    .aggregate([
-      {
-        $match: { subject, ...activeWindow }
-      },
-      {
-        $graphLookup: {
-          from: 'relationships',
-          startWith: '$resource',
-          connectFromField: 'resource',
-          connectToField: 'subject',
-          as: 'path',
-          maxDepth: 5,
-          restrictSearchWithMatch: activeWindow
-        }
-      }
-    ])
-    .toArray()
-
+function relationshipsToMermaidFlowChart(relationships) {
   const seen = new Set()
 
   const ids = {
     team: new Set(),
     user: new Set(),
-    permission: new Set(),
-    entity: new Set()
+    permission: new Set()
   }
 
-  for (const r of result) {
+  for (const r of relationships) {
     ids[r.subjectType].add(r.subject)
     ids[r.resourceType].add(r.resource)
     seen.add(`${r.subject} -->|${r.relation}| ${r.resource}`)
@@ -46,19 +28,19 @@ async function generateMermaidDiagram(db, subject) {
   let mermaid = 'flowchart TD\n'
   mermaid += 'subgraph team\n'
   ids.team.forEach((id) => {
-    mermaid += '    ' + id + '\n'
+    mermaid += `    ${id}\n`
   })
   mermaid += 'end\n'
 
   mermaid += 'subgraph user\n'
   ids.user.forEach((id) => {
-    mermaid += '    ' + id + '\n'
+    mermaid += `    ${id}\n`
   })
   mermaid += 'end\n'
 
   mermaid += 'subgraph permissions\n'
   ids.permission.forEach((id) => {
-    mermaid += '    ' + id + '\n'
+    mermaid += `    ${id}\n`
   })
   mermaid += 'end\n'
 
@@ -70,4 +52,4 @@ async function generateMermaidDiagram(db, subject) {
   return mermaid
 }
 
-export { generateMermaidDiagram }
+export { generateMermaidDiagram, relationshipsToMermaidFlowChart }

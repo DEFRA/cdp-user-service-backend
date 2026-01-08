@@ -1,33 +1,22 @@
 import { scopes } from '@defra/cdp-validation-kit'
-import { memberScopeIds, scopeDefinitions } from '../../../../config/scopes.js'
-import { activePermissionFilter } from './active-permission-filter.js'
+import { scopeDefinitions } from '../../../../config/scopes.js'
+import { createLogger } from '../../../../helpers/logging/logger.js'
+import { findRelationshipGraphForUser } from './relationships.js'
+
+const logger = createLogger()
+
+/**
+ * Provides a list of all scopes that can be applied to team members
+ * @type {Set<string>}
+ */
+const memberScopeIds = new Set(
+  Object.values(scopeDefinitions)
+    .filter((s) => s.kind.includes('member'))
+    .map((s) => s.scopeId)
+)
 
 async function scopesForUser(db, userId) {
-  const activeWindow = activePermissionFilter()
-
-  const result = await db
-    .collection('relationships')
-    .aggregate([
-      {
-        $match: {
-          subject: userId,
-          subjectType: 'user',
-          ...activeWindow
-        }
-      },
-      {
-        $graphLookup: {
-          from: 'relationships',
-          startWith: '$resource',
-          connectFromField: 'resource',
-          connectToField: 'subject',
-          as: 'path',
-          maxDepth: 5,
-          restrictSearchWithMatch: activeWindow
-        }
-      }
-    ])
-    .toArray()
+  const result = await findRelationshipGraphForUser(db, userId)
 
   const perms = new Set()
   perms.add(`user:${userId}`)
@@ -39,17 +28,16 @@ async function scopesForUser(db, userId) {
   }
 
   for (const r of result) {
-    if (memberScopeIds.has(r.relation)) {
-      // Handles break-glass and other member level scopes,
-      // as these emit a different permission string to normal perms
-      perms.add(`permission:${r.relation}:team:${r.resource}`)
-    } else if (r.relation === 'granted') {
+    if (r.relation === 'granted') {
       // Permissions granted directly to the user
       perms.add(`${r.resourceType}:${r.resource}`)
-    } else if (r.relation === 'member') {
+      continue
+    }
+
+    if (r.relation === 'member') {
       // Team membership/owner scopes.
       perms.add(`team:${r.resource}`)
-      perms.add(`permission:serviceOwner:team:${r.resource}`)
+      perms.add(`${scopes.serviceOwner}:team:${r.resource}`)
       perms.add(scopes.tenant)
 
       // Add any scopes that the team has to the user.
@@ -59,10 +47,20 @@ async function scopesForUser(db, userId) {
           p.subjectType === 'team' &&
           p.resourceType === 'permission'
         ) {
-          perms.add(`${p.resourceType}:${p.resource}`)
+          perms.add(`permission:${p.resource}`)
         }
       })
+      continue
     }
+
+    if (memberScopeIds.has(r.relation)) {
+      // Handles break-glass and other member level scopes,
+      // as these emit a different permission string to normal perms
+      perms.add(`permission:${r.relation}:team:${r.resource}`)
+      continue
+    }
+
+    logger.info(`Skipping relation ${r.subject}#${r.relation}@${r.resource}`)
   }
 
   // Set break glass flag

@@ -67,11 +67,12 @@ async function addRelationship(db, relationship) {
     throw error
   }
   try {
-    return await db.collection(collection).insertOne(value)
+    await db.collection(collection).insertOne(value)
+    return relationship
   } catch (err) {
     if (err.code === 11000) {
       // Duplicate key, ignore
-      return {}
+      return relationship
     }
     throw err
   }
@@ -84,7 +85,43 @@ async function addRelationship(db, relationship) {
  * @returns {Promise<{}>}
  */
 async function removeRelationship(db, relationship) {
-  return await db.collection(collection).deleteMany(relationship)
+  return db.collection(collection).deleteMany(relationship)
+}
+
+/**
+ * Walks the relationship graph for a user, returning all relationships, with any related ones.
+ * Related relationships are stored in the 'path' field
+ * @param {{}} db
+ * @param {string} userId
+ * @param {Date|null} currentDate
+ * @returns {Promise<Relationship[]>}
+ */
+async function findRelationshipGraphForUser(db, userId, currentDate = null) {
+  const activeWindow = activePermissionFilter(currentDate)
+
+  return await db
+    .collection('relationships')
+    .aggregate([
+      {
+        $match: {
+          subject: userId,
+          subjectType: 'user',
+          ...activeWindow
+        }
+      },
+      {
+        $graphLookup: {
+          from: 'relationships',
+          startWith: '$resource',
+          connectFromField: 'resource',
+          connectToField: 'subject',
+          as: 'path',
+          maxDepth: 5,
+          restrictSearchWithMatch: activeWindow
+        }
+      }
+    ])
+    .toArray()
 }
 
 /**
@@ -353,6 +390,7 @@ async function deleteUserRelationships(db, userId) {
 export {
   addUserToTeam,
   removeUserFromTeam,
+  findRelationshipGraphForUser,
   grantPermissionToTeam,
   grantPermissionToUser,
   grantTeamScopedPermissionToUser,
