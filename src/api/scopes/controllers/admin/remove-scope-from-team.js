@@ -6,9 +6,8 @@ import {
   statusCodes
 } from '@defra/cdp-validation-kit'
 
-import { getTeam } from '../../../teams/helpers/get-team.js'
-import { getScope } from '../../helpers/get-scope.js'
-import { removeScopeFromTeamTransaction } from '../../../../helpers/mongo/transactions/scope/remove-scope-from-team-transaction.js'
+import { revokePermissionFromTeam } from '../../../permissions/helpers/relationships/relationships.js'
+import { scopeIdValidation } from '../../helpers/schemas.js'
 
 const adminRemoveScopeFromTeamController = {
   options: {
@@ -21,7 +20,7 @@ const adminRemoveScopeFromTeamController = {
     validate: {
       params: Joi.object({
         teamId: teamIdValidation,
-        scopeId: Joi.string().required()
+        scopeId: scopeIdValidation.required()
       }),
       failAction: () => Boom.boomify(Boom.badRequest())
     }
@@ -29,17 +28,7 @@ const adminRemoveScopeFromTeamController = {
   handler: async (request, h) => {
     const teamId = request.params.teamId
     const scopeId = request.params.scopeId
-
-    const dbTeam = await getTeam(request.db, teamId)
-    const dbScope = await getScope(request.db, scopeId)
-
-    const scope = await removeScopeFromTeamTransaction({
-      request,
-      teamId,
-      teamName: dbTeam.name,
-      scopeId,
-      scopeName: dbScope.value
-    })
+    const scope = await revokePermissionFromTeam(request.db, teamId, scopeId)
     return h.response(scope).code(statusCodes.ok)
   }
 }

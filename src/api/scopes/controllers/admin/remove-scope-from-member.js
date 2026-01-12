@@ -6,20 +6,21 @@ import {
   userIdValidation
 } from '@defra/cdp-validation-kit'
 
-import { removeScopeFromMemberTransaction } from '../../../../helpers/mongo/transactions/scope/remove-scope-from-member-transaction.js'
+import { revokeTeamScopedPermissionFromUser } from '../../../permissions/helpers/relationships/relationships.js'
+import { memberOnlyScopeIdValidation } from '../../helpers/schemas.js'
 
 const adminRemoveScopeFromMemberController = {
   options: {
     auth: {
       strategy: 'azure-oidc',
       access: {
-        scope: [scopes.admin, scopes.testAsTenant]
+        scope: [scopes.admin]
       }
     },
     validate: {
       params: Joi.object({
         userId: userIdValidation,
-        scopeId: Joi.string().required(),
+        scopeId: memberOnlyScopeIdValidation.required(),
         teamId: teamIdValidation
       }),
       failAction: () => Boom.boomify(Boom.badRequest())
@@ -31,12 +32,12 @@ const adminRemoveScopeFromMemberController = {
     const scopeId = params.scopeId
     const teamId = params.teamId
 
-    const scope = await removeScopeFromMemberTransaction({
-      request,
+    const scope = await revokeTeamScopedPermissionFromUser(
+      request.db,
       userId,
-      scopeId,
-      teamId
-    })
+      teamId,
+      scopeId
+    )
     return h.response(scope).code(200)
   }
 }

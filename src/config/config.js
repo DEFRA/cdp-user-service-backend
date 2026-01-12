@@ -162,12 +162,6 @@ const config = convict({
     env: 'AZURE_CLIENT_SECRET',
     default: 'test_value'
   },
-  azureGroupPrefix: {
-    doc: 'Azure Active Directory Group Prefix',
-    format: String,
-    env: 'AZURE_GROUP_PREFIX',
-    default: 'AG-APP-CDP-'
-  },
   azureClientBaseUrl: {
     doc: 'MsGraph api endpoint',
     format: String,

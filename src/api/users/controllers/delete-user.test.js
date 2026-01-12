@@ -1,6 +1,5 @@
 import { Client } from '@microsoft/microsoft-graph-client'
 
-import { createServer } from '../../server.js'
 import { scopes } from '@defra/cdp-validation-kit'
 import { collections } from '../../../../test-helpers/constants.js'
 import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
@@ -16,6 +15,9 @@ import {
   platformTeamFixture,
   tenantTeamFixture
 } from '../../../__fixtures__/teams.js'
+import { createTestServer } from '../../../../test-helpers/create-test-server.js'
+import { teams } from '../../teams/routes.js'
+import { users } from '../routes.js'
 
 vi.mock('@microsoft/microsoft-graph-client')
 vi.mock('@azure/identity')
@@ -37,7 +39,7 @@ describe('DELETE:/users/{userId}', () => {
     }
     Client.initWithMiddleware = () => mockMsGraph
 
-    server = await createServer()
+    server = await createTestServer({ plugins: [users, teams] })
     await server.initialize()
 
     replaceOneTestHelper = replaceOne(server.db)
@@ -60,7 +62,7 @@ describe('DELETE:/users/{userId}', () => {
   describe('When user id does not exist in the db', () => {
     test('Should provide expected error response', async () => {
       const { result, statusCode, statusMessage } = await deleteUserEndpoint(
-        '/users/8469dcf7-846d-43fd-899a-9850bc43298b'
+        `/users/user-doesnt-exist`
       )
 
       expect(statusCode).toBe(404)

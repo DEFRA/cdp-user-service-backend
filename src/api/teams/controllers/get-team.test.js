@@ -1,26 +1,24 @@
-import { ObjectId } from 'mongodb'
-
-import { createServer } from '../../server.js'
 import { collections } from '../../../../test-helpers/constants.js'
 import { platformTeamFixture } from '../../../__fixtures__/teams.js'
 import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
+import { deleteMany } from '../../../../test-helpers/mongo-helpers.js'
+import { createTeam } from '../helpers/create-team.js'
 import {
-  deleteMany,
-  replaceOne
-} from '../../../../test-helpers/mongo-helpers.js'
+  addUserToTeam,
+  grantPermissionToTeam
+} from '../../permissions/helpers/relationships/relationships.js'
+import { scopeDefinitions } from '../../../config/scopes.js'
+import { createUser } from '../../users/helpers/create-user.js'
+import { teams } from '../routes.js'
+import { createTestServer } from '../../../../test-helpers/create-test-server.js'
 
 describe('GET:/teams/{teamId}', () => {
   let server
-  let replaceOneTestHelper
   let deleteManyTestHelper
 
   beforeAll(async () => {
     mockWellKnown()
-
-    server = await createServer()
-    await server.initialize()
-
-    replaceOneTestHelper = replaceOne(server.db)
+    server = await createTestServer({ plugins: [teams] })
     deleteManyTestHelper = deleteMany(server.db)
   })
 
@@ -33,7 +31,43 @@ describe('GET:/teams/{teamId}', () => {
 
   describe('When a team is in the DB', () => {
     beforeEach(async () => {
-      await replaceOneTestHelper(collections.team, platformTeamFixture)
+      await createTeam(server.db, {
+        name: 'Platform',
+        description: 'The team that runs the platform',
+        github: 'cdp-platform',
+        serviceCodes: ['CDP'],
+        alertEmailAddresses: ['mary@mary.com'],
+        alertEnvironments: ['infra-dev', 'management']
+      })
+
+      await createUser(server.db, {
+        _id: 'user1',
+        name: 'User 1',
+        email: 'user1@email.com',
+        github: 'user1'
+      })
+
+      await createUser(server.db, {
+        _id: 'user2',
+        name: 'User 2',
+        email: 'user2@email.com',
+        github: 'user2'
+      })
+
+      await addUserToTeam(server.db, 'user1', 'platform')
+      await addUserToTeam(server.db, 'user2', 'platform')
+
+      await grantPermissionToTeam(
+        server.db,
+        'platform',
+        scopeDefinitions.admin.scopeId
+      )
+
+      await grantPermissionToTeam(
+        server.db,
+        'platform',
+        scopeDefinitions.externalTest.scopeId
+      )
     })
 
     afterEach(async () => {
@@ -47,51 +81,42 @@ describe('GET:/teams/{teamId}', () => {
 
       expect(statusCode).toBe(200)
       expect(statusMessage).toBe('OK')
-      expect(result).toEqual({
+      expect(result).toMatchObject({
         name: 'Platform',
         description: 'The team that runs the platform',
         github: 'cdp-platform',
         serviceCodes: ['CDP'],
         alertEmailAddresses: ['mary@mary.com'],
         alertEnvironments: ['infra-dev', 'management'],
-        createdAt: '2023-09-28T13:52:01.906Z',
-        updatedAt: '2024-12-04T08:17:06.795Z',
         scopes: [
           {
-            scopeId: new ObjectId('67500e94922c4fe819dd8832'),
-            scopeName: 'externalTest'
+            scopeId: 'admin',
+            scopeName: 'admin'
           },
           {
-            scopeId: new ObjectId('7751e606a171ebffac3cc9dd'),
-            scopeName: 'admin'
+            scopeId: 'externalTest',
+            scopeName: 'externalTest'
           }
         ],
         teamId: 'platform',
-        users: []
+        users: [
+          {
+            name: 'User 1',
+            userId: 'user1'
+          },
+          {
+            name: 'User 2',
+            userId: 'user2'
+          }
+        ]
       })
     })
   })
 
-  describe('When non UUID passed as teamId param', () => {
-    test('Should provide expected error response', async () => {
-      const { result, statusCode, statusMessage } =
-        await getTeamEndpoint('/teams/not-a-uuid')
-
-      expect(statusCode).toBe(404)
-      expect(statusMessage).toBe('Not Found')
-
-      expect(result).toMatchObject({
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'Team not found'
-      })
-    })
-  })
-
-  describe('When team UUID does not exist in the db', () => {
+  describe('When team id does not exist in the db', () => {
     test('Should provide expected error response', async () => {
       const { result, statusCode, statusMessage } = await getTeamEndpoint(
-        '/team/b4c0d7f5-afc7-4dd2-aac5-5467f72a5cfe'
+        '/team/non-existent-team'
       )
 
       expect(statusCode).toBe(404)

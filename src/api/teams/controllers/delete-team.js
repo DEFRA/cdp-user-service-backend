@@ -5,8 +5,9 @@ import {
   statusCodes
 } from '@defra/cdp-validation-kit'
 
-import { deleteTeamTransaction } from '../../../helpers/mongo/transactions/team/delete-team-transaction.js'
 import { triggerRemoveTeamWorkflow } from '../helpers/github/trigger-create-team-workflow.js'
+import { deleteTeamRelationships } from '../../permissions/helpers/relationships/relationships.js'
+import { deleteTeam } from '../helpers/delete-team.js'
 
 const deleteTeamController = {
   options: {
@@ -32,7 +33,8 @@ const deleteTeamController = {
       // Non-fatal for now...
     }
 
-    await deleteTeamTransaction({ request, teamId: request.params.teamId })
+    await deleteTeam(request.db, request.params.teamId)
+    await deleteTeamRelationships(request.db, request.params.teamId)
     return h.response().code(statusCodes.ok)
   }
 }

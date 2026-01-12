@@ -7,8 +7,8 @@ import {
 } from '@defra/cdp-validation-kit'
 
 import { getTeam } from '../../../teams/helpers/get-team.js'
-import { getScope } from '../../helpers/get-scope.js'
-import { addScopeToTeamTransaction } from '../../../../helpers/mongo/transactions/scope/add-scope-to-team-transaction.js'
+import { grantPermissionToTeam } from '../../../permissions/helpers/relationships/relationships.js'
+import { teamScopeIdValidation } from '../../helpers/schemas.js'
 
 const adminAddScopeToTeamController = {
   options: {
@@ -21,7 +21,7 @@ const adminAddScopeToTeamController = {
     validate: {
       params: Joi.object({
         teamId: teamIdValidation,
-        scopeId: Joi.string().required()
+        scopeId: teamScopeIdValidation.required()
       }),
       failAction: () => Boom.boomify(Boom.badRequest())
     }
@@ -31,28 +31,12 @@ const adminAddScopeToTeamController = {
     const scopeId = request.params.scopeId
 
     const dbTeam = await getTeam(request.db, teamId)
-    const dbScope = await getScope(request.db, scopeId)
 
     if (!dbTeam) {
       throw Boom.notFound('Team not found')
     }
 
-    if (!dbScope) {
-      throw Boom.notFound('Scope not found')
-    }
-
-    if (!dbScope.kind.includes('team')) {
-      throw Boom.badRequest('Scope cannot be applied to a team')
-    }
-
-    const scope = await addScopeToTeamTransaction({
-      request,
-      teamId,
-      teamName: dbTeam.name,
-      scopeId,
-      scopeName: dbScope.value
-    })
-
+    const scope = await grantPermissionToTeam(request.db, teamId, scopeId)
     return h.response(scope).code(statusCodes.ok)
   }
 }

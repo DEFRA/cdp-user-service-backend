@@ -1,4 +1,3 @@
-import { createServer } from '../../server.js'
 import { scopes } from '@defra/cdp-validation-kit'
 import { collections } from '../../../../test-helpers/constants.js'
 import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
@@ -15,6 +14,10 @@ import {
   deleteMany,
   replaceOne
 } from '../../../../test-helpers/mongo-helpers.js'
+import { createTestServer } from '../../../../test-helpers/create-test-server.js'
+import { teams } from '../routes.js'
+import { addUserToTeam } from '../../permissions/helpers/relationships/relationships.js'
+import { users } from '../../users/routes.js'
 
 describe('DELETE:/teams/{teamId}', () => {
   let server
@@ -23,8 +26,7 @@ describe('DELETE:/teams/{teamId}', () => {
 
   beforeAll(async () => {
     mockWellKnown()
-
-    server = await createServer()
+    server = await createTestServer({ plugins: [teams, users] })
     await server.initialize()
 
     replaceOneTestHelper = replaceOne(server.db)
@@ -45,7 +47,7 @@ describe('DELETE:/teams/{teamId}', () => {
   }
 
   describe('When team id does not exist in the db', () => {
-    test('Should provide expected error response', async () => {
+    test('Should provide 404 error response', async () => {
       const { result, statusCode, statusMessage } = await deleteTeamEndpoint(
         '/team/this-team-does-not-exist'
       )
@@ -73,7 +75,11 @@ describe('DELETE:/teams/{teamId}', () => {
     })
 
     afterEach(async () => {
-      await deleteManyTestHelper([collections.team])
+      await deleteManyTestHelper([
+        collections.team,
+        collections.user,
+        collections.relationship
+      ])
     })
 
     test('Should have deleted the team from DB', async () => {
@@ -107,6 +113,11 @@ describe('DELETE:/teams/{teamId}', () => {
     beforeEach(async () => {
       await replaceOneTestHelper(collections.user, userAdminFixture)
       await replaceOneTestHelper(collections.team, platformTeamFixture)
+      await addUserToTeam(
+        server.db,
+        userAdminFixture._id,
+        platformTeamFixture._id
+      )
 
       deleteTeamResponse = await deleteTeamEndpoint(
         `/teams/${platformTeamFixture._id}`
@@ -114,7 +125,11 @@ describe('DELETE:/teams/{teamId}', () => {
     })
 
     afterEach(async () => {
-      await deleteManyTestHelper([collections.user, collections.team])
+      await deleteManyTestHelper([
+        collections.user,
+        collections.team,
+        collections.relationship
+      ])
     })
 
     test('Team should have been removed from DB', async () => {
@@ -169,8 +184,12 @@ describe('DELETE:/teams/{teamId}', () => {
       )
     })
 
-    afterEach(async () => {
-      await deleteManyTestHelper([collections.user, collections.team])
+    afterAll(async () => {
+      await deleteManyTestHelper([
+        collections.user,
+        collections.team,
+        collections.relationship
+      ])
     })
 
     test('Team should have been removed from DB', async () => {

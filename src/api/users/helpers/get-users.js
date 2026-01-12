@@ -1,5 +1,5 @@
 import isNil from 'lodash/isNil.js'
-import { userAggregation } from './aggregations/user.js'
+import { userWithTeamsAggregation } from './aggregations/user-with-teams.js'
 
 async function getUsers(db, query) {
   const stages = []
@@ -15,7 +15,7 @@ async function getUsers(db, query) {
     })
   }
 
-  stages.push(...userAggregation, {
+  stages.push(...userWithTeamsAggregation(), {
     $sort: { name: 1 }
   })
 

@@ -18,6 +18,7 @@ const getTeamController = {
     if (!team) {
       throw Boom.notFound('Team not found')
     }
+
     return h.response(team).code(statusCodes.ok)
   }
 }

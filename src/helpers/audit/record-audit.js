@@ -14,7 +14,7 @@ export function recordAudit(auditDetails) {
     return fetcher(url, {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+      payload: JSON.stringify({
         category,
         action,
         performedBy,

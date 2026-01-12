@@ -6,7 +6,8 @@ import {
   statusCodes
 } from '@defra/cdp-validation-kit'
 
-import { removeScopeFromUserTransaction } from '../../../../helpers/mongo/transactions/scope/remove-scope-from-user-transaction.js'
+import { revokePermissionFromUser } from '../../../permissions/helpers/relationships/relationships.js'
+import { scopeIdValidation } from '../../helpers/schemas.js'
 
 const adminRemoveScopeFromUserController = {
   options: {
@@ -19,7 +20,7 @@ const adminRemoveScopeFromUserController = {
     validate: {
       params: Joi.object({
         userId: userIdValidation,
-        scopeId: Joi.string().required()
+        scopeId: scopeIdValidation.required()
       }),
       failAction: () => Boom.boomify(Boom.badRequest())
     }
@@ -27,13 +28,7 @@ const adminRemoveScopeFromUserController = {
   handler: async (request, h) => {
     const userId = request.params.userId
     const scopeId = request.params.scopeId
-
-    const scope = await removeScopeFromUserTransaction({
-      request,
-      userId,
-      scopeId
-    })
-
+    const scope = await revokePermissionFromUser(request.db, userId, scopeId)
     return h.response(scope).code(statusCodes.ok)
   }
 }

@@ -4,7 +4,6 @@ import { getUserController } from './controllers/get-user.js'
 import { getUsersController } from './controllers/get-users.js'
 import { updateUserController } from './controllers/update-user.js'
 import { getUsersWithScopeForTeamController } from './controllers/get-users-with-scope-for-team.js'
-import { addScopeToUserController } from './controllers/add-scope-to-user.js'
 import { addBreakGlassToMemberController } from './controllers/add-break-glass-to-member.js'
 import { removeBreakGlassFromMemberController } from './controllers/remove-break-glass-from-member.js'
 import { getUsersForTeamController } from './controllers/get-users-for-team.js'
@@ -48,11 +47,6 @@ const users = {
           method: 'DELETE',
           path: '/users/{userId}',
           ...deleteUserController
-        },
-        {
-          method: 'PATCH',
-          path: '/users/{userId}/{scopeId}',
-          ...addScopeToUserController
         },
         {
           method: 'PATCH',

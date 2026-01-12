@@ -1,15 +1,13 @@
-import { userAggregation } from './aggregations/user.js'
-import { maybeObjectId } from '../../../helpers/maybe-objectid.js'
+import { userWithTeamsAggregation } from './aggregations/user-with-teams.js'
 
 function getUsersByScopeAndTeam(db, scopeId, teamId) {
   const pipeline = [
-    ...userAggregation,
+    ...userWithTeamsAggregation(),
     {
       $match: {
         scopes: {
           $elemMatch: {
-            teamId,
-            scopeId: maybeObjectId(scopeId)
+            scopeId: `${scopeId}:team:${teamId}`
           }
         }
       }

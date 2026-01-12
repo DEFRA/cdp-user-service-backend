@@ -1,98 +1,116 @@
-import { ObjectId } from 'mongodb'
-
-import { collections } from '../../../../test-helpers/constants.js'
-import { createTestServer } from '../../../../test-helpers/create-test-server.js'
-import { withTestDb } from '../../../../test-helpers/with-test-db.js'
+import { addHours, subHours } from 'date-fns'
 import { userAdminFixture } from '../../../__fixtures__/users.js'
+import { collections } from '../../../../test-helpers/constants.js'
 import { platformTeamFixture } from '../../../__fixtures__/teams.js'
-import { getUser } from './get-user.js'
-import { getUserController } from '../controllers/get-user.js'
+import { mockWellKnown } from '../../../../test-helpers/mock-well-known.js'
+import {
+  deleteMany,
+  replaceOne
+} from '../../../../test-helpers/mongo-helpers.js'
+import {
+  addUserToTeam,
+  grantTeamScopedPermissionToUser,
+  grantPermissionToUser
+} from '../../permissions/helpers/relationships/relationships.js'
+import { scopeDefinitions } from '../../../config/scopes.js'
+import { createTestServer } from '../../../../test-helpers/create-test-server.js'
+import { users } from '../routes.js'
 
-const adminUserResult = {
-  name: 'Admin User',
-  email: 'admin.user@defra.onmicrosoft.com',
-  createdAt: '2023-09-28T13:53:44.948Z',
-  updatedAt: '2024-12-03T12:26:28.965Z',
-  github: 'AdminUser',
-  scopes: [
-    {
-      scopeId: new ObjectId('6751e606a171ebffac3cc9dd'),
-      scopeName: 'breakGlass'
-    },
-    {
-      scopeId: new ObjectId('7751e606a171ebffac3cc9dd'),
-      scopeName: 'admin'
-    }
-  ],
-  teams: [{ teamId: 'platform', name: 'Platform' }],
-  userId: '62bb35d2-d4f2-4cf6-abd3-262d99727677',
-  hasBreakGlass: true
-}
-
-describe('getUser', () => {
-  let db
-  let replaceOne
-  let deleteMany
+describe('GET:/users/{userId}', () => {
+  let server
+  let replaceOneTestHelper
+  let deleteManyTestHelper
 
   beforeAll(async () => {
-    ;({ db, replaceOne, deleteMany } = await withTestDb())
+    mockWellKnown()
+
+    server = await createTestServer({ plugins: [users] })
+    await server.initialize()
+
+    replaceOneTestHelper = replaceOne(server.db)
+    deleteManyTestHelper = deleteMany(server.db)
   })
 
-  async function seedTestData() {
-    await replaceOne(collections.user, userAdminFixture)
-    await replaceOne(collections.team, platformTeamFixture)
+  async function getUserEndpoint(url) {
+    return await server.inject({
+      method: 'GET',
+      url
+    })
   }
 
-  async function cleanupTestData() {
-    await deleteMany([collections.user, collections.team])
-  }
+  describe('When a user is in the DB', () => {
+    beforeEach(async () => {
+      await replaceOneTestHelper(collections.user, userAdminFixture)
+      await replaceOneTestHelper(collections.team, platformTeamFixture)
 
-  describe('helper function', () => {
-    beforeEach(seedTestData)
-    afterEach(cleanupTestData)
+      await addUserToTeam(
+        server.db,
+        userAdminFixture._id,
+        platformTeamFixture._id
+      )
+      await grantPermissionToUser(
+        server.db,
+        userAdminFixture._id,
+        scopeDefinitions.externalTest.scopeId
+      )
 
-    test('Should return user with aggregated data', async () => {
-      const result = await getUser(db, userAdminFixture._id)
-
-      expect(result).toEqual(adminUserResult)
+      await grantTeamScopedPermissionToUser(
+        server.db,
+        userAdminFixture._id,
+        platformTeamFixture._id,
+        scopeDefinitions.breakGlass.scopeId,
+        subHours(new Date(), 1),
+        addHours(new Date(), 1)
+      )
     })
 
-    test('Should return null when user does not exist', async () => {
-      const result = await getUser(db, 'non-existent-user-id')
-
-      expect(result).toBeNull()
-    })
-  })
-
-  describe('GET /users/{userId} endpoint', () => {
-    let server
-
-    beforeAll(async () => {
-      server = await createTestServer({
-        routes: { method: 'GET', path: '/users/{userId}', ...getUserController }
-      })
+    afterEach(async () => {
+      await deleteManyTestHelper([collections.user])
+      await deleteManyTestHelper([collections.team])
+      await deleteManyTestHelper([collections.relationship])
     })
 
-    beforeEach(seedTestData)
-    afterEach(cleanupTestData)
-
-    test('Should return 200 with user data', async () => {
-      const { result, statusCode } = await server.inject({
-        method: 'GET',
-        url: `/users/${userAdminFixture._id}`
-      })
+    test('Should provide expected response', async () => {
+      const { result, statusCode, statusMessage } = await getUserEndpoint(
+        `/users/${userAdminFixture._id}`
+      )
 
       expect(statusCode).toBe(200)
-      expect(result).toEqual(adminUserResult)
-    })
+      expect(statusMessage).toBe('OK')
 
-    test('Should return 404 when user does not exist', async () => {
-      const { result, statusCode } = await server.inject({
-        method: 'GET',
-        url: '/users/8469dcf7-846d-43fd-899a-9850bc43298b'
+      expect(result).toEqual({
+        name: 'Admin User',
+        email: 'admin.user@defra.onmicrosoft.com',
+        createdAt: '2023-09-28T13:53:44.948Z',
+        updatedAt: '2024-12-03T12:26:28.965Z',
+        github: 'AdminUser',
+        scopes: [
+          {
+            scopeId: scopeDefinitions.externalTest.scopeId,
+            scopeName: scopeDefinitions.externalTest.scopeId
+          }
+        ],
+        teams: [
+          {
+            description: 'The team that runs the platform',
+            teamId: 'platform',
+            name: 'Platform'
+          }
+        ],
+        userId: userAdminFixture._id
       })
+    })
+  })
+
+  describe('When a user does not exist in the DB', () => {
+    test('Should provide expected not found error response', async () => {
+      const { result, statusCode, statusMessage } = await getUserEndpoint(
+        '/users/this-user-doesnt-exist'
+      )
 
       expect(statusCode).toBe(404)
+      expect(statusMessage).toBe('Not Found')
+
       expect(result).toMatchObject({
         statusCode: 404,
         error: 'Not Found',

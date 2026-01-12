@@ -10,9 +10,8 @@ import {
 import Joi from 'joi'
 import { getUser } from '../helpers/get-user.js'
 import { recordAudit } from '../../../helpers/audit/record-audit.js'
-import { getScopeByName } from '../../scopes/helpers/get-scope-by-name.js'
-import { removeScopeFromMemberTransaction } from '../../../helpers/mongo/transactions/scope/remove-scope-from-member-transaction.js'
-import { maybeObjectId } from '../../../helpers/maybe-objectid.js'
+import { revokeTeamScopedPermissionFromUser } from '../../permissions/helpers/relationships/relationships.js'
+import { scopeDefinitions } from '../../../config/scopes.js'
 
 const removeBreakGlassFromMemberController = {
   options: {
@@ -43,21 +42,18 @@ const removeBreakGlassFromMemberController = {
       displayName: request.auth.credentials.displayName
     }
 
-    const scopeName = 'breakGlass'
-    const breakGlassScope = await getScopeByName(request.db, scopeName)
-    const scope = await removeScopeFromMemberTransaction({
-      request,
+    const scope = await revokeTeamScopedPermissionFromUser(
+      request.db,
       userId,
-      scopeId: maybeObjectId(breakGlassScope?.scopeId),
-      teamId
-    })
+      teamId,
+      scopeDefinitions.breakGlass.scopeId
+    )
 
     const user = await getUser(request.db, userId)
     const team = user?.teams.find((t) => t.teamId === teamId)
-
     const now = new UTCDate()
     await recordAudit({
-      category: scopeName,
+      category: scopeDefinitions.breakGlass.scopeId,
       action: 'Removed',
       performedBy: requestor,
       performedAt: now,
