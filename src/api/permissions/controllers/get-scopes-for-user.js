@@ -1,5 +1,5 @@
 import { statusCodes } from '@defra/cdp-validation-kit'
-import { scopesForUser } from '../helpers/relationships/legacy-scopes-for-user.js'
+import { scopesForUser } from '../helpers/relationships/scopes-for-user.js'
 
 const getScopesForUserController = {
   options: {

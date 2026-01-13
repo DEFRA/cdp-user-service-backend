@@ -2,7 +2,7 @@ import jwt from '@hapi/jwt'
 
 import { config } from '../config/config.js'
 import { proxyFetch } from './proxy.js'
-import { scopesForUser } from '../api/permissions/helpers/relationships/legacy-scopes-for-user.js'
+import { scopesForUser } from '../api/permissions/helpers/relationships/scopes-for-user.js'
 
 const azureOidc = {
   plugin: {

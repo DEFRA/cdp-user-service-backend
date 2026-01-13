@@ -1,7 +1,7 @@
 import { subHours, addHours } from 'date-fns'
 import {
   addUserToTeam,
-  createIndexes,
+  createRelationshipIndexes,
   grantPermissionToTeam,
   grantPermissionToUser,
   grantTeamScopedPermissionToUser,
@@ -12,7 +12,7 @@ import {
 } from './relationships.js'
 import { connectToTestMongoDB } from '../../../../../test-helpers/connect-to-test-mongodb.js'
 import { scopeDefinitions } from '../../../../config/scopes.js'
-import { scopesForUser } from './legacy-scopes-for-user.js'
+import { scopesForUser } from './scopes-for-user.js'
 import { scopes } from '@defra/cdp-validation-kit'
 
 describe('#legacyScopesForUser', () => {
@@ -26,7 +26,7 @@ describe('#legacyScopesForUser', () => {
 
   beforeEach(async () => {
     await request.db.collection('relationships').drop()
-    await createIndexes(request.db)
+    await createRelationshipIndexes(request.db)
   })
 
   test('user level permissions are provided as scopes', async () => {

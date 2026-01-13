@@ -15,6 +15,11 @@ const memberScopeIds = new Set(
     .map((s) => s.scopeId)
 )
 
+/**
+ * @param {{}} db
+ * @param {string} userId
+ * @return {Promise<{scopes: string[], scopeFlags: {isAdmin: boolean, isTenant: boolean, hasBreakGlass: boolean}}>}
+ */
 async function scopesForUser(db, userId) {
   const result = await findRelationshipGraphForUser(db, userId)
 
