@@ -25,34 +25,42 @@ const collection = 'relationships'
  * - A TLL based on end date to clean up expired relationships.
  *
  * @param {{}} db
+ * @param {{}} logger
  * @returns {Promise<void>}
  */
-async function createIndexes(db) {
-  await db
-    .collection(collection)
-    .createIndex({ subject: 1, relation: 1, subjectType: 1 })
-  await db
-    .collection(collection)
-    .createIndex({ resource: 1, relation: 1, resourceType: 1 })
+async function createRelationshipIndexes(db, logger) {
+  try {
+    await db
+      .collection(collection)
+      .createIndex({ subject: 1, subjectType: 1, relation: 1 })
 
-  // Unique constraints
-  await db.collection(collection).createIndex(
-    {
-      subject: 1,
-      subjectType: 1,
-      relation: 1,
-      resource: 1,
-      resourceType: 1,
-      start: 1,
-      end: 1
-    },
-    { unique: true }
-  )
+    await db
+      .collection(collection)
+      .createIndex({ resource: 1, resourceType: 1, relation: 1 })
 
-  // Automatically clean up expired relationships.
-  await db
-    .collection(collection)
-    .createIndex({ end: 1 }, { expireAfterSeconds: 0 })
+    await db.collection(collection).createIndex({ relation: 1 })
+
+    // Unique constraints
+    await db.collection(collection).createIndex(
+      {
+        subject: 1,
+        subjectType: 1,
+        relation: 1,
+        resource: 1,
+        resourceType: 1,
+        start: 1,
+        end: 1
+      },
+      { unique: true }
+    )
+
+    // Automatically clean up expired relationships.
+    await db
+      .collection(collection)
+      .createIndex({ end: 1 }, { expireAfterSeconds: 0 })
+  } catch (e) {
+    logger.error(e)
+  }
 }
 
 /**
@@ -306,9 +314,9 @@ async function findTeamsOfUser(db, userId) {
     .find(
       {
         subject: userId,
-        resourceType: 'team',
+        subjectType: 'user',
         relation: 'member',
-        subjectType: 'user'
+        resourceType: 'team'
       },
       { resource: 1, _id: 0 }
     )
@@ -403,5 +411,5 @@ export {
   findMembersOfTeam,
   findTeamsOfUser,
   userIsMemberOfTeam,
-  createIndexes
+  createRelationshipIndexes
 }

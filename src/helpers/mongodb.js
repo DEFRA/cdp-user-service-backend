@@ -1,5 +1,6 @@
 import { MongoClient } from 'mongodb'
 import { LockManager } from 'mongo-locks'
+import { createRelationshipIndexes } from '../api/permissions/helpers/relationships/relationships.js'
 
 const mongoDb = {
   plugin: {
@@ -40,6 +41,7 @@ const mongoDb = {
 
 async function createIndexes(db) {
   await db.collection('mongo-locks').createIndex({ id: 1 })
+  await createRelationshipIndexes(db)
 }
 
 export { mongoDb }

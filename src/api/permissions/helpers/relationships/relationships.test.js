@@ -2,7 +2,7 @@ import { connectToTestMongoDB } from '../../../../../test-helpers/connect-to-tes
 import {
   addUserToTeam,
   removeUserFromTeam,
-  createIndexes,
+  createRelationshipIndexes,
   findMembersOfTeam,
   grantPermissionToTeam,
   revokePermissionFromTeam,
@@ -29,7 +29,7 @@ describe('#relationships', () => {
 
   beforeEach(async () => {
     await db.collection('relationships').drop()
-    await createIndexes(db)
+    await createRelationshipIndexes(db)
   })
 
   test('#addUserToTeam creates a member relationship', async () => {
