@@ -7,9 +7,7 @@ beforeAll(async () => {
       version: 'latest',
       downloadDir: './.cache/mongodb-binaries'
     },
-    serverOptions: {
-      replSet: { count: 1 }
-    },
+    serverOptions: {},
     autoStart: false
   })
   process.env.MONGO_URI = globalThis.__MONGO_URI__
