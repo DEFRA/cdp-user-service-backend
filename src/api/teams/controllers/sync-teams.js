@@ -1,7 +1,7 @@
-import { syncTeamsValidationSchema } from '../helpers/sync-teams-validation-schema.js'
 import Boom from '@hapi/boom'
 import { syncTeams } from '../helpers/sync-teams.js'
 import { statusCodes } from '@defra/cdp-validation-kit'
+import { syncTeamsValidationSchema } from '../helpers/schemas.js'
 
 const syncTeamsController = {
   options: {

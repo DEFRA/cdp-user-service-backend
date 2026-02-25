@@ -1,11 +1,11 @@
 import Boom from '@hapi/boom'
 
-import { createTeamValidationSchema } from '../helpers/create-team-validation-schema.js'
 import { MongoErrors } from '../../../helpers/mongodb-errors.js'
 import { teamNameExists } from '../helpers/team-name-exists.js'
 import { createTeam, normalizeTeamName } from '../helpers/create-team.js'
 import { scopes } from '@defra/cdp-validation-kit'
 import { triggerCreateTeamWorkflow } from '../helpers/github/trigger-create-team-workflow.js'
+import { createTeamValidationSchema } from '../helpers/schemas.js'
 
 const createTeamController = {
   options: {

@@ -43,6 +43,7 @@ export const teamWithUserAggregation = [
       serviceCodes: 1,
       alertEmailAddresses: 1,
       alertEnvironments: 1,
+      slackChannels: 1,
       users: 1,
       scopes: 1,
       createdAt: 1,
