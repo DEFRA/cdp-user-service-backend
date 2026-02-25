@@ -6,6 +6,11 @@ const platformTeamFixture = {
   serviceCodes: ['CDP'],
   alertEmailAddresses: ['mary@mary.com'],
   alertEnvironments: ['infra-dev', 'management'],
+  slackChannels: {
+    prod: 'cdp-platform-alerts',
+    nonProd: 'cdp-platform-non-prod-alerts',
+    team: 'cdp-platform-team'
+  },
   createdAt: '2023-09-28T13:52:01.906Z',
   updatedAt: '2024-12-04T08:17:06.795Z'
 }

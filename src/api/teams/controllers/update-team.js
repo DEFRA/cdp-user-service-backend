@@ -1,12 +1,12 @@
 import Boom from '@hapi/boom'
 
-import { updateTeamValidationSchema } from '../helpers/update-team-validation-schema.js'
 import { getTeam } from '../helpers/get-team.js'
 import { buildUpdateFields } from '../../../helpers/build-update-fields.js'
 import { teamNameExists } from '../helpers/team-name-exists.js'
 import { updateTeam } from '../helpers/update-team.js'
 import { scopes, statusCodes } from '@defra/cdp-validation-kit'
 import { triggerUpdateTeamWorkflow } from '../helpers/github/trigger-create-team-workflow.js'
+import { updateTeamValidationSchema } from '../helpers/schemas.js'
 
 const updateTeamController = {
   options: {
