@@ -8,9 +8,9 @@ import {
 } from './team-validators.js'
 
 const slackChannelsSchema = Joi.object({
-  prod: Joi.string().allow(null),
-  nonProd: Joi.string().allow(null),
-  team: Joi.string().allow(null)
+  prod: Joi.string().max(80).allow(null),
+  nonProd: Joi.string().max(80).allow(null),
+  team: Joi.string().max(80).allow(null)
 }).unknown(true)
 
 const serviceCodesSchema = Joi.array()

@@ -27,7 +27,8 @@ const createTeamController = {
       github: payload?.github,
       serviceCodes: payload?.serviceCodes,
       alertEmailAddresses: payload?.alertEmailAddresses,
-      alertEnvironments: payload?.alertEnvironments
+      alertEnvironments: payload?.alertEnvironments,
+      slackChannels: payload?.slackChannels
     }
     const teamExists = await teamNameExists(request.db, dbTeam.name)
     if (teamExists) {
@@ -40,7 +41,10 @@ const createTeamController = {
         name: payload.name,
         description: payload.description,
         service_code: (payload.serviceCodes ?? [])[0],
-        github: payload.github
+        github: payload.github,
+        slack_prod: payload.slackChannels?.prod,
+        slack_non_prod: payload.slackChannels?.nonProd,
+        slack_team: payload.slackChannels?.team
       }
       await triggerCreateTeamWorkflow(request.octokit, triggerCreateTeamPayload)
     } catch (error) {

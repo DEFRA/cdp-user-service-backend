@@ -68,6 +68,18 @@ function buildWorkflowPayload(teamId, update) {
     payload.github = update.github
   }
 
+  if (update.slackChannels?.prod) {
+    payload.slack_prod = payload.slackChannels?.prod
+  }
+
+  if (update.slackChannels?.nonProd) {
+    payload.slack_non_prod = payload.slackChannels?.nonProd
+  }
+
+  if (update.slackChannels?.team) {
+    payload.slack_team = payload.slackChannels?.team
+  }
+
   return payload
 }
 
