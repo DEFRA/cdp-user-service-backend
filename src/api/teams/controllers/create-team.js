@@ -36,17 +36,8 @@ const createTeamController = {
     }
 
     try {
-      const triggerCreateTeamPayload = {
-        team_id: normalizeTeamName(payload.name),
-        name: payload.name,
-        description: payload.description,
-        service_code: (payload.serviceCodes ?? [])[0],
-        github: payload.github,
-        slack_prod: payload.slackChannels?.prod,
-        slack_non_prod: payload.slackChannels?.nonProd,
-        slack_team: payload.slackChannels?.team
-      }
-      await triggerCreateTeamWorkflow(request.octokit, triggerCreateTeamPayload)
+      const triggerCreateTeamInputs = buildCreateWorkflowInputs(payload)
+      await triggerCreateTeamWorkflow(request.octokit, triggerCreateTeamInputs)
     } catch (error) {
       request.logger.error(error)
       // Non-fatal for now. Once we switch over to using cdp-tenant-config this will change.
@@ -61,6 +52,19 @@ const createTeamController = {
       }
       throw error
     }
+  }
+}
+
+function buildCreateWorkflowInputs(payload) {
+  return {
+    team_id: normalizeTeamName(payload.name),
+    name: payload.name,
+    description: payload.description,
+    service_code: (payload.serviceCodes ?? [])[0],
+    github: payload.github,
+    slack_prod: payload.slackChannels?.prod,
+    slack_non_prod: payload.slackChannels?.nonProd,
+    slack_team: payload.slackChannels?.team
   }
 }
 

@@ -40,47 +40,47 @@ const updateTeamController = {
 
     await triggerUpdateTeamWorkflow(
       request.octokit,
-      buildWorkflowPayload(teamId, request?.payload)
+      buildWorkflowInputs(teamId, request?.payload)
     )
 
     return h.response(updatedTeam).code(statusCodes.ok)
   }
 }
 
-function buildWorkflowPayload(teamId, update) {
-  const payload = {
+function buildWorkflowInputs(teamId, payload) {
+  const inputs = {
     team_id: teamId
   }
 
-  if (update.name) {
-    payload.name = update.name
+  if (payload.name) {
+    inputs.name = payload.name
   }
 
-  if (update.description) {
-    payload.description = update.description
+  if (payload.description) {
+    inputs.description = payload.description
   }
 
-  if (update.serviceCodes) {
-    payload.service_code = (update.serviceCodes ?? [])[0]
+  if (payload.serviceCodes) {
+    inputs.service_code = (payload.serviceCodes ?? [])[0]
   }
 
-  if (update.github) {
-    payload.github = update.github
+  if (payload.github) {
+    inputs.github = payload.github
   }
 
-  if (update.slackChannels?.prod) {
-    payload.slack_prod = payload.slackChannels?.prod
+  if (payload.slackChannels?.prod) {
+    inputs.slack_prod = payload.slackChannels?.prod
   }
 
-  if (update.slackChannels?.nonProd) {
-    payload.slack_non_prod = payload.slackChannels?.nonProd
+  if (payload.slackChannels?.nonProd) {
+    inputs.slack_non_prod = payload.slackChannels?.nonProd
   }
 
-  if (update.slackChannels?.team) {
-    payload.slack_team = payload.slackChannels?.team
+  if (payload.slackChannels?.team) {
+    inputs.slack_team = payload.slackChannels?.team
   }
 
-  return payload
+  return inputs
 }
 
 async function existingTeamInDb(name, request) {
