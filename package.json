@@ -50,7 +50,7 @@
     "@octokit/plugin-paginate-graphql": "6.0.0",
     "aws4": "1.13.2",
     "babel-plugin-module-resolver": "5.0.2",
-    "convict": "6.2.4",
+    "convict": "6.2.5",
     "date-fns": "4.1.0",
     "global-agent": "3.0.0",
     "hapi-pino": "13.0.0",
