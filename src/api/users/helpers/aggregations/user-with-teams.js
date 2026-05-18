@@ -54,6 +54,7 @@ function userWithTeamsAggregation() {
         github: 1,
         createdAt: 1,
         updatedAt: 1,
+        lastActive: 1,
         relationships: 1,
         scopes: 1,
         teams: 1,
