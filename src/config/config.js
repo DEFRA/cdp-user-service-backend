@@ -304,6 +304,20 @@ const config = convict({
     format: String,
     default: 'http://localhost:5094',
     env: 'PORTAL_BACKEND_URL'
+  },
+  metrics: {
+    enabled: {
+      doc: 'Should the service send usage metrics to cloudwatch',
+      format: Boolean,
+      default: false,
+      env: 'METRICS_ENABLED'
+    },
+    interval: {
+      doc: 'How frequently to send metrics (cron schedule)',
+      format: String,
+      default: '0 * * * *',
+      env: 'METRICS_INTERVAL'
+    }
   }
 })
 

@@ -70,7 +70,7 @@ async function createServer(configOverrides = {}) {
     msGraphPlugin,
     octokitPlugin,
     metrics,
-    metricsScheduler,
+    { plugin: metricsScheduler.plugin, options: config.get('metrics') },
     router
   ])
 
