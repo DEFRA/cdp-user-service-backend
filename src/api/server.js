@@ -15,6 +15,8 @@ import { requestLogger } from '../helpers/logging/request-logger.js'
 import { router } from './router.js'
 import { secureContext } from '../helpers/secure-context/index.js'
 import { requestTracing } from '../helpers/request-tracing.js'
+import { metrics } from '@defra/cdp-metrics'
+import { metricsScheduler } from '../helpers/metrics/metrics-scheduler.js'
 
 async function createServer(configOverrides = {}) {
   config.load(configOverrides)
@@ -67,6 +69,8 @@ async function createServer(configOverrides = {}) {
     { plugin: mongoDb.plugin, options: config.get('mongo') },
     msGraphPlugin,
     octokitPlugin,
+    metrics,
+    metricsScheduler,
     router
   ])
 
