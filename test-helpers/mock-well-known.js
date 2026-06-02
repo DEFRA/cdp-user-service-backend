@@ -1,4 +1,4 @@
-import { config } from '../src/config/config.js'
+import { config } from '#config/config.js'
 import { wellKnownResponseFixture } from '../src/__fixtures__/well-known.js'
 
 export function mockWellKnown(fetchMock = global.fetchMock) {

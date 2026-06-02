@@ -1,5 +1,5 @@
 import Joi from 'joi'
-import { scopeDefinitions } from '../../../../config/scopes.js'
+import { scopeDefinitions } from '#config/scopes.js'
 
 const memberOfSchema = Joi.object({
   subject: Joi.string().required(),

@@ -12,7 +12,7 @@ import {
   grantTeamScopedPermissionToUser,
   grantPermissionToUser
 } from '../../permissions/helpers/relationships/relationships.js'
-import { scopeDefinitions } from '../../../config/scopes.js'
+import { scopeDefinitions } from '#config/scopes.js'
 import { createTestServer } from '../../../../test-helpers/create-test-server.js'
 import { users } from '../routes.js'
 

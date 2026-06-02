@@ -1,4 +1,4 @@
-import { scopeDefinitions } from '../../../config/scopes.js'
+import { scopeDefinitions } from '#config/scopes.js'
 
 const createdDate = new Date(2025, 1, 1)
 

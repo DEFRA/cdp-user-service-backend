@@ -11,7 +11,7 @@ import {
   revokeTeamScopedPermissionFromUser
 } from './relationships.js'
 import { connectToTestMongoDB } from '../../../../../test-helpers/connect-to-test-mongodb.js'
-import { scopeDefinitions } from '../../../../config/scopes.js'
+import { scopeDefinitions } from '#config/scopes.js'
 import { scopesForUser } from './scopes-for-user.js'
 import { scopes } from '@defra/cdp-validation-kit'
 

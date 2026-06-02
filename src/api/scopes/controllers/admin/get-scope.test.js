@@ -1,6 +1,6 @@
 import { mockWellKnown } from '../../../../../test-helpers/mock-well-known.js'
 import { scopes } from '@defra/cdp-validation-kit'
-import { scopeDefinitions } from '../../../../config/scopes.js'
+import { scopeDefinitions } from '#config/scopes.js'
 import { createUser } from '../../../users/helpers/create-user.js'
 import { createTeam } from '../../../teams/helpers/create-team.js'
 import {
@@ -60,9 +60,9 @@ describe("#'/scopes/admin/{scopeId}'", () => {
   })
 
   afterAll(async () => {
-    db.collection(collections.relationship).drop()
-    db.collection(collections.team).drop()
-    db.collection(collections.user).drop()
+    await db.collection(collections.relationship).drop()
+    await db.collection(collections.team).drop()
+    await db.collection(collections.user).drop()
   })
 
   it('should fail with a Bad Request status if the scopeId is invalid', async () => {

@@ -1,7 +1,7 @@
 import Boom from '@hapi/boom'
 import isNull from 'lodash/isNull.js'
 
-import { config } from '../../../config/config.js'
+import { config } from '#config/config.js'
 import { updateUserValidationSchema } from '../helpers/update-user-validation-schema.js'
 import { getUser } from '../helpers/get-user.js'
 import { buildUpdateFields } from '../../../helpers/build-update-fields.js'

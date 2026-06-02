@@ -1,4 +1,4 @@
-import { scopeDefinitions } from '../../../config/scopes.js'
+import { scopeDefinitions } from '#config/scopes.js'
 import { activePermissionFilter } from '../../permissions/helpers/relationships/active-permission-filter.js'
 
 async function getScope(db, scopeId) {

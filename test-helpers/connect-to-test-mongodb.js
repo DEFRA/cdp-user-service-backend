@@ -1,6 +1,6 @@
 import { MongoClient } from 'mongodb'
 
-import { config } from '../src/config/config.js'
+import { config } from '#config/config.js'
 import { testDbName } from './constants.js'
 
 /* @typedef mongo

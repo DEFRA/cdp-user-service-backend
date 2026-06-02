@@ -12,7 +12,7 @@ import {
   addUserToTeam,
   grantPermissionToTeam
 } from '../../permissions/helpers/relationships/relationships.js'
-import { scopeDefinitions } from '../../../config/scopes.js'
+import { scopeDefinitions } from '#config/scopes.js'
 import {
   userAdminFixture,
   userTenantFixture

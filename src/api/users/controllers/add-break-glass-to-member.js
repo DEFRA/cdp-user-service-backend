@@ -12,7 +12,7 @@ import Joi from 'joi'
 import { recordAudit } from '../../../helpers/audit/record-audit.js'
 import { getUserOnly } from '../helpers/get-user.js'
 import { grantTeamScopedPermissionToUser } from '../../permissions/helpers/relationships/relationships.js'
-import { scopeDefinitions } from '../../../config/scopes.js'
+import { scopeDefinitions } from '#config/scopes.js'
 import { getTeamOnly } from '../../teams/helpers/get-team.js'
 
 const addBreakGlassToMemberController = {

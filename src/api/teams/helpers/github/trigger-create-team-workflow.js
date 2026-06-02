@@ -1,4 +1,4 @@
-import { config } from '../../../../config/config.js'
+import { config } from '#config/config.js'
 
 /**
  * Trigger https://github.com/DEFRA/cdp-tenant-config/blob/main/.github/workflows/create-team.yml

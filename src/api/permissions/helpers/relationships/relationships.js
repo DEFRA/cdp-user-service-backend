@@ -1,7 +1,7 @@
 import { strictRelationshipSchema } from './relationship-schema.js'
 import isNil from 'lodash/isNil.js'
 import { activePermissionFilter } from './active-permission-filter.js'
-import { scopeDefinitions } from '../../../../config/scopes.js'
+import { scopeDefinitions } from '#config/scopes.js'
 
 const collection = 'relationships'
 
