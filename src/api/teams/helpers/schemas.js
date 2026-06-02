@@ -1,6 +1,6 @@
 import Joi from 'joi'
 
-import { environments } from '../../../config/environments.js'
+import { environments } from '#config/environments.js'
 import {
   serviceCodeValidator,
   teamIdValidator,

@@ -16,7 +16,7 @@ import {
   revokeTeamScopedPermissionFromUser,
   findActiveBreakGlassForUser
 } from './relationships.js'
-import { scopeDefinitions } from '../../../../config/scopes.js'
+import { scopeDefinitions } from '#config/scopes.js'
 import { subHours, addHours } from 'date-fns'
 
 describe('#relationships', () => {

@@ -11,7 +11,7 @@ import Joi from 'joi'
 import { getUser } from '../helpers/get-user.js'
 import { recordAudit } from '../../../helpers/audit/record-audit.js'
 import { revokeTeamScopedPermissionFromUser } from '../../permissions/helpers/relationships/relationships.js'
-import { scopeDefinitions } from '../../../config/scopes.js'
+import { scopeDefinitions } from '#config/scopes.js'
 
 const removeBreakGlassFromMemberController = {
   options: {

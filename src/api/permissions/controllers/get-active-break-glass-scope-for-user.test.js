@@ -12,7 +12,7 @@ import {
   userTenantFixture
 } from '../../../__fixtures__/users.js'
 import { grantTeamScopedPermissionToUser } from '../helpers/relationships/relationships.js'
-import { scopeDefinitions } from '../../../config/scopes.js'
+import { scopeDefinitions } from '#config/scopes.js'
 import { addHours, subHours } from 'date-fns'
 import { permissions } from '../routes.js'
 

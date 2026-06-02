@@ -1,5 +1,5 @@
 import { fetcher } from '../fetcher.js'
-import { config } from '../../config/config.js'
+import { config } from '#config/config.js'
 import { createLogger } from '../logging/logger.js'
 
 const logger = createLogger()

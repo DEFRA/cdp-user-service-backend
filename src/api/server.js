@@ -13,7 +13,7 @@ import { setupProxy } from '../helpers/proxy.js'
 import { pulse } from '../helpers/pulse.js'
 import { requestLogger } from '../helpers/logging/request-logger.js'
 import { router } from './router.js'
-import { secureContext } from '../helpers/secure-context/index.js'
+import { secureContext } from '@defra/hapi-secure-context'
 import { requestTracing } from '../helpers/request-tracing.js'
 import { metrics } from '@defra/cdp-metrics'
 import { metricsScheduler } from '../helpers/metrics/metrics-scheduler.js'
@@ -23,7 +23,6 @@ async function createServer(configOverrides = {}) {
 
   const root = config.get('root')
   const port = config.get('port')
-  const enableSecureContext = config.get('enableSecureContext')
   const enableDocumentation = config.get('enableDocumentation')
 
   setupProxy()
@@ -56,14 +55,10 @@ async function createServer(configOverrides = {}) {
     }
   })
 
-  // Add tracer and request logger before all other plugins
-  await server.register([requestTracing, requestLogger])
-
-  if (enableSecureContext) {
-    await server.register(secureContext)
-  }
-
   await server.register([
+    requestLogger,
+    requestTracing,
+    secureContext,
     pulse,
     azureOidc,
     { plugin: mongoDb.plugin, options: config.get('mongo') },

@@ -1,5 +1,5 @@
 import { scopes } from '@defra/cdp-validation-kit'
-import { scopeDefinitions } from '../../../../config/scopes.js'
+import { scopeDefinitions } from '#config/scopes.js'
 import { createLogger } from '../../../../helpers/logging/logger.js'
 import { findRelationshipGraphForUser } from './relationships.js'
 

@@ -1,7 +1,7 @@
 import { mockWellKnown } from '../../../../../test-helpers/mock-well-known.js'
 import { scopes } from '@defra/cdp-validation-kit'
 import { createTeam } from '../../../teams/helpers/create-team.js'
-import { scopeDefinitions } from '../../../../config/scopes.js'
+import { scopeDefinitions } from '#config/scopes.js'
 import { collections } from '../../../../../test-helpers/constants.js'
 import { grantPermissionToTeam } from '../../../permissions/helpers/relationships/relationships.js'
 import { createTestServer } from '../../../../../test-helpers/create-test-server.js'

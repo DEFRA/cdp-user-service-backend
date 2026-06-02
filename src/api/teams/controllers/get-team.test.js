@@ -7,7 +7,7 @@ import {
   addUserToTeam,
   grantPermissionToTeam
 } from '../../permissions/helpers/relationships/relationships.js'
-import { scopeDefinitions } from '../../../config/scopes.js'
+import { scopeDefinitions } from '#config/scopes.js'
 import { createUser } from '../../users/helpers/create-user.js'
 import { teams } from '../routes.js'
 import { createTestServer } from '../../../../test-helpers/create-test-server.js'
