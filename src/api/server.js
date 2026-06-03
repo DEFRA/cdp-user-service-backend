@@ -9,7 +9,6 @@ import { failAction } from '../helpers/fail-action.js'
 import { mongoDb } from '../helpers/mongodb.js'
 import { msGraphPlugin } from '../helpers/ms-graph.js'
 import { octokitPlugin } from '../helpers/octokit.js'
-import { setupProxy } from '../helpers/proxy.js'
 import { pulse } from '../helpers/pulse.js'
 import { requestLogger } from '../helpers/logging/request-logger.js'
 import { router } from './router.js'
@@ -24,8 +23,6 @@ async function createServer(configOverrides = {}) {
   const root = config.get('root')
   const port = config.get('port')
   const enableDocumentation = config.get('enableDocumentation')
-
-  setupProxy()
 
   const server = hapi.server({
     port,

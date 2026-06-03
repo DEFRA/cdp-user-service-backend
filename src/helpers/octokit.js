@@ -3,7 +3,6 @@ import { createAppAuth } from '@octokit/auth-app'
 import { paginateGraphQL } from '@octokit/plugin-paginate-graphql'
 
 import { config } from '../config/config.js'
-import { proxyFetch } from './proxy.js'
 
 const octokitPlugin = {
   plugin: {
@@ -24,8 +23,7 @@ const octokitPlugin = {
             'utf8'
           ),
           installationId: gitHubAppInstallationId
-        },
-        request: { fetch: proxyFetch }
+        }
       }
 
       const cfg = config.get('github.baseUrl')
