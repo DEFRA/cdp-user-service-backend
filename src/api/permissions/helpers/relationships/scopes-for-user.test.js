@@ -86,7 +86,7 @@ describe('#legacyScopesForUser', () => {
     })
   })
 
-  test('tenant scope flag is set if user is a member of a team and not an admin', async () => {
+  test('tenant scope flag is set if user is a member of a team and an admin', async () => {
     const userid = 'user-admin-2'
     const teamId = 'platform'
     await grantPermissionToTeam(

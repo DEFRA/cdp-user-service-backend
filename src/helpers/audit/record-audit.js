@@ -1,4 +1,3 @@
-import { fetcher } from '../fetcher.js'
 import { config } from '#config/config.js'
 import { createLogger } from '../logging/logger.js'
 
@@ -10,20 +9,25 @@ export function recordAudit(auditDetails) {
 
   logger.debug(auditDetails, 'Audit record')
 
-  try {
-    return fetcher(url, {
-      method: 'post',
-      headers: { 'Content-Type': 'application/json' },
-      payload: JSON.stringify({
-        category,
-        action,
-        performedBy,
-        performedAt,
-        details
-      })
+  return fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      category,
+      action,
+      performedBy,
+      performedAt,
+      details
     })
-  } catch (error) {
-    logger.error(error, 'Failed to record audit record')
-    return null
-  }
+  })
+    .then((res) => {
+      if (!res.ok) {
+        logger.warn(`Audit API returned ${res.status}`)
+      }
+    })
+    .catch((error) => {
+      logger.error(error, 'Failed to record audit record')
+    })
 }

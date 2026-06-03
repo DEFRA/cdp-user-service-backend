@@ -247,7 +247,7 @@ describe('#relationships', () => {
     ])
   })
 
-  test('#grantTeamScopedPermssionToUser should grant a permission to a user scoped to the team', async () => {
+  test('#grantTeamScopedPermssionToUser should grant a permission to a user scoped to the user', async () => {
     await grantTeamScopedPermissionToUser(db, 'user1', 'team1', 'breakGlass')
     await revokeTeamScopedPermissionFromUser(db, 'user1', 'team1', 'breakGlass')
 
