@@ -9,9 +9,15 @@ const azureOidc = {
     register: async (server) => {
       await server.register(jwt)
 
-      const oidc = await fetch(config.get('oidcWellKnownConfigurationUrl'))
-        .then((response) => response.json())
-        .catch((error) => server.logger.error(error))
+      const response = await fetch(config.get('oidcWellKnownConfigurationUrl'))
+
+      if (!response.ok) {
+        const message = `Failed to fetch OIDC config: ${response.status} ${response.statusText}`
+        server.logger.error(message)
+        throw new Error(message)
+      }
+
+      const oidc = await response.json()
 
       server.auth.strategy('azure-oidc', 'jwt', {
         keys: {
