@@ -1,14 +1,13 @@
-import jwt from '@hapi/jwt'
+import { createRemoteJWKSet, jwtVerify } from 'jose'
 
 import { config } from '../config/config.js'
 import { scopesForUser } from '../api/permissions/helpers/relationships/scopes-for-user.js'
+import Boom from '@hapi/boom'
 
-const azureOidc = {
+export const azureOidc = {
   plugin: {
     name: 'azure-oidc',
     register: async (server) => {
-      await server.register(jwt)
-
       const response = await fetch(config.get('oidcWellKnownConfigurationUrl'))
 
       if (!response.ok) {
@@ -16,51 +15,53 @@ const azureOidc = {
         server.logger.error(message)
         throw new Error(message)
       }
-
       const oidc = await response.json()
 
-      server.auth.strategy('azure-oidc', 'jwt', {
-        keys: {
-          uri: oidc.jwks_uri
-        },
-        verify: {
-          aud: config.get('oidcAudience'),
-          iss: oidc.issuer,
-          sub: false,
-          nbf: true,
-          exp: true,
-          maxAgeSec: 5400, // 90 minutes
-          timeSkewSec: 15
-        },
-        validate: async (artifacts) => {
-          const payload = artifacts.decoded.payload
+      const JWKS = createRemoteJWKSet(new URL(oidc.jwks_uri))
 
-          const credentials = {
-            id: payload.oid,
-            displayName: payload.name,
-            email: payload.upn ?? payload.preferred_username,
-            scope: [...payload.groups, payload.oid]
-          }
+      server.auth.scheme('azure-oidc-scheme', () => {
+        return {
+          authenticate: async (request, h) => {
+            const auth = request.headers.authorization
 
-          const { scopes, scopeFlags } = await scopesForUser(
-            server.db,
-            credentials.id
-          )
+            if (!auth || !auth.startsWith('Bearer ')) {
+              throw Boom.unauthorized('Missing token')
+            }
 
-          return {
-            isValid: true,
-            credentials: {
-              id: payload.oid,
-              displayName: payload.name,
-              email: payload.upn ?? payload.preferred_username,
-              scope: scopes,
-              scopeFlags
+            const token = auth.replace('Bearer ', '')
+
+            try {
+              const { payload } = await jwtVerify(token, JWKS, {
+                issuer: oidc.issuer,
+                audience: config.get('oidcAudience'),
+                maxTokenAge: '90m',
+                clockTolerance: 15
+              })
+
+              const { scopes, scopeFlags } = await scopesForUser(
+                server.db,
+                payload.oid
+              )
+
+              return h.authenticated({
+                isValid: true,
+                credentials: {
+                  id: payload.oid,
+                  displayName: payload.name,
+                  email: payload.upn ?? payload.preferred_username,
+                  scope: scopes,
+                  scopeFlags
+                }
+              })
+            } catch (err) {
+              request.logger?.warn?.({ err }, 'OIDC token verification failed')
+
+              throw Boom.unauthorized('Invalid token')
             }
           }
         }
       })
+      server.auth.strategy('azure-oidc', 'azure-oidc-scheme')
     }
   }
 }
-
-export { azureOidc }
