@@ -2,13 +2,16 @@ import {
   CognitoIdentityClient,
   GetOpenIdTokenForDeveloperIdentityCommand
 } from '@aws-sdk/client-cognito-identity'
+import { addProxyToClient } from 'aws-sdk-v3-proxy'
 
 import { config } from '../config/config.js'
 import { createLogger } from './logging/logger.js'
 
 const logger = createLogger()
 
-const client = new CognitoIdentityClient()
+const client = addProxyToClient(new CognitoIdentityClient(), {
+  throwOnNoProxy: false
+})
 
 /**
  * Attempts to get a federated token from cognito
