@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v6
+        uses: DEFRA/cdp-build-action/checkout@stable
       - uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
@@ -35,7 +35,7 @@ jobs:
         run: npm run security-audit
 
       - name: Build all the stuff
-        uses: DEFRA/cdp-build-action/build@main
+        uses: DEFRA/cdp-build-action/build@stable
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           push-build-stages: true
