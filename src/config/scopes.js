@@ -6,6 +6,13 @@ export const scopeDefinitions = {
       'Allow teams to view and deploy to the external test environment',
     kind: ['team']
   },
+  restrictedTechJava: {
+    scopeId: 'restrictedTechJava',
+    value: 'restrictedTechJava',
+    kind: ['user', 'team'],
+    description:
+      'A restricted tech permission to provide Java service creation and management to a team or user'
+  },
   restrictedTechPython: {
     scopeId: 'restrictedTechPython',
     value: 'restrictedTechPython',
