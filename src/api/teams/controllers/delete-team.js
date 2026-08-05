@@ -5,9 +5,14 @@ import {
   statusCodes
 } from '@defra/cdp-validation-kit'
 
-import { triggerRemoveTeamWorkflow } from '../helpers/github/trigger-create-team-workflow.js'
+import { triggerGenericCdpCliWorkflow } from '../helpers/github/trigger-generic-cli-workflow.js'
 import { deleteTeamRelationships } from '../../permissions/helpers/relationships/relationships.js'
 import { deleteTeam } from '../helpers/delete-team.js'
+import {
+  buildGenericCdpCommand,
+  publishTeamCommand,
+  removeTeamCommand
+} from '../helpers/github/generic-cdp-cli.js'
 
 const deleteTeamController = {
   options: {
@@ -25,12 +30,15 @@ const deleteTeamController = {
   },
   handler: async (request, h) => {
     try {
-      await triggerRemoveTeamWorkflow(request.octokit, {
-        team_id: request.params.teamId
-      })
+      const gitHubResponse = await triggerGenericCdpCliWorkflow(
+        request.octokit,
+        buildWorkflowInputs(request.params.teamId)
+      )
+      request.logger.info(
+        `delete team workflow triggered: ${gitHubResponse?.html_url}`
+      )
     } catch (error) {
       request.logger.error(error, error.message)
-      // Non-fatal for now...
     }
 
     await deleteTeam(request.db, request.params.teamId)
@@ -39,4 +47,10 @@ const deleteTeamController = {
   }
 }
 
+function buildWorkflowInputs(teamId) {
+  const removeCommand = removeTeamCommand(teamId)
+  const publishCommand = publishTeamCommand()
+  const runId = crypto.randomUUID().toString()
+  return buildGenericCdpCommand(runId, [removeCommand, publishCommand])
+}
 export { deleteTeamController }

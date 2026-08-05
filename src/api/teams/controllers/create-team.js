@@ -4,8 +4,13 @@ import { MongoErrors } from '../../../helpers/mongodb-errors.js'
 import { teamNameExists } from '../helpers/team-name-exists.js'
 import { createTeam, normalizeTeamName } from '../helpers/create-team.js'
 import { scopes } from '@defra/cdp-validation-kit'
-import { triggerCreateTeamWorkflow } from '../helpers/github/trigger-create-team-workflow.js'
+import { triggerGenericCdpCliWorkflow } from '../helpers/github/trigger-generic-cli-workflow.js'
 import { createTeamValidationSchema } from '../helpers/schemas.js'
+import {
+  buildGenericCdpCommand,
+  createTeamCommand,
+  publishTeamCommand
+} from '../helpers/github/generic-cdp-cli.js'
 
 const createTeamController = {
   options: {
@@ -38,7 +43,13 @@ const createTeamController = {
 
     try {
       const triggerCreateTeamInputs = buildCreateWorkflowInputs(payload)
-      await triggerCreateTeamWorkflow(request.octokit, triggerCreateTeamInputs)
+      const gitHubResponse = await triggerGenericCdpCliWorkflow(
+        request.octokit,
+        triggerCreateTeamInputs
+      )
+      request.logger.info(
+        `create team workflow triggered: ${gitHubResponse?.html_url}`
+      )
     } catch (error) {
       request.logger.error(error)
       // Non-fatal for now. Once we switch over to using cdp-tenant-config this will change.
@@ -57,7 +68,7 @@ const createTeamController = {
 }
 
 function buildCreateWorkflowInputs(payload) {
-  return {
+  const createCommand = createTeamCommand({
     team_id: normalizeTeamName(payload.name),
     name: payload.name,
     description: payload.description,
@@ -68,7 +79,10 @@ function buildCreateWorkflowInputs(payload) {
     slack_team: payload.slackChannels?.team
     // ,...(payload.deliveryGroupId &&
     //   { delivery_group_id: normalizeTeamName(payload.name) })
-  }
+  })
+  const publishCommand = publishTeamCommand()
+  const runId = crypto.randomUUID().toString()
+  return buildGenericCdpCommand(runId, [createCommand, publishCommand])
 }
 
 export { createTeamController }

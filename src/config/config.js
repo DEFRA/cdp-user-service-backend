@@ -257,6 +257,12 @@ const config = convict({
       format: String,
       env: 'GITHUB_WORKFLOW_USER_DELETE',
       default: 'remove-user.yml'
+    },
+    genericCdpCliWorkflow: {
+      doc: 'Remove User workflow',
+      format: String,
+      env: 'GITHUB_WORKFLOW_GENERIC_CDP_CLI',
+      default: 'generic-cdp-cli-workflow.yml'
     }
   },
   oidcKeysUrl: {
