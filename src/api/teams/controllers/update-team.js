@@ -5,8 +5,13 @@ import { buildUpdateFields } from '../../../helpers/build-update-fields.js'
 import { teamNameExists } from '../helpers/team-name-exists.js'
 import { updateTeam } from '../helpers/update-team.js'
 import { scopes, statusCodes } from '@defra/cdp-validation-kit'
-import { triggerUpdateTeamWorkflow } from '../helpers/github/trigger-create-team-workflow.js'
+import { triggerGenericCdpCliWorkflow } from '../helpers/github/trigger-generic-cli-workflow.js'
 import { updateTeamValidationSchema } from '../helpers/schemas.js'
+import {
+  buildGenericCdpCommand,
+  publishTeamCommand,
+  updateTeamCommand
+} from '../helpers/github/generic-cdp-cli.js'
 
 const updateTeamController = {
   options: {
@@ -40,53 +45,40 @@ const updateTeamController = {
     await existingTeamInDb(updateFields?.$set?.name, request)
     const updatedTeam = await updateTeam(request.db, teamId, updateFields)
 
-    await triggerUpdateTeamWorkflow(
-      request.octokit,
-      buildWorkflowInputs(teamId, request?.payload)
-    )
+    try {
+      const gitHubResponse = await triggerGenericCdpCliWorkflow(
+        request.octokit,
+        buildWorkflowInputs(teamId, request?.payload)
+      )
+      request.logger.info(
+        `update team workflow triggered: ${gitHubResponse?.html_url}`
+      )
+    } catch (error) {
+      request.logger.error(error)
+    }
 
     return h.response(updatedTeam).code(statusCodes.ok)
   }
 }
 
 function buildWorkflowInputs(teamId, payload) {
-  const inputs = {
-    team_id: teamId
-  }
-
-  if (payload.name) {
-    inputs.name = payload.name
-  }
-
-  if (payload.description) {
-    inputs.description = payload.description
-  }
-
-  if (payload.serviceCodes) {
-    inputs.service_code = (payload.serviceCodes ?? [])[0]
-  }
-
-  if (payload.github) {
-    inputs.github = payload.github
-  }
-
-  if (payload.slackChannels?.prod) {
-    inputs.slack_prod = payload.slackChannels?.prod
-  }
-
-  if (payload.slackChannels?.nonProd) {
-    inputs.slack_non_prod = payload.slackChannels?.nonProd
-  }
-
-  if (payload.slackChannels?.team) {
-    inputs.slack_team = payload.slackChannels?.team
-  }
-
+  const updateCommand = updateTeamCommand({
+    team_id: teamId,
+    name: payload.name,
+    description: payload.description,
+    service_code: (payload.serviceCodes ?? [])[0],
+    github: payload.github,
+    slack_prod: payload.slackChannels?.prod,
+    slack_non_prod: payload.slackChannels?.nonProd,
+    slack_team: payload.slackChannels?.team
+  })
+  const publishCommand = publishTeamCommand()
+  const runId = crypto.randomUUID().toString()
   // if (payload.deliveryGroupId) {
   //   inputs.delivery_group_id = payload.deliveryGroupId
   // }
 
-  return inputs
+  return buildGenericCdpCommand(runId, [updateCommand, publishCommand])
 }
 
 async function existingTeamInDb(name, request) {

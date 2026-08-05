@@ -67,6 +67,10 @@ async function syncTeams(db, teams) {
       const teamsToBackup = await collection.find(filter).toArray()
 
       if (teamsToBackup.length > 0) {
+        teamsToBackup.forEach((team) => {
+          team.teamId = team._id
+          delete team._id
+        })
         logger.info(
           `removing ${teamsToBackup.length} teams: ${teamsToBackup.map((t) => t._id)}`
         )
@@ -77,7 +81,7 @@ async function syncTeams(db, teams) {
         )
       }
     } catch (error) {
-      logger.error('Error during delete operation:', error)
+      logger.error(error)
       throw error
     }
   }
