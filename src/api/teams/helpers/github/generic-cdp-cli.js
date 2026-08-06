@@ -23,7 +23,7 @@ function escapeShell(param) {
 
 /**
  * Generates payload for the cdp-cli to create a new team.
- * @param {{ team_id: string, name: string, description: string|null, service_code: string|null, github: string|null, slack_prod: string|null, slack_non_prod: string|null, slack_team: string|null }} team
+ * @param {{ team_id: string, name: string, description: string|null, service_code: string|null, github: string|null, slack_prod: string|null, slack_non_prod: string|null, slack_team: string|null, delivery_group_id: string|null }} team
  * @returns {string}
  */
 export function createTeamCommand(team) {
@@ -50,11 +50,15 @@ export function createTeamCommand(team) {
   }
 
   if (team.slack_non_prod) {
-    args.push(`--slack-non-prod ${escapeShell(team.slack_prod)}`)
+    args.push(`--slack-non-prod ${escapeShell(team.slack_non_prod)}`)
   }
 
   if (team.slack_team) {
-    args.push(`--slack-team ${escapeShell(team.slack_prod)}`)
+    args.push(`--slack-team ${escapeShell(team.slack_team)}`)
+  }
+
+  if (team.delivery_group_id) {
+    args.push(`--delivery-group-id ${escapeShell(team.delivery_group_id)}`)
   }
 
   return args.join(' ')
@@ -62,7 +66,7 @@ export function createTeamCommand(team) {
 
 /**
  * Generates payload for cdp-cli to update fields in a team.
- * @param {{ team_id: string, name: string, description: string|null, service_code: string|null, github: string|null, slack_prod: string|null, slack_non_prod: string|null, slack_team: string|null }} team
+ * @param {{ team_id: string, name: string, description: string|null, service_code: string|null, github: string|null, slack_prod: string|null, slack_non_prod: string|null, slack_team: string|null, delivery_group_id: string|null }} team
  * @returns {string}
  */
 export function updateTeamCommand(team) {
@@ -89,11 +93,15 @@ export function updateTeamCommand(team) {
   }
 
   if (team.slack_non_prod) {
-    args.push(`--slack-non-prod ${escapeShell(team.slack_prod)}`)
+    args.push(`--slack-non-prod ${escapeShell(team.slack_non_prod)}`)
   }
 
   if (team.slack_team) {
-    args.push(`--slack-team ${escapeShell(team.slack_prod)}`)
+    args.push(`--slack-team ${escapeShell(team.slack_team)}`)
+  }
+
+  if (team.delivery_group_id) {
+    args.push(`--delivery-group-id ${escapeShell(team.delivery_group_id)}`)
   }
 
   return args.join(' ')

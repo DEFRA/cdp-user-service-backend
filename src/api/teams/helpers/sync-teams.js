@@ -51,7 +51,7 @@ async function syncTeams(db, teams) {
         `Successfully updated ${updateResult.modifiedCount} documents.`
       )
     } catch (error) {
-      logger.error('Error during bulk update operation:', error)
+      logger.error(error)
     }
   }
 
@@ -72,7 +72,7 @@ async function syncTeams(db, teams) {
           delete team._id
         })
         logger.info(
-          `removing ${teamsToBackup.length} teams: ${teamsToBackup.map((t) => t._id)}`
+          `removing ${teamsToBackup.length} teams: ${teamsToBackup.map((t) => t.teamId)}`
         )
         await deletedTeamsCollection.insertMany(teamsToBackup)
         const deleteResult = await collection.deleteMany(filter)
