@@ -23,12 +23,13 @@ const createTeamController = {
     const payload = request?.payload
     const dbTeam = {
       name: payload.name,
-      description: payload?.description,
-      github: payload?.github,
-      serviceCodes: payload?.serviceCodes,
-      alertEmailAddresses: payload?.alertEmailAddresses,
-      alertEnvironments: payload?.alertEnvironments,
-      slackChannels: payload?.slackChannels
+      description: payload.description,
+      github: payload.github,
+      serviceCodes: payload.serviceCodes,
+      alertEmailAddresses: payload.alertEmailAddresses,
+      alertEnvironments: payload.alertEnvironments,
+      slackChannels: payload.slackChannels,
+      deliveryGroupId: payload.deliveryGroupId
     }
     const teamExists = await teamNameExists(request.db, dbTeam.name)
     if (teamExists) {
@@ -65,6 +66,8 @@ function buildCreateWorkflowInputs(payload) {
     slack_prod: payload.slackChannels?.prod,
     slack_non_prod: payload.slackChannels?.nonProd,
     slack_team: payload.slackChannels?.team
+    // ,...(payload.deliveryGroupId &&
+    //   { delivery_group_id: normalizeTeamName(payload.name) })
   }
 }
 
