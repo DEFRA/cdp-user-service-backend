@@ -33,8 +33,10 @@ const updateTeamController = {
       'github',
       'serviceCodes',
       'alertEmailAddresses',
-      'alertEnvironments'
+      'alertEnvironments',
+      'deliveryGroupId'
     ])
+
     await existingTeamInDb(updateFields?.$set?.name, request)
     const updatedTeam = await updateTeam(request.db, teamId, updateFields)
 
@@ -79,6 +81,10 @@ function buildWorkflowInputs(teamId, payload) {
   if (payload.slackChannels?.team) {
     inputs.slack_team = payload.slackChannels?.team
   }
+
+  // if (payload.deliveryGroupId) {
+  //   inputs.delivery_group_id = payload.deliveryGroupId
+  // }
 
   return inputs
 }

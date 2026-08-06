@@ -5,7 +5,7 @@ import { removeNil } from '../../../helpers/remove-nil.js'
 
 /**
  * @param {{}} db
- * @param {{ name: string, description: string, github: string|null, serviceCodes: string[]|null, alertEmailAddresses: string[]|null, alertEnvironments: string[]|null }} dbTeam
+ * @param {{ name: string, description: string, github: string|null, serviceCodes: string[]|null, alertEmailAddresses: string[]|null, alertEnvironments: string[]|null, deliveryGroupId: string|null }} dbTeam
  * @returns {Promise<null|*>}
  */
 async function createTeam(db, dbTeam) {

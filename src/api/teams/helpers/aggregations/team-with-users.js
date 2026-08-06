@@ -37,6 +37,7 @@ export const teamWithUserAggregation = [
     $project: {
       _id: 0,
       teamId: '$_id',
+      deliveryGroupId: 1,
       name: 1,
       description: 1,
       github: 1,

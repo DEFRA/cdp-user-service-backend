@@ -27,7 +27,8 @@ const createTeamValidationSchema = Joi.object({
   alertEnvironments: Joi.array()
     .items(Joi.string().valid(...Object.values(environments)))
     .optional(),
-  slackChannels: slackChannelsSchema.optional().allow(null)
+  slackChannels: slackChannelsSchema.optional().allow(null),
+  deliveryGroupId: Joi.string().optional() // later ensure this is a valid deliveryGroup id
 })
 
 const syncTeamsValidationSchema = Joi.object({
@@ -39,7 +40,11 @@ const syncTeamsValidationSchema = Joi.object({
         description: Joi.string().allow(null),
         github: Joi.string().allow(null),
         serviceCodes: serviceCodesSchema,
-        slackChannels: slackChannelsSchema.optional().allow(null)
+        slackChannels: slackChannelsSchema.optional().allow(null),
+        deliveryGroupId: Joi.string()
+          .regex(/^[A-Za-z0-9-]+$/)
+          .optional()
+          .allow(null)
       })
     )
     .required()
@@ -55,7 +60,8 @@ const updateTeamValidationSchema = Joi.object({
   alertEnvironments: Joi.array()
     .items(Joi.string().valid(...Object.values(environments)))
     .optional(),
-  slackChannels: slackChannelsSchema.optional().allow(null)
+  slackChannels: slackChannelsSchema.optional().allow(null),
+  deliveryGroupId: Joi.string().allow(null)
 })
 
 export {

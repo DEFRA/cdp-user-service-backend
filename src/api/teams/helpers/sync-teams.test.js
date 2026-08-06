@@ -37,7 +37,8 @@ describe('#syncTeams', () => {
         teamId: 'team2',
         name: 'Team2',
         description: 'Another Team',
-        serviceCode: 'ANN'
+        serviceCode: 'ANN',
+        deliveryGroupId: 'delivery-group-id'
       }
     ])
 
@@ -58,7 +59,8 @@ describe('#syncTeams', () => {
         '2a0fd147-0000-410d-922d-69f93d6abf73',
         '351ef4d1-0000-4d69-90af-de18c2fc70de'
       ],
-      scopes: ['foo']
+      scopes: ['foo'],
+      deliveryGroupId: 'delivery-group-id'
     })
 
     let current = await request.db.collection('teams').find({}).toArray()
@@ -87,7 +89,8 @@ describe('#syncTeams', () => {
         '2a0fd147-0000-410d-922d-69f93d6abf73',
         '351ef4d1-0000-4d69-90af-de18c2fc70de'
       ],
-      scopes: ['foo']
+      scopes: ['foo'],
+      deliveryGroupId: 'delivery-group-id'
     })
   })
 
@@ -102,7 +105,8 @@ describe('#syncTeams', () => {
         name: 'Team1',
         description: 'A Team',
         github: 'ghaccount',
-        serviceCode: 'TST'
+        serviceCode: 'TST',
+        deliveryGroupId: 'delivery-group-id'
       },
       {
         teamId: 'team2',
@@ -122,7 +126,8 @@ describe('#syncTeams', () => {
         name: 'Team1',
         description: 'A Team',
         github: 'foobar',
-        serviceCode: 'TST'
+        serviceCode: 'TST',
+        deliveryGroupId: 'delivery-group-id-1'
       },
       {
         teamId: 'team2',
@@ -135,6 +140,7 @@ describe('#syncTeams', () => {
     current = await request.db.collection('teams').find({}).toArray()
     expect(current.length).toBe(2)
     expect(current[0].github).toEqual('foobar')
+    expect(current[0].deliveryGroupId).toEqual('delivery-group-id-1')
 
     // delete
     // Update one of the teams
