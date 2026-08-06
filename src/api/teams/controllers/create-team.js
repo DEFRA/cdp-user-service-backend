@@ -76,9 +76,8 @@ function buildCreateWorkflowInputs(payload) {
     github: payload.github,
     slack_prod: payload.slackChannels?.prod,
     slack_non_prod: payload.slackChannels?.nonProd,
-    slack_team: payload.slackChannels?.team
-    // ,...(payload.deliveryGroupId &&
-    //   { delivery_group_id: normalizeTeamName(payload.name) })
+    slack_team: payload.slackChannels?.team,
+    delivery_group_id: payload.deliveryGroupId
   })
   const publishCommand = publishTeamCommand()
   const runId = crypto.randomUUID().toString()

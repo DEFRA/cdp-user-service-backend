@@ -70,14 +70,11 @@ function buildWorkflowInputs(teamId, payload) {
     github: payload.github,
     slack_prod: payload.slackChannels?.prod,
     slack_non_prod: payload.slackChannels?.nonProd,
-    slack_team: payload.slackChannels?.team
+    slack_team: payload.slackChannels?.team,
+    delivery_group_id: payload.deliveryGroupId
   })
   const publishCommand = publishTeamCommand()
   const runId = crypto.randomUUID().toString()
-  // if (payload.deliveryGroupId) {
-  //   inputs.delivery_group_id = payload.deliveryGroupId
-  // }
-
   return buildGenericCdpCommand(runId, [updateCommand, publishCommand])
 }
 

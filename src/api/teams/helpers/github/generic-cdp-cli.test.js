@@ -14,13 +14,14 @@ describe('cdp-generic-cli workflow input builder', () => {
         name: 'Foo',
         description: 'A team description',
         service_code: 'FOO',
-        github: 'footeam'
+        github: 'footeam',
+        delivery_group_id: 'fishing'
       })
     ])
 
     const jsonVersion = JSON.stringify(workflowInput)
     expect(jsonVersion).toEqual(
-      '{"run_id":"1234","commands":"[\\"team add --team-id \'foo\' --team-name \'Foo\' --description \'A team description\' --github \'footeam\' --service-code \'FOO\'\\"]"}'
+      `{"run_id":"1234","commands":"[\\"team add --team-id 'foo' --team-name 'Foo' --description 'A team description' --github 'footeam' --service-code 'FOO' --delivery-group-id 'fishing'\\"]"}`
     )
   })
 
@@ -34,13 +35,14 @@ describe('cdp-generic-cli workflow input builder', () => {
         github: 'footeam',
         slack_non_prod: 'foo-non-prod',
         slack_team: 'foo-team',
-        slack_prod: 'foo-prod'
+        slack_prod: 'foo-prod',
+        delivery_group_id: 'fishing'
       })
     ])
 
     const jsonVersion = JSON.stringify(workflowInput)
     expect(jsonVersion).toEqual(
-      `{"run_id":"1234","commands":"[\\"team update --team-id 'foo' --team-name 'Foo' --description 'A team description' --github 'footeam' --service-code 'FOO' --slack-prod 'foo-prod' --slack-non-prod 'foo-prod' --slack-team 'foo-prod'\\"]"}`
+      `{"run_id":"1234","commands":"[\\"team update --team-id 'foo' --team-name 'Foo' --description 'A team description' --github 'footeam' --service-code 'FOO' --slack-prod 'foo-prod' --slack-non-prod 'foo-non-prod' --slack-team 'foo-team' --delivery-group-id 'fishing'\\"]"}`
     )
   })
 
