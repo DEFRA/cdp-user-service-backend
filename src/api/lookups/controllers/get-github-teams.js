@@ -7,7 +7,7 @@ const getGitHubTeamsController = {
   options: {
     validate: {
       query: Joi.object({
-        query: Joi.string().required()
+        query: Joi.string()
       })
     }
   },
