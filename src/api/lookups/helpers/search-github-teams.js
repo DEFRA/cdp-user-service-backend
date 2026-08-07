@@ -22,15 +22,18 @@ async function searchGitHubTeams(octokit, query) {
     orgName: org,
     searchQuery: query
   })
-  return (
-    allTeams?.organization?.teams?.nodes
-      ?.filter(
-        (team) =>
-          team.name?.toLowerCase().includes(query?.toLowerCase()) ||
-          team.github?.toLowerCase().includes(query?.toLowerCase())
-      )
-      .slice(0, 20) ?? []
-  )
+  if (query) {
+    return (
+      allTeams?.organization?.teams?.nodes
+        ?.filter(
+          (team) =>
+            team.name?.toLowerCase().includes(query?.toLowerCase()) ||
+            team.github?.toLowerCase().includes(query?.toLowerCase())
+        )
+        .slice(0, 20) ?? []
+    )
+  }
+  return allTeams?.organization?.teams?.nodes
 }
 
 export { searchGitHubTeams }
