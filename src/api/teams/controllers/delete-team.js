@@ -50,7 +50,7 @@ const deleteTeamController = {
 function buildWorkflowInputs(teamId) {
   const removeCommand = removeTeamCommand(teamId)
   const publishCommand = publishTeamCommand()
-  const runId = crypto.randomUUID().toString()
+  const runId = `Delete Team ${teamId}`
   return buildGenericCdpCommand(runId, [removeCommand, publishCommand])
 }
 export { deleteTeamController }

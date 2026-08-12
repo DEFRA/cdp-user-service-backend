@@ -74,7 +74,7 @@ function buildWorkflowInputs(teamId, payload) {
     delivery_group_id: payload.deliveryGroupId
   })
   const publishCommand = publishTeamCommand()
-  const runId = crypto.randomUUID().toString()
+  const runId = `Update Team ${teamId}`
   return buildGenericCdpCommand(runId, [updateCommand, publishCommand])
 }
 
