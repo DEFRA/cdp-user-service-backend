@@ -53,5 +53,12 @@ export const scopeDefinitions = {
     kind: ['user', 'member'],
     description:
       "Allow a member of a team to grant the 'breakGlass' permission to team members"
+  },
+  betaTester: {
+    scopeId: 'betaTester',
+    value: 'betaTester',
+    kind: ['user', 'team'],
+    description:
+      'Allows access to features restricted to just admins or beta testers.'
   }
 }
