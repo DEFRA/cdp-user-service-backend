@@ -36,7 +36,7 @@ export const inactiveUsersScheduler = {
   },
   options: {
     interval: '0 3 * * *',
-    enabled: true,
+    enabled: false,
     thresholdDays: 60
   }
 }

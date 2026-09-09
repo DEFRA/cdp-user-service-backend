@@ -323,7 +323,7 @@ const config = convict({
     enabled: {
       doc: 'Should the service disable inactive users',
       format: Boolean,
-      default: true,
+      default: false,
       env: 'INACTIVE_USERS_CHECK_ENABLED'
     },
     interval: {
