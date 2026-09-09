@@ -7,6 +7,8 @@ import { getUsersWithScopeForTeamController } from './controllers/get-users-with
 import { addBreakGlassToMemberController } from './controllers/add-break-glass-to-member.js'
 import { removeBreakGlassFromMemberController } from './controllers/remove-break-glass-from-member.js'
 import { getUsersForTeamController } from './controllers/get-users-for-team.js'
+import { disableUserController } from './controllers/disable-user.js'
+import { enableUserController } from './controllers/enable-user.js'
 
 const users = {
   plugin: {
@@ -57,6 +59,16 @@ const users = {
           method: 'PATCH',
           path: '/users/{userId}/remove-break-glass/{teamId}',
           ...removeBreakGlassFromMemberController
+        },
+        {
+          method: 'PATCH',
+          path: '/users/{userId}/disable',
+          ...disableUserController
+        },
+        {
+          method: 'PATCH',
+          path: '/users/{userId}/enable',
+          ...enableUserController
         }
       ])
     }
