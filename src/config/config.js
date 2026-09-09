@@ -318,6 +318,26 @@ const config = convict({
       default: '0 * * * *',
       env: 'METRICS_INTERVAL'
     }
+  },
+  inactiveUsers: {
+    enabled: {
+      doc: 'Should the service disable inactive users',
+      format: Boolean,
+      default: false,
+      env: 'INACTIVE_USERS_CHECK_ENABLED'
+    },
+    interval: {
+      doc: 'How frequently to evaluate inactive users (cron schedule)',
+      format: String,
+      default: '0 8 * * *',
+      env: 'INACTIVE_USERS_CHECK_INTERVAL'
+    },
+    thresholdDays: {
+      doc: 'Disable users inactive for this many days',
+      format: Number,
+      default: 60,
+      env: 'INACTIVE_USERS_THRESHOLD_DAYS'
+    }
   }
 })
 

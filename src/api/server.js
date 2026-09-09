@@ -16,6 +16,7 @@ import { secureContext } from '@defra/hapi-secure-context'
 import { requestTracing } from '../helpers/request-tracing.js'
 import { metrics } from '@defra/cdp-metrics'
 import { metricsScheduler } from '../helpers/metrics/metrics-scheduler.js'
+import { inactiveUsersScheduler } from '../helpers/inactive-users/inactive-users-scheduler.js'
 
 async function createServer(configOverrides = {}) {
   config.load(configOverrides)
@@ -63,6 +64,10 @@ async function createServer(configOverrides = {}) {
     octokitPlugin,
     metrics,
     { plugin: metricsScheduler.plugin, options: config.get('metrics') },
+    {
+      plugin: inactiveUsersScheduler.plugin,
+      options: config.get('inactiveUsers')
+    },
     router
   ])
 
