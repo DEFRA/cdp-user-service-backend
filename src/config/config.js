@@ -329,7 +329,7 @@ const config = convict({
     interval: {
       doc: 'How frequently to evaluate inactive users (cron schedule)',
       format: String,
-      default: '0 3 * * *',
+      default: '0 8 * * *',
       env: 'INACTIVE_USERS_CHECK_INTERVAL'
     },
     thresholdDays: {
