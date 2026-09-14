@@ -14,7 +14,8 @@ import {
   userIsMemberOfTeam,
   grantTeamScopedPermissionToUser,
   revokeTeamScopedPermissionFromUser,
-  findActiveBreakGlassForUser
+  findActiveBreakGlassForUser,
+  findAdminUserIds
 } from './relationships.js'
 import { scopeDefinitions } from '#config/scopes.js'
 import { subHours, addHours } from 'date-fns'
@@ -290,5 +291,108 @@ describe('#relationships', () => {
 
     const result = await findActiveBreakGlassForUser(db, 'user1')
     expect(result.length).toEqual(1)
+  })
+
+  test('#findAdminUserIds should return users in teams granted admin', async () => {
+    await addUserToTeam(db, 'adminUser', 'platform')
+    await addUserToTeam(db, 'tenantUser', 'tenantteam')
+    await grantPermissionToTeam(db, 'platform', scopeDefinitions.admin.scopeId)
+
+    const result = await findAdminUserIds(db)
+    expect(result).toEqual(['adminUser'])
+  })
+
+  test('#findAdminUserIds should return empty list when no admin team exists', async () => {
+    await addUserToTeam(db, 'tenantUser', 'tenantteam')
+    await grantPermissionToTeam(
+      db,
+      'tenantteam',
+      scopeDefinitions.externalTest.scopeId
+    )
+
+    const result = await findAdminUserIds(db)
+    expect(result).toEqual([])
+  })
+
+  async function grantTimeBoxedAdminToTeam(teamId, start, end) {
+    await db.collection('relationships').insertOne({
+      subject: teamId,
+      subjectType: 'team',
+      relation: 'granted',
+      resource: scopeDefinitions.admin.scopeId,
+      resourceType: 'permission',
+      start,
+      end
+    })
+  }
+
+  test('#findAdminUserIds should exclude teams whose admin grant has expired', async () => {
+    await addUserToTeam(db, 'expiredAdminUser', 'platform')
+    await grantTimeBoxedAdminToTeam(
+      'platform',
+      subHours(new Date(), 3),
+      subHours(new Date(), 1)
+    )
+
+    const result = await findAdminUserIds(db)
+    expect(result).toEqual([])
+  })
+
+  test('#findAdminUserIds should exclude teams whose admin grant has not started yet', async () => {
+    await addUserToTeam(db, 'futureAdminUser', 'platform')
+    await grantTimeBoxedAdminToTeam(
+      'platform',
+      addHours(new Date(), 1),
+      addHours(new Date(), 3)
+    )
+
+    const result = await findAdminUserIds(db)
+    expect(result).toEqual([])
+  })
+
+  test('#findAdminUserIds should include teams with a currently active time-boxed admin grant', async () => {
+    await addUserToTeam(db, 'temporaryAdminUser', 'platform')
+    await grantTimeBoxedAdminToTeam(
+      'platform',
+      subHours(new Date(), 1),
+      addHours(new Date(), 1)
+    )
+
+    const result = await findAdminUserIds(db)
+    expect(result).toEqual(['temporaryAdminUser'])
+  })
+
+  test('#findAdminUserIds should return empty list when admin team has no members', async () => {
+    await grantPermissionToTeam(db, 'platform', scopeDefinitions.admin.scopeId)
+
+    const result = await findAdminUserIds(db)
+    expect(result).toEqual([])
+  })
+
+  test('#findAdminUserIds should dedupe a user who is a member of multiple admin teams', async () => {
+    await addUserToTeam(db, 'sharedAdminUser', 'platform')
+    await addUserToTeam(db, 'sharedAdminUser', 'security')
+    await addUserToTeam(db, 'platformOnlyAdmin', 'platform')
+    await grantPermissionToTeam(db, 'platform', scopeDefinitions.admin.scopeId)
+    await grantPermissionToTeam(db, 'security', scopeDefinitions.admin.scopeId)
+
+    const result = await findAdminUserIds(db)
+    expect(result.sort()).toEqual(['platformOnlyAdmin', 'sharedAdminUser'])
+  })
+
+  test('#findAdminUserIds should exclude users with only a scoped (non-member) grant to an admin team', async () => {
+    await addUserToTeam(db, 'realAdminUser', 'platform')
+    await grantPermissionToTeam(db, 'platform', scopeDefinitions.admin.scopeId)
+    await grantTeamScopedPermissionToUser(
+      db,
+      'breakGlassOnlyUser',
+      'platform',
+      scopeDefinitions.breakGlass.scopeId,
+      subHours(new Date(), 1),
+      addHours(new Date(), 1)
+    )
+
+    const result = await findAdminUserIds(db)
+    expect(result).toEqual(['realAdminUser'])
   })
 })

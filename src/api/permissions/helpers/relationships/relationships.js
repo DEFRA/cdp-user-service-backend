@@ -280,6 +280,51 @@ async function revokePermissionFromTeam(db, teamId, permission) {
 }
 
 /**
+ * Returns userIds for users that are admins via team membership.
+ * Uses a single aggregation ($graphLookup, one hop) instead of two
+ * sequential queries: find teams currently granted admin, then find
+ * users who are members of those teams.
+ * @param {{}} db
+ * @returns {Promise<string[]>}
+ */
+async function findAdminUserIds(db) {
+  const activeWindow = activePermissionFilter()
+  const result = await db
+    .collection(collection)
+    .aggregate([
+      {
+        $match: {
+          subjectType: 'team',
+          relation: 'granted',
+          resourceType: 'permission',
+          resource: scopeDefinitions.admin.scopeId,
+          ...activeWindow
+        }
+      },
+      {
+        $graphLookup: {
+          from: collection,
+          startWith: '$subject',
+          connectFromField: 'subject',
+          connectToField: 'resource',
+          maxDepth: 5,
+          restrictSearchWithMatch: {
+            subjectType: 'user',
+            relation: 'member',
+            resourceType: 'team'
+          },
+          as: 'members'
+        }
+      },
+      { $unwind: '$members' },
+      { $group: { _id: null, userIds: { $addToSet: '$members.subject' } } }
+    ])
+    .toArray()
+
+  return result[0]?.userIds ?? []
+}
+
+/**
  * Returns a list of userIds that are members of that team.
  * @param {{}} db
  * @param {string} teamId
@@ -408,6 +453,7 @@ export {
   deleteTeamRelationships,
   deleteUserRelationships,
   findActiveBreakGlassForUser,
+  findAdminUserIds,
   findMembersOfTeam,
   findTeamsOfUser,
   userIsMemberOfTeam,

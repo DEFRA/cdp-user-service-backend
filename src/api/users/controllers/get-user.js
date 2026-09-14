@@ -3,6 +3,7 @@ import Boom from '@hapi/boom'
 import isNull from 'lodash/isNull.js'
 
 import { getUser } from '../helpers/get-user.js'
+import { scopesForUser } from '../../permissions/helpers/relationships/scopes-for-user.js'
 import { userIdValidation, statusCodes } from '@defra/cdp-validation-kit'
 
 const getUserController = {
@@ -18,7 +19,11 @@ const getUserController = {
     if (isNull(user)) {
       throw Boom.notFound('User not found')
     }
-    return h.response(user).code(statusCodes.ok)
+    const { scopeFlags } = await scopesForUser(
+      request.db,
+      request.params.userId
+    )
+    return h.response({ ...user, scopeFlags }).code(statusCodes.ok)
   }
 }
 

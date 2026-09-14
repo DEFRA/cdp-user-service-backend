@@ -1,5 +1,6 @@
 import Boom from '@hapi/boom'
 import hapi from '@hapi/hapi'
+import { LockManager } from 'mongo-locks'
 
 import { connectToTestMongoDB } from './connect-to-test-mongodb.js'
 
@@ -52,6 +53,10 @@ async function createTestServer({
   server.decorate('server', 'db', mongo.db)
   server.decorate('request', 'mongoClient', mongo.mongoClient)
   server.decorate('request', 'db', mongo.db)
+
+  const locker = new LockManager(mongo.db.collection('mongo-locks'))
+  server.decorate('server', 'locker', locker)
+  server.decorate('request', 'locker', locker)
 
   // Add a simple logger decorator (some controllers use request.logger)
   const noopLogger = {

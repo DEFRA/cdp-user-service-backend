@@ -98,6 +98,11 @@ describe('GET:/users/{userId}', () => {
             name: 'Platform'
           }
         ],
+        scopeFlags: {
+          isAdmin: false,
+          isTenant: true,
+          hasBreakGlass: true
+        },
         userId: userAdminFixture._id
       })
     })

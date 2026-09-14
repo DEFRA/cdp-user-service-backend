@@ -1,11 +1,14 @@
 import { subDays } from 'date-fns'
 import { UTCDate } from '@date-fns/utc'
+import { findAdminUserIds } from '../../permissions/helpers/relationships/relationships.js'
 
 async function disableInactiveUsers(db, thresholdDays) {
   const now = new UTCDate()
   const cutoffDate = subDays(now, thresholdDays)
+  const adminUserIds = await findAdminUserIds(db)
   const query = {
     disabled: { $ne: true },
+    _id: { $nin: adminUserIds },
     $or: [
       { lastActive: { $lt: cutoffDate } },
       {
