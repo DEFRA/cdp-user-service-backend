@@ -17,7 +17,17 @@ export const teamWithUserAggregation = [
         },
         { $unwind: '$user' },
         { $replaceRoot: { newRoot: '$user' } },
-        { $project: { userId: '$_id', _id: 0, name: 1 } }
+        {
+          $project: {
+            userId: '$_id',
+            _id: 0,
+            name: 1,
+            disabled: 1,
+            disabledAt: 1,
+            disabledBy: 1,
+            disabledReason: 1
+          }
+        }
       ]
     }
   },
