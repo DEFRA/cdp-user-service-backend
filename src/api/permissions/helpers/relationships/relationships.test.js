@@ -313,4 +313,52 @@ describe('#relationships', () => {
     const result = await findAdminUserIds(db)
     expect(result).toEqual([])
   })
+
+  async function grantTimeBoxedAdminToTeam(teamId, start, end) {
+    await db.collection('relationships').insertOne({
+      subject: teamId,
+      subjectType: 'team',
+      relation: 'granted',
+      resource: scopeDefinitions.admin.scopeId,
+      resourceType: 'permission',
+      start,
+      end
+    })
+  }
+
+  test('#findAdminUserIds should exclude teams whose admin grant has expired', async () => {
+    await addUserToTeam(db, 'expiredAdminUser', 'platform')
+    await grantTimeBoxedAdminToTeam(
+      'platform',
+      subHours(new Date(), 3),
+      subHours(new Date(), 1)
+    )
+
+    const result = await findAdminUserIds(db)
+    expect(result).toEqual([])
+  })
+
+  test('#findAdminUserIds should exclude teams whose admin grant has not started yet', async () => {
+    await addUserToTeam(db, 'futureAdminUser', 'platform')
+    await grantTimeBoxedAdminToTeam(
+      'platform',
+      addHours(new Date(), 1),
+      addHours(new Date(), 3)
+    )
+
+    const result = await findAdminUserIds(db)
+    expect(result).toEqual([])
+  })
+
+  test('#findAdminUserIds should include teams with a currently active time-boxed admin grant', async () => {
+    await addUserToTeam(db, 'temporaryAdminUser', 'platform')
+    await grantTimeBoxedAdminToTeam(
+      'platform',
+      subHours(new Date(), 1),
+      addHours(new Date(), 1)
+    )
+
+    const result = await findAdminUserIds(db)
+    expect(result).toEqual(['temporaryAdminUser'])
+  })
 })

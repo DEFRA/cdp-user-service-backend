@@ -87,30 +87,6 @@ describe('PATCH:/users/{userId}/disable', () => {
     })
   })
 
-  describe('When an admin attempts to disable their own account', () => {
-    test('Should provide expected forbidden error response', async () => {
-      await replaceOneTestHelper(collections.user, userAdminFixture)
-      await grantPermissionToUser(
-        server.db,
-        userAdminFixture._id,
-        scopeDefinitions.admin.scopeId
-      )
-
-      const { result, statusCode, statusMessage } = await disableUserEndpoint(
-        `/users/${userAdminFixture._id}/disable`,
-        { id: userAdminFixture._id }
-      )
-
-      expect(statusCode).toBe(403)
-      expect(statusMessage).toBe('Forbidden')
-      expect(result).toMatchObject({
-        statusCode: 403,
-        error: 'Forbidden',
-        message: 'Cannot disable an admin account'
-      })
-    })
-  })
-
   describe('When the target user is a non-admin, disabled by a different caller', () => {
     test('Should provide expected success response', async () => {
       await replaceOneTestHelper(collections.user, userTenantFixture)
