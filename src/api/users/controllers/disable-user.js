@@ -11,6 +11,7 @@ import { requireLock } from '../../../helpers/mongo-lock.js'
 import { disableUser } from '../helpers/disable-user.js'
 import { getUserOnly } from '../helpers/get-user.js'
 import { recordAudit } from '../../../helpers/audit/record-audit.js'
+import { scopesForUser } from '../../permissions/helpers/relationships/scopes-for-user.js'
 
 const disableUserController = {
   options: {
@@ -38,6 +39,11 @@ const disableUserController = {
 
     if (!existingUser) {
       throw Boom.notFound('User not found')
+    }
+
+    const { scopeFlags } = await scopesForUser(request.db, userId)
+    if (scopeFlags.isAdmin) {
+      throw Boom.forbidden('Cannot disable an admin account')
     }
 
     const lock = await requireLock(request.locker, 'users')

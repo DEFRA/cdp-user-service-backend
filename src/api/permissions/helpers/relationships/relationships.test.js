@@ -14,7 +14,8 @@ import {
   userIsMemberOfTeam,
   grantTeamScopedPermissionToUser,
   revokeTeamScopedPermissionFromUser,
-  findActiveBreakGlassForUser
+  findActiveBreakGlassForUser,
+  findAdminUserIds
 } from './relationships.js'
 import { scopeDefinitions } from '#config/scopes.js'
 import { subHours, addHours } from 'date-fns'
@@ -290,5 +291,26 @@ describe('#relationships', () => {
 
     const result = await findActiveBreakGlassForUser(db, 'user1')
     expect(result.length).toEqual(1)
+  })
+
+  test('#findAdminUserIds should return users in teams granted admin', async () => {
+    await addUserToTeam(db, 'adminUser', 'platform')
+    await addUserToTeam(db, 'tenantUser', 'tenantteam')
+    await grantPermissionToTeam(db, 'platform', scopeDefinitions.admin.scopeId)
+
+    const result = await findAdminUserIds(db)
+    expect(result).toEqual(['adminUser'])
+  })
+
+  test('#findAdminUserIds should return empty list when no admin team exists', async () => {
+    await addUserToTeam(db, 'tenantUser', 'tenantteam')
+    await grantPermissionToTeam(
+      db,
+      'tenantteam',
+      scopeDefinitions.externalTest.scopeId
+    )
+
+    const result = await findAdminUserIds(db)
+    expect(result).toEqual([])
   })
 })

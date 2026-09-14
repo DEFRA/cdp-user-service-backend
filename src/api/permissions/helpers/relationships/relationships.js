@@ -280,6 +280,42 @@ async function revokePermissionFromTeam(db, teamId, permission) {
 }
 
 /**
+ * Returns userIds for users that are admins via team membership.
+ * @param {{}} db
+ * @returns {Promise<string[]>}
+ */
+async function findAdminUserIds(db) {
+  const activeWindow = activePermissionFilter()
+  const adminTeamGrants = await db
+    .collection(collection)
+    .find({
+      subjectType: 'team',
+      relation: 'granted',
+      resourceType: 'permission',
+      resource: scopeDefinitions.admin.scopeId,
+      ...activeWindow
+    })
+    .toArray()
+
+  const adminTeamIds = adminTeamGrants.map((grant) => grant.subject)
+  if (!adminTeamIds.length) {
+    return []
+  }
+
+  const members = await db
+    .collection(collection)
+    .find({
+      subjectType: 'user',
+      relation: 'member',
+      resourceType: 'team',
+      resource: { $in: adminTeamIds }
+    })
+    .toArray()
+
+  return [...new Set(members.map((member) => member.subject))]
+}
+
+/**
  * Returns a list of userIds that are members of that team.
  * @param {{}} db
  * @param {string} teamId
@@ -408,6 +444,7 @@ export {
   deleteTeamRelationships,
   deleteUserRelationships,
   findActiveBreakGlassForUser,
+  findAdminUserIds,
   findMembersOfTeam,
   findTeamsOfUser,
   userIsMemberOfTeam,
