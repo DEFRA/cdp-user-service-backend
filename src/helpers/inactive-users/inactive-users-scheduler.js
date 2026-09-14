@@ -33,11 +33,6 @@ export const inactiveUsersScheduler = {
         task.stop()
       })
     }
-  },
-  options: {
-    interval: '0 3 * * *',
-    enabled: false,
-    thresholdDays: 60
   }
 }
 
