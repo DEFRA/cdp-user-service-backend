@@ -281,38 +281,47 @@ async function revokePermissionFromTeam(db, teamId, permission) {
 
 /**
  * Returns userIds for users that are admins via team membership.
+ * Uses a single aggregation ($graphLookup, one hop) instead of two
+ * sequential queries: find teams currently granted admin, then find
+ * users who are members of those teams.
  * @param {{}} db
  * @returns {Promise<string[]>}
  */
 async function findAdminUserIds(db) {
   const activeWindow = activePermissionFilter()
-  const adminTeamGrants = await db
+  const result = await db
     .collection(collection)
-    .find({
-      subjectType: 'team',
-      relation: 'granted',
-      resourceType: 'permission',
-      resource: scopeDefinitions.admin.scopeId,
-      ...activeWindow
-    })
+    .aggregate([
+      {
+        $match: {
+          subjectType: 'team',
+          relation: 'granted',
+          resourceType: 'permission',
+          resource: scopeDefinitions.admin.scopeId,
+          ...activeWindow
+        }
+      },
+      {
+        $graphLookup: {
+          from: collection,
+          startWith: '$subject',
+          connectFromField: 'subject',
+          connectToField: 'resource',
+          maxDepth: 5,
+          restrictSearchWithMatch: {
+            subjectType: 'user',
+            relation: 'member',
+            resourceType: 'team'
+          },
+          as: 'members'
+        }
+      },
+      { $unwind: '$members' },
+      { $group: { _id: null, userIds: { $addToSet: '$members.subject' } } }
+    ])
     .toArray()
 
-  const adminTeamIds = adminTeamGrants.map((grant) => grant.subject)
-  if (!adminTeamIds.length) {
-    return []
-  }
-
-  const members = await db
-    .collection(collection)
-    .find({
-      subjectType: 'user',
-      relation: 'member',
-      resourceType: 'team',
-      resource: { $in: adminTeamIds }
-    })
-    .toArray()
-
-  return [...new Set(members.map((member) => member.subject))]
+  return result[0]?.userIds ?? []
 }
 
 /**

@@ -361,4 +361,38 @@ describe('#relationships', () => {
     const result = await findAdminUserIds(db)
     expect(result).toEqual(['temporaryAdminUser'])
   })
+
+  test('#findAdminUserIds should return empty list when admin team has no members', async () => {
+    await grantPermissionToTeam(db, 'platform', scopeDefinitions.admin.scopeId)
+
+    const result = await findAdminUserIds(db)
+    expect(result).toEqual([])
+  })
+
+  test('#findAdminUserIds should dedupe a user who is a member of multiple admin teams', async () => {
+    await addUserToTeam(db, 'sharedAdminUser', 'platform')
+    await addUserToTeam(db, 'sharedAdminUser', 'security')
+    await addUserToTeam(db, 'platformOnlyAdmin', 'platform')
+    await grantPermissionToTeam(db, 'platform', scopeDefinitions.admin.scopeId)
+    await grantPermissionToTeam(db, 'security', scopeDefinitions.admin.scopeId)
+
+    const result = await findAdminUserIds(db)
+    expect(result.sort()).toEqual(['platformOnlyAdmin', 'sharedAdminUser'])
+  })
+
+  test('#findAdminUserIds should exclude users with only a scoped (non-member) grant to an admin team', async () => {
+    await addUserToTeam(db, 'realAdminUser', 'platform')
+    await grantPermissionToTeam(db, 'platform', scopeDefinitions.admin.scopeId)
+    await grantTeamScopedPermissionToUser(
+      db,
+      'breakGlassOnlyUser',
+      'platform',
+      scopeDefinitions.breakGlass.scopeId,
+      subHours(new Date(), 1),
+      addHours(new Date(), 1)
+    )
+
+    const result = await findAdminUserIds(db)
+    expect(result).toEqual(['realAdminUser'])
+  })
 })
