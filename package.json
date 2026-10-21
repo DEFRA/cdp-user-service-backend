@@ -41,7 +41,7 @@
     "@elastic/ecs-pino-format": "1.5.0",
     "@hapi/boom": "10.0.1",
     "@hapi/hapi": "21.4.9",
-    "@hapi/inert": "7.1.0",
+    "@hapi/inert": "7.1.1",
     "@hapi/vision": "7.0.3",
     "@microsoft/microsoft-graph-client": "3.0.7",
     "@octokit/auth-app": "8.1.2",
