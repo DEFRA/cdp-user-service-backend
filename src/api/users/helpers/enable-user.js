@@ -12,7 +12,8 @@ async function enableUser(db, userId) {
         disabledReason: ''
       },
       $set: {
-        updatedAt: new UTCDate()
+        updatedAt: new UTCDate(),
+        lastActive: new UTCDate()
       }
     }
   )
