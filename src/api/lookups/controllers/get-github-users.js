@@ -13,7 +13,7 @@ const getGitHubUsersController = {
   },
   handler: async (request, h) => {
     const query = request.query.query
-    const users = await searchGitHubUsers(request.octokit, query)
+    const users = await searchGitHubUsers(request.server, query)
     return h.response(users).code(statusCodes.ok)
   }
 }

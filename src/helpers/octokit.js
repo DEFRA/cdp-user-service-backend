@@ -43,6 +43,7 @@ const octokitPlugin = {
       const OctokitExtra = Octokit.plugin(paginateGraphQL)
       const octokit = new OctokitExtra(cfg)
       server.decorate('request', 'octokit', octokit)
+      server.decorate('server', 'octokit', octokit)
     }
   }
 }
