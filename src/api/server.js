@@ -17,6 +17,7 @@ import { requestTracing } from '../helpers/request-tracing.js'
 import { metrics } from '@defra/cdp-metrics'
 import { metricsScheduler } from '../helpers/metrics/metrics-scheduler.js'
 import { inactiveUsersScheduler } from '../helpers/inactive-users/inactive-users-scheduler.js'
+import { githubOrgMembersPlugin } from '../helpers/github-org-members.js'
 
 async function createServer(configOverrides = {}) {
   config.load(configOverrides)
@@ -62,6 +63,13 @@ async function createServer(configOverrides = {}) {
     { plugin: mongoDb.plugin, options: config.get('mongo') },
     msGraphPlugin,
     octokitPlugin,
+    {
+      plugin: githubOrgMembersPlugin,
+      options: {
+        org: config.get('github.org'),
+        cache: config.get('github.cache.orgMembers')
+      }
+    },
     metrics,
     { plugin: metricsScheduler.plugin, options: config.get('metrics') },
     {

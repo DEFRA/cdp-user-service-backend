@@ -1,29 +1,7 @@
-import { config } from '#config/config.js'
-
-async function searchGitHubUsers(octokit, query) {
-  const org = config.get('github.org')
-  const orgUsersQuery = `
-  query orgUsers($cursor: String, $orgName: String!) {
-    organization(login: $orgName) {
-      membersWithRole(first: 100, after: $cursor) {
-        nodes {
-          github: login
-          name
-        }
-        pageInfo {
-          hasNextPage
-          endCursor
-        }
-      }
-    }
-  }`
-
-  const allMembers = await octokit.graphql.paginate(orgUsersQuery, {
-    orgName: org,
-    searchQuery: query
-  })
+async function searchGitHubUsers(server, query) {
+  const members = await server.methods.getGitHubOrgMembers()
   return (
-    allMembers?.organization?.membersWithRole?.nodes
+    members
       ?.filter(
         (user) =>
           user.name?.toLowerCase().includes(query?.toLowerCase()) ||
