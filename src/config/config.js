@@ -263,6 +263,34 @@ const config = convict({
       format: String,
       env: 'GITHUB_WORKFLOW_GENERIC_CDP_CLI',
       default: 'generic-cdp-cli-workflow.yml'
+    },
+    cache: {
+      orgMembers: {
+        expiresIn: {
+          doc: 'How long GitHub organisation members remain cached in milliseconds',
+          format: Number,
+          default: 8 * 60 * 60 * 1000,
+          env: 'GITHUB_ORG_MEMBERS_CACHE_EXPIRES_IN'
+        },
+        staleIn: {
+          doc: 'How long before cached GitHub organisation members are considered stale in milliseconds',
+          format: Number,
+          default: 10 * 60 * 1000,
+          env: 'GITHUB_ORG_MEMBERS_CACHE_STALE_IN'
+        },
+        staleTimeout: {
+          doc: 'How long to wait for fresh GitHub organisation members before serving stale data in milliseconds',
+          format: Number,
+          default: 300, //trigger the cache to be updated in the background
+          env: 'GITHUB_ORG_MEMBERS_CACHE_STALE_TIMEOUT'
+        },
+        generateTimeout: {
+          doc: 'How long to wait for GitHub organisation members to be generated before timing out in milliseconds',
+          format: Number,
+          default: 2 * 60 * 1000,
+          env: 'GITHUB_ORG_MEMBERS_CACHE_GENERATE_TIMEOUT'
+        }
+      }
     }
   },
   oidcKeysUrl: {
